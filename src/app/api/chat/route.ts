@@ -10,7 +10,7 @@ import type { ChatPageContext } from "@/types/chat-history";
 
 export const maxDuration = 60;
 
-const CHAT_MODEL = process.env.CHAT_MODEL || "claude-sonnet-4-6-20250514";
+const CHAT_MODEL = process.env.CHAT_MODEL || "claude-sonnet-4-6";
 
 function getTextFromMessage(message: UIMessage): string {
   return message.parts
