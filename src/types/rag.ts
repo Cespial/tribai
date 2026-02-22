@@ -40,6 +40,7 @@ export interface ArticleGroup {
   estado?: "vigente" | "modificado" | "derogado";
   totalModificaciones?: number;
   slug?: string;
+  concordancias?: string;
 }
 
 /** Group for doctrina, jurisprudencia, decretos, resoluciones */

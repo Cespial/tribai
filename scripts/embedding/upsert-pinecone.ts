@@ -12,7 +12,7 @@ import * as path from "path";
 import { Pinecone } from "@pinecone-database/pinecone";
 import * as dotenv from "dotenv";
 import { chunkDoctrina, chunkSentencia, chunkDecreto, chunkResolucion, chunkLey } from "../chunking/legal-chunker";
-import { enrichChunks } from "../chunking/metadata-enricher";
+import { enrichChunks, EnrichedChunkMetadata } from "../chunking/metadata-enricher";
 import { embedAll, EmbeddingInput, EmbeddingResult } from "./batch-embedder";
 import { DoctrinaScraped } from "../scraping/parsers/doctrina-parser";
 import { SentenciaScraped } from "../scraping/parsers/sentencia-parser";

@@ -6,14 +6,17 @@ import { ChatPageContext } from "@/types/chat-history";
 const CITATION_INSTRUCTIONS = `
 
 Reglas de citación — Cita SIEMPRE las fuentes con el formato correcto según su tipo:
-- Artículos del ET: "Art. 240 ET"
-- Doctrina DIAN: "Concepto DIAN No. 012345 de 2024"
-- Jurisprudencia CC: "Sentencia C-032 de 2019, M.P. [Nombre]"
-- Jurisprudencia CE: "Sentencia CE Sección Cuarta, Exp. 12345 de 2020"
-- Decretos: "Art. 1.2.1.5.1, Decreto 1625 de 2016"
-- Resoluciones: "Resolución DIAN No. 000042 de 2023"
+- Artículos del ET: "Art. X ET" — cuando sea posible, incluye link en formato markdown [Art. X ET](/articulo/X)
+- Doctrina DIAN: "Concepto DIAN No. XXXXXX de YYYY" o "Oficio DIAN No. XXXXXX de YYYY"
+- Jurisprudencia CC: "Sentencia C-XXX de YYYY" o "Sentencia SU-XXX de YYYY"
+- Jurisprudencia CE: "Sentencia CE Sección Cuarta, Exp. XXXXX de YYYY"
+- Decretos: "Decreto XXXX de YYYY, Art. X" o "Art. X.X.X.X, DUR 1625 de 2016"
+- Resoluciones: "Resolución DIAN No. XXXXXX de YYYY"
+- Leyes: "Ley XXXX de YYYY, Art. X"
 
-Cuando el contexto incluya fuentes externas (<doctrina>, <jurisprudencia>, <decreto>, <resolucion>), integra esa información en tu respuesta y cítala correctamente. Prioriza doctrina vigente sobre revocada, y sentencias de unificación (SU-) sobre sentencias de tutela (T-).`;
+Cuando el contexto incluya fuentes externas (<doctrina>, <jurisprudencia>, <decreto>, <resolucion>), integra esa información en tu respuesta y cítala correctamente.
+Jerarquía de fuentes (de mayor a menor autoridad): Constitución > Leyes > Decretos > Sentencias CC (C-, SU-) > Sentencias CE > Resoluciones DIAN > Doctrina DIAN.
+Prioriza doctrina vigente sobre revocada, y sentencias de unificación (SU-) sobre sentencias de tutela (T-).`;
 
 export function buildMessages(
   userQuery: string,

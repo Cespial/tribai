@@ -7,6 +7,7 @@ import { checkRateLimit } from "@/lib/api/rate-limiter";
 import { buildConversationContext } from "@/lib/chat/session-memory";
 import { suggestCalculators } from "@/lib/chat/calculator-context";
 import type { ChatPageContext } from "@/types/chat-history";
+import { setRequestId, logger } from "@/lib/logging/structured-logger";
 
 export const maxDuration = 60;
 
@@ -99,6 +100,12 @@ export async function POST(req: Request) {
     pageContext as ChatPageContext | undefined
   );
 
+  // Initialize structured logging for this request
+  const requestId = setRequestId();
+  logger.info("Chat request received", {
+    metadata: { query: userQuery.slice(0, 100), ip, conversationId },
+  });
+
   // Run RAG pipeline
   const { system, contextBlock, sources, debugInfo } = await runRAGPipeline(userQuery, {
     libroFilter,
@@ -112,6 +119,16 @@ export async function POST(req: Request) {
     3,
     pageContext as ChatPageContext | undefined
   );
+
+  logger.info("RAG pipeline completed", {
+    metadata: {
+      chunksRetrieved: debugInfo?.chunksRetrieved,
+      uniqueArticles: debugInfo?.uniqueArticles,
+      pipelineMs: debugInfo?.timings?.totalPipeline
+        ? Math.round(debugInfo.timings.totalPipeline)
+        : undefined,
+    },
+  });
 
   const result = streamText({
     model: anthropic(CHAT_MODEL),
@@ -134,11 +151,27 @@ export async function POST(req: Request) {
             chunksAfterReranking: debugInfo?.chunksAfterReranking,
             uniqueArticles: debugInfo?.uniqueArticles,
             tokensUsed: debugInfo?.contextTokensUsed,
+            tokensBudget: debugInfo?.contextTokensBudget,
             queryEnhanced: debugInfo?.queryEnhanced,
             hydeGenerated: debugInfo?.hydeGenerated,
+            subQueriesCount: debugInfo?.subQueriesCount,
             topScore: debugInfo?.topScore,
+            medianScore: debugInfo?.medianScore,
+            dynamicThreshold: debugInfo?.dynamicThreshold,
+            namespacesSearched: debugInfo?.namespacesSearched,
+            siblingChunksAdded: debugInfo?.siblingChunksAdded,
+            embeddingCacheHitRate: debugInfo?.embeddingCacheHitRate,
             pipelineMs: debugInfo?.timings?.totalPipeline
               ? Math.round(debugInfo.timings.totalPipeline)
+              : undefined,
+            timings: debugInfo?.timings
+              ? {
+                  queryEnhancement: Math.round(debugInfo.timings.queryEnhancement),
+                  retrieval: Math.round(debugInfo.timings.retrieval),
+                  reranking: Math.round(debugInfo.timings.reranking),
+                  contextAssembly: Math.round(debugInfo.timings.contextAssembly),
+                  promptBuilding: Math.round(debugInfo.timings.promptBuilding),
+                }
               : undefined,
           },
         };

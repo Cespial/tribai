@@ -57,7 +57,7 @@ async function rewriteQuery(query: string): Promise<string> {
   try {
     const { text } = await generateText({
       model: anthropic("claude-haiku-4-5-20251001"),
-      maxOutputTokens: 200,
+      maxOutputTokens: 300,
       system:
         "Eres un experto en el Estatuto Tributario colombiano (Decreto 624 de 1989). " +
         "Reescribe la consulta del usuario usando terminología legal precisa del Estatuto Tributario. " +
@@ -79,10 +79,19 @@ function shouldUseHyDE(
   forceHyDE?: boolean
 ): boolean {
   if (forceHyDE !== undefined) return forceHyDE;
-  if (detectedArticles.length > 0) return false;
   if (query.length < 15) return false;
-  // Skip HyDE for direct article queries (e.g., "qué dice el artículo 240")
-  if (/^(qu[eé]|cu[aá]l)\s+(dice|establece|se[nñ]ala)\s+/i.test(query)) return false;
+
+  // Only disable HyDE for SIMPLE article lookups (e.g., "qué dice el artículo 240")
+  // Queries with context like "qué dice el Art. 240 sobre zonas francas?" benefit from HyDE
+  if (detectedArticles.length > 0) {
+    const isSimpleArticleLookup = query.length < 60 &&
+      /^(qu[eé]|cu[aá]l|mu[eé]str|dame|ver)\s+(dice|establece|se[nñ]ala|es|el|la)\s+/i.test(query);
+    if (isSimpleArticleLookup) return false;
+  }
+
+  // Skip HyDE for very simple direct queries
+  if (/^(qu[eé]|cu[aá]l)\s+(dice|establece|se[nñ]ala)\s+(el\s+)?art/i.test(query) && query.length < 50) return false;
+
   return true;
 }
 

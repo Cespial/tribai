@@ -7,6 +7,7 @@ import { AssembledContext, SourceCitation, RAGDebugInfo, PipelineTimings } from 
 import { RAG_CONFIG } from "@/config/constants";
 import { ChatPageContext } from "@/types/chat-history";
 import { getCacheStats } from "@/lib/pinecone/embedder";
+import { getCachedResult, setCachedResult } from "@/lib/cache/response-cache";
 
 export interface PipelineOptions {
   libroFilter?: string;
@@ -30,6 +31,14 @@ export async function runRAGPipeline(
   query: string,
   options: PipelineOptions = {}
 ): Promise<PipelineResult> {
+  // Check cache for frequent queries (skip if conversation history present)
+  if (!options.conversationHistory) {
+    const cached = getCachedResult(query);
+    if (cached) {
+      return cached;
+    }
+  }
+
   const pipelineStart = performance.now();
   const timings: PipelineTimings = {
     queryEnhancement: 0,
@@ -142,11 +151,18 @@ export async function runRAGPipeline(
     embeddingCacheHitRate: cacheStats.hitRate,
   };
 
-  return {
+  const result: PipelineResult = {
     system,
     contextBlock,
     sources: context.sources,
     context,
     debugInfo,
   };
+
+  // Cache result for future identical queries
+  if (!options.conversationHistory) {
+    setCachedResult(query, result);
+  }
+
+  return result;
 }

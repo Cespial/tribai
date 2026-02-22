@@ -156,6 +156,11 @@ export function heuristicRerank(
       boost += BOOST.complexityBoost;
     }
 
+    // PageRank boost: prefer structurally important articles in the tax graph
+    if (meta.pagerank && meta.pagerank > 0.01) {
+      boost += 0.08;
+    }
+
     // Multiplicative + additive scoring: preserves relative ranking better
     const multiplier = 1 + (boost > 0 ? boost * 0.3 : 0);
     const rerankedScore = chunk.score * multiplier + boost * 0.7;

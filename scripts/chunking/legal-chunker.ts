@@ -114,6 +114,47 @@ function validateChunk(text: string): boolean {
 }
 
 /**
+ * Generate a contextual prefix for a chunk (Anthropic-style Contextual Retrieval).
+ * Prepends document-level context before the chunk text to improve embedding quality.
+ */
+export function generateContextualPrefix(
+  metadata: Record<string, unknown>
+): string {
+  const parts: string[] = [];
+
+  if (metadata.id_articulo) {
+    parts.push(`[Artículo ${metadata.id_articulo} del Estatuto Tributario]`);
+  }
+  if (metadata.titulo) {
+    parts.push(`Título: ${metadata.titulo}`);
+  }
+  if (metadata.categoria_libro) {
+    parts.push(`Libro: ${metadata.categoria_libro}`);
+  }
+  if (metadata.estado) {
+    parts.push(`Estado: ${metadata.estado}`);
+  }
+  if (metadata.doc_type === "doctrina") {
+    parts.push(`[Concepto DIAN No. ${metadata.numero || ""}${metadata.fecha ? `, ${metadata.fecha}` : ""}]`);
+    if (metadata.tema) parts.push(`Tema: ${metadata.tema}`);
+  }
+  if (metadata.doc_type === "sentencia") {
+    parts.push(`[Sentencia ${metadata.tipo || ""}-${metadata.numero || ""} de ${metadata.year || ""}]`);
+    if (metadata.tema) parts.push(`Tema: ${metadata.tema}`);
+  }
+  if (metadata.doc_type === "decreto") {
+    parts.push(`[Decreto ${metadata.decreto_numero || ""}, Art. ${metadata.articulo_numero || ""}]`);
+  }
+  if (metadata.doc_type === "resolucion") {
+    parts.push(`[Resolución DIAN No. ${metadata.numero || ""}${metadata.fecha ? `, ${metadata.fecha}` : ""}]`);
+    if (metadata.tema) parts.push(`Tema: ${metadata.tema}`);
+  }
+
+  if (parts.length === 0) return "";
+  return parts.join(". ") + "\n\n";
+}
+
+/**
  * Chunk legal text respecting document structure.
  */
 export function chunkLegalText(

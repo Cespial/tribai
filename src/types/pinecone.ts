@@ -17,10 +17,14 @@ export interface ChunkMetadata {
   leyes_modificatorias?: string[];
   cross_ref_articles?: string[];
   has_concordancias?: boolean;
+  concordancias?: string;
   has_normas_jurisprudencia?: boolean;
   has_doctrina_dian?: boolean;
   complexity_score?: number;
   slug?: string;
+  // Graph metrics (enrichment)
+  pagerank?: number;
+  community_id?: number;
 }
 
 /** Multi-source chunk metadata for doctrina, jurisprudencia, decretos, resoluciones */

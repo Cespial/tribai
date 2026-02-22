@@ -92,38 +92,51 @@ async function fetchSiblingChunks(
   const index = getIndex();
 
   // Find articles that have multiple chunks (total_chunks > 1)
-  const articlesToExpand = new Set<string>();
+  const articlesToExpand: string[] = [];
   const existingIds = new Set(chunks.map((c) => c.id));
 
   for (const chunk of chunks) {
-    if (chunk.metadata.total_chunks > 1) {
-      articlesToExpand.add(chunk.metadata.id_articulo);
+    if (chunk.metadata.total_chunks > 1 && !articlesToExpand.includes(chunk.metadata.id_articulo)) {
+      articlesToExpand.push(chunk.metadata.id_articulo);
     }
   }
 
-  if (articlesToExpand.size === 0) return [...chunks];
+  if (articlesToExpand.length === 0) return [...chunks];
 
-  // For each article needing expansion, fetch all its chunks by metadata filter
-  const siblingPromises = Array.from(articlesToExpand).map(async (artId) => {
-    const bestChunk = chunks
-      .filter(c => c.metadata.id_articulo === artId)
-      .sort((a, b) => b.rerankedScore - a.rerankedScore)[0];
+  // Batch sibling retrieval: single query with $in filter instead of N individual queries
+  const bestChunk = chunks.sort((a, b) => b.rerankedScore - a.rerankedScore)[0];
+  let allMatches: Array<{ id: string; score?: number; metadata?: Record<string, unknown> }> = [];
 
-    try {
-      const result = await index.query({
-        id: bestChunk.id,
-        topK: 30,
-        includeMetadata: true,
-        filter: { id_articulo: { $eq: artId } },
-      });
-      return result.matches || [];
-    } catch (error) {
-      console.warn(`[sibling-retrieval] Failed for ${artId}:`, error);
-      return [];
-    }
-  });
-
-  const siblingResults = await Promise.all(siblingPromises);
+  try {
+    const result = await index.query({
+      id: bestChunk.id,
+      topK: articlesToExpand.length * 6, // ~6 chunks per article max
+      includeMetadata: true,
+      filter: { id_articulo: { $in: articlesToExpand } },
+    });
+    allMatches = result.matches || [];
+  } catch (error) {
+    console.warn("[sibling-retrieval] Batch query failed, falling back to individual queries:", error);
+    // Fallback: individual queries (only if batch fails)
+    const siblingPromises = articlesToExpand.map(async (artId) => {
+      try {
+        const artBestChunk = chunks
+          .filter(c => c.metadata.id_articulo === artId)
+          .sort((a, b) => b.rerankedScore - a.rerankedScore)[0];
+        const result = await index.query({
+          id: artBestChunk.id,
+          topK: 8,
+          includeMetadata: true,
+          filter: { id_articulo: { $eq: artId } },
+        });
+        return result.matches || [];
+      } catch {
+        return [];
+      }
+    });
+    const results = await Promise.all(siblingPromises);
+    allMatches = results.flat();
+  }
 
   // Find the max score for each article from the original chunks
   const articleScores = new Map<string, number>();
@@ -139,32 +152,31 @@ async function fetchSiblingChunks(
   const result: RerankedChunk[] = [...chunks];
   const siblingsAdded = new Map<string, number>();
 
-  for (const matches of siblingResults) {
-    const sorted = [...matches].sort((a, b) => {
-      const aIdx = (a.metadata as unknown as ChunkMetadata)?.chunk_index ?? 0;
-      const bIdx = (b.metadata as unknown as ChunkMetadata)?.chunk_index ?? 0;
-      return aIdx - bIdx;
-    });
+  // Sort all matches by chunk_index for correct ordering
+  const sorted = [...allMatches].sort((a, b) => {
+    const aIdx = (a.metadata as unknown as ChunkMetadata)?.chunk_index ?? 0;
+    const bIdx = (b.metadata as unknown as ChunkMetadata)?.chunk_index ?? 0;
+    return aIdx - bIdx;
+  });
 
-    for (const match of sorted) {
-      if (!existingIds.has(match.id) && match.metadata) {
-        const meta = match.metadata as unknown as ChunkMetadata;
-        const artId = meta.id_articulo;
-        const added = siblingsAdded.get(artId) ?? 0;
+  for (const match of sorted) {
+    if (!existingIds.has(match.id) && match.metadata) {
+      const meta = match.metadata as unknown as ChunkMetadata;
+      const artId = meta.id_articulo;
+      const added = siblingsAdded.get(artId) ?? 0;
 
-        if (added >= MAX_SIBLINGS_PER_ARTICLE) continue;
+      if (added >= MAX_SIBLINGS_PER_ARTICLE) continue;
 
-        const artScore = articleScores.get(artId) ?? 0;
+      const artScore = articleScores.get(artId) ?? 0;
 
-        result.push({
-          id: match.id,
-          score: match.score ?? 0,
-          metadata: meta,
-          rerankedScore: artScore * 0.9,
-        });
-        existingIds.add(match.id);
-        siblingsAdded.set(artId, added + 1);
-      }
+      result.push({
+        id: match.id,
+        score: match.score ?? 0,
+        metadata: meta,
+        rerankedScore: artScore * 0.9,
+      });
+      existingIds.add(match.id);
+      siblingsAdded.set(artId, added + 1);
     }
   }
 
@@ -208,6 +220,7 @@ function groupByArticle(chunks: RerankedChunk[]): ArticleGroup[] {
         estado: chunk.metadata.estado,
         totalModificaciones: chunk.metadata.total_modificaciones,
         slug: chunk.metadata.slug,
+        concordancias: chunk.metadata.concordancias,
       };
       groups.set(artId, group);
     }
@@ -323,6 +336,12 @@ export function formatArticleForContext(group: ArticleGroup): string {
     }
   } catch {
     // Fail silently if graph not loaded or ID format mismatch
+  }
+
+  // Include concordancias if available
+  if (group.concordancias) {
+    parts.push(`Concordancias: ${group.concordancias}`);
+    parts.push("");
   }
 
   if (group.contenido.length > 0) {

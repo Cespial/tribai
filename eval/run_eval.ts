@@ -26,6 +26,7 @@ interface EvalQuestion {
   expected_articles: string[];
   expected_chunk_types: string[];
   expected_answer_contains: string[];
+  expected_external_sources?: string[];
 }
 
 interface EvalResult {
@@ -41,7 +42,20 @@ interface EvalResult {
   numArticlesInContext: number;
   errorAnalysis: ErrorAnalysis;
   hallucinationCheck: { citedArticles: string[]; uncitedArticles: string[] };
+  // Performance tracking
+  latencyMs: number;
+  tokensUsed: number;
+  // Multi-source metrics
+  externalSourcePresence: number;
+  sourceTypeAccuracy: number;
   timestamp: string;
+}
+
+interface CategoryMetrics {
+  count: number;
+  avgPrecision5: number;
+  avgRecall5: number;
+  avgMRR: number;
 }
 
 interface ExperimentResult {
@@ -57,6 +71,15 @@ interface ExperimentResult {
     avgSourcePresence: number;
     avgContainsExpected: number;
     errorAnalysis: ReturnType<typeof aggregateErrors>;
+    // New: metrics by category
+    byCategory: Record<string, CategoryMetrics>;
+    // New: performance stats
+    avgLatencyMs: number;
+    p95LatencyMs: number;
+    avgTokensUsed: number;
+    // New: multi-source metrics
+    avgExternalSourcePresence: number;
+    avgSourceTypeAccuracy: number;
   };
   timestamp: string;
 }
@@ -65,6 +88,7 @@ async function runSingleQuestion(
   question: EvalQuestion,
   experimentConfig: ExperimentConfig
 ): Promise<EvalResult> {
+  const startTime = performance.now();
   const mergedConfig = { ...RAG_CONFIG, ...experimentConfig.ragConfig };
 
   // 1. Enhance query
@@ -74,7 +98,7 @@ async function runSingleQuestion(
   });
 
   // 2. Retrieve
-  const { chunks } = await retrieve(enhanced, {
+  const { chunks, multiSourceChunks } = await retrieve(enhanced, {
     topK: mergedConfig.topK,
     similarityThreshold: mergedConfig.similarityThreshold,
   });
@@ -122,6 +146,32 @@ async function runSingleQuestion(
   const contextArticleIds = context.sources.map((s) => s.idArticulo);
   const hallucinationCheck = quickHallucinationCheck(contextString, contextArticleIds);
 
+  // 9. Multi-source metrics
+  let externalSourcePresence = 0;
+  let sourceTypeAccuracy = 0;
+  if (question.expected_external_sources && question.expected_external_sources.length > 0) {
+    // Check if external sources were retrieved
+    const retrievedNamespaces = new Set(
+      (multiSourceChunks || []).map((c) => c.namespace)
+    );
+    const found = question.expected_external_sources.filter((ns) =>
+      retrievedNamespaces.has(ns)
+    );
+    externalSourcePresence = found.length / question.expected_external_sources.length;
+
+    // Check if external sources made it into the context
+    const contextExternalTypes = new Set(
+      (context.externalSources || []).map((s) => s.namespace)
+    );
+    const foundInContext = question.expected_external_sources.filter((ns) =>
+      contextExternalTypes.has(ns)
+    );
+    sourceTypeAccuracy = foundInContext.length / question.expected_external_sources.length;
+  }
+
+  const latencyMs = Math.round(performance.now() - startTime);
+  const tokensUsed = context.totalTokensEstimate;
+
   return {
     questionId: question.id,
     question: question.question,
@@ -135,6 +185,10 @@ async function runSingleQuestion(
     numArticlesInContext: context.articles.length,
     errorAnalysis,
     hallucinationCheck,
+    latencyMs,
+    tokensUsed,
+    externalSourcePresence,
+    sourceTypeAccuracy,
     timestamp: new Date().toISOString(),
   };
 }
@@ -165,8 +219,35 @@ async function runExperiment(
   // Aggregate
   const avg = (arr: number[]) =>
     arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+  const percentile = (arr: number[], p: number) => {
+    const sorted = [...arr].sort((a, b) => a - b);
+    const idx = Math.ceil((p / 100) * sorted.length) - 1;
+    return sorted[Math.max(0, idx)] ?? 0;
+  };
 
   const errorAgg = aggregateErrors(results.map((r) => r.errorAnalysis));
+
+  // Metrics by category
+  const categoryMap: Record<string, { p5: number[]; r5: number[]; mrr: number[] }> = {};
+  for (const r of results) {
+    if (!categoryMap[r.category]) {
+      categoryMap[r.category] = { p5: [], r5: [], mrr: [] };
+    }
+    categoryMap[r.category].p5.push(r.retrievalMetrics["precision@5"]);
+    categoryMap[r.category].r5.push(r.retrievalMetrics["recall@5"]);
+    categoryMap[r.category].mrr.push(r.retrievalMetrics.mrr);
+  }
+  const byCategory: Record<string, CategoryMetrics> = {};
+  for (const [cat, vals] of Object.entries(categoryMap)) {
+    byCategory[cat] = {
+      count: vals.p5.length,
+      avgPrecision5: avg(vals.p5),
+      avgRecall5: avg(vals.r5),
+      avgMRR: avg(vals.mrr),
+    };
+  }
+
+  const latencies = results.map((r) => r.latencyMs);
 
   const aggregated = {
     avgPrecisionAt5: avg(results.map((r) => r.retrievalMetrics["precision@5"])),
@@ -177,6 +258,12 @@ async function runExperiment(
     avgSourcePresence: avg(results.map((r) => r.sourcePresenceScore)),
     avgContainsExpected: avg(results.map((r) => r.containsExpected)),
     errorAnalysis: errorAgg,
+    byCategory,
+    avgLatencyMs: avg(latencies),
+    p95LatencyMs: percentile(latencies, 95),
+    avgTokensUsed: avg(results.map((r) => r.tokensUsed)),
+    avgExternalSourcePresence: avg(results.map((r) => r.externalSourcePresence)),
+    avgSourceTypeAccuracy: avg(results.map((r) => r.sourceTypeAccuracy)),
   };
 
   console.log(`\n  AGGREGATED:`);
@@ -187,7 +274,15 @@ async function runExperiment(
   console.log(`    Source Pres:  ${aggregated.avgSourcePresence.toFixed(3)}`);
   console.log(`    Contains Exp: ${aggregated.avgContainsExpected.toFixed(3)}`);
   console.log(`    Error Rate:   ${aggregated.errorAnalysis.errorRate.toFixed(3)}`);
-  console.log(`    Errors by category:`, JSON.stringify(aggregated.errorAnalysis.byCategory));
+  console.log(`    Avg Latency:  ${aggregated.avgLatencyMs.toFixed(0)}ms`);
+  console.log(`    P95 Latency:  ${aggregated.p95LatencyMs.toFixed(0)}ms`);
+  console.log(`    Avg Tokens:   ${aggregated.avgTokensUsed.toFixed(0)}`);
+  console.log(`    Ext Source %: ${aggregated.avgExternalSourcePresence.toFixed(3)}`);
+  console.log(`    Src Type Acc: ${aggregated.avgSourceTypeAccuracy.toFixed(3)}`);
+  console.log(`\n  BY CATEGORY:`);
+  for (const [cat, m] of Object.entries(byCategory)) {
+    console.log(`    ${cat.padEnd(16)} n=${String(m.count).padEnd(4)} P@5=${m.avgPrecision5.toFixed(3)} R@5=${m.avgRecall5.toFixed(3)} MRR=${m.avgMRR.toFixed(3)}`);
+  }
 
   return {
     experiment: experimentConfig.name,

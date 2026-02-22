@@ -5,9 +5,6 @@
  * When a vector search finds "Art. 240", this module finds "Decree 1625 Art. 1.2..."
  */
 
-import * as fs from "fs";
-import * as path from "path";
-
 // Types matching build-graph.ts output
 interface TaxNode {
   id: string;
@@ -20,6 +17,7 @@ interface TaxEdge {
   source: string;
   target: string;
   relation: string;
+  type?: string;
   context?: string;
 }
 
@@ -34,15 +32,29 @@ function loadGraph(): TaxGraph {
   if (cachedGraph) return cachedGraph;
 
   try {
-    const graphPath = path.resolve(process.cwd(), "data/graph/tax-graph.json");
-    if (!fs.existsSync(graphPath)) {
-      console.warn("[graph-retriever] Graph file not found at", graphPath);
-      return { nodes: [], edges: [] };
+    // Try multiple paths: public/data for Vercel, data/graph for local scripts
+    const paths = [
+      `${process.cwd()}/public/data/graph-data.json`,
+      `${process.cwd()}/data/graph/tax-graph.json`,
+    ];
+
+    for (const graphPath of paths) {
+      try {
+        // Use dynamic import-friendly approach that works in both Node and Edge
+        const fs = require("fs");
+        if (fs.existsSync(graphPath)) {
+          const raw = fs.readFileSync(graphPath, "utf-8");
+          cachedGraph = JSON.parse(raw);
+          console.log(`[graph-retriever] Loaded graph from ${graphPath} with ${cachedGraph?.nodes.length} nodes`);
+          return cachedGraph!;
+        }
+      } catch {
+        continue;
+      }
     }
-    const raw = fs.readFileSync(graphPath, "utf-8");
-    cachedGraph = JSON.parse(raw);
-    console.log(`[graph-retriever] Loaded graph with ${cachedGraph?.nodes.length} nodes`);
-    return cachedGraph!;
+
+    console.warn("[graph-retriever] Graph file not found in any expected location");
+    return { nodes: [], edges: [] };
   } catch (error) {
     console.error("[graph-retriever] Failed to load graph:", error);
     return { nodes: [], edges: [] };
@@ -51,9 +63,14 @@ function loadGraph(): TaxGraph {
 
 // Relation weights for scoring — higher weight = more relevant connection
 const RELATION_WEIGHTS: Record<string, number> = {
+  MODIFICA: 1.0,
   MODIFIES: 1.0,
+  REGLAMENTA: 0.8,
   REGULATES: 0.8,
+  INTERPRETA: 0.6,
   INTERPRETS: 0.6,
+  ANALIZA: 0.5,
+  REFERENCIA: 0.4,
   REFERENCES: 0.4,
   CITED_IN: 0.3,
 };
@@ -70,6 +87,7 @@ export interface GraphContext {
 /**
  * Centralized graph ID normalization.
  * Converts various ID formats to the graph's "et-art-NUM" format.
+ * Handles: "Art. 240", "Art. 240-1", "Art. 260-1", "art-240", "et-art-240", "240"
  */
 export function normalizeGraphId(idArticulo: string): string {
   // Already normalized
@@ -77,16 +95,21 @@ export function normalizeGraphId(idArticulo: string): string {
 
   // Clean prefixes and extract the number(s)
   const cleaned = idArticulo
+    .replace(/^Art[íi]culo\s*/i, "")
     .replace(/^Art\.\s*/i, "")
     .replace(/^art-/i, "")
     .trim();
 
-  // Extract number pattern (handles "240", "240-1", "23-1", etc.)
-  const match = cleaned.match(/^(\d+(?:-\d+)?)$/);
+  // Extract compound article pattern: "240-1", "260-1", "23-1", "240", "606-1"
+  const match = cleaned.match(/^(\d+(?:-\d+)*)$/);
   if (match) return `et-art-${match[1]}`;
 
-  // If it's already in a complex format, try to extract number
-  const numMatch = cleaned.match(/(\d+(?:-\d+)?)/);
+  // Handle "Parágrafo X del Art. Y" → normalize to the article
+  const paraMatch = cleaned.match(/par[aá]grafo\s+\w+\s+(?:del\s+)?(?:art[íi]culo\s+)?(\d+(?:-\d+)*)/i);
+  if (paraMatch) return `et-art-${paraMatch[1]}`;
+
+  // If it's a complex format, try to extract number
+  const numMatch = cleaned.match(/(\d+(?:-\d+)*)/);
   if (numMatch) return `et-art-${numMatch[1]}`;
 
   return `et-art-${cleaned.toLowerCase().replace(/\s+/g, "-")}`;
