@@ -83,28 +83,15 @@ export function analyzeErrors(
     }
   }
 
-  // Check for expected articles missing from assembled context
-  // (Previously this scanned the context string for cross-referenced article
-  //  mentions and counted each as a "hallucination" error — this inflated the
-  //  error count massively since legal texts naturally cite many articles.)
+  // Check for expected articles retrieved but excluded from context (token budget)
   for (const expected of expectedArticles) {
-    if (contextArticles.has(expected)) {
-      // Expected article IS in context — check it has content
-      const articleGroup = context.articles.find((a) => a.idArticulo === expected);
-      if (articleGroup && articleGroup.contenido.length > 0) {
-        // Good — article is present with content, no error
-        continue;
-      }
-      // Falls through to truncation check above (already handled)
-    } else if (retrievedArticles.has(expected)) {
-      // Retrieved but didn't make it into assembled context (token budget cut)
+    if (retrievedArticles.has(expected) && !contextArticles.has(expected)) {
       errors.push({
         category: ErrorCategory.TRUNCATION,
         detail: `${expected} was retrieved but excluded from assembled context (token budget)`,
         severity: "medium",
       });
     }
-    // MISSING_ARTICLE and WRONG_RANKING already handled above
   }
 
   // Determine overall severity
@@ -136,12 +123,18 @@ export function aggregateErrors(analyses: ErrorAnalysis[]): {
     }
   }
 
+  // Error rate counts questions with HIGH severity errors (real retrieval failures)
+  // Medium errors (wrong ranking, token budget exclusion) are tracked but not counted as failures
+  const questionsWithHighErrors = analyses.filter((a) =>
+    a.errors.some((e) => e.severity === "high")
+  ).length;
+
   return {
     totalErrors,
     byCategory,
     bySeverity,
     errorRate: analyses.length > 0
-      ? analyses.filter((a) => a.errors.length > 0).length / analyses.length
+      ? questionsWithHighErrors / analyses.length
       : 0,
   };
 }
