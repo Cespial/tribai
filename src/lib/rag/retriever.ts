@@ -115,19 +115,31 @@ export async function retrieve(
     (a, b) => b.score - a.score
   );
 
-  // Multi-namespace retrieval for external sources — prioritized by query type + intent
+  // Multi-namespace retrieval — CONDITIONAL based on routing + intent signals
   let multiSourceChunks: ScoredMultiSourceChunk[] | undefined;
   if (RAG_CONFIG.useMultiNamespace && RAG_CONFIG.additionalNamespaces.length > 0) {
-    const bestEmbedding = embeddings[1] || embeddings[0];
-    // Use routing config priority namespaces first, then intent-based, then config fallback
+    // Collect external namespace signals from routing and intent
     const routingNs = routingConfig.priorityNamespaces.filter((ns) => ns !== "");
     const intentNs = prioritizeNamespaces(query.original).filter((ns) => ns !== "");
-    // Merge: routing priorities first, then intent-based, deduped
-    const mergedNs = [...new Set([...routingNs, ...intentNs, ...RAG_CONFIG.additionalNamespaces])];
-    multiSourceChunks = await retrieveMultiNamespace(
-      bestEmbedding,
-      mergedNs as PineconeNamespace[]
-    );
+    const candidateNs = [...new Set([...routingNs, ...intentNs])];
+
+    // Only retrieve external sources when:
+    // 1) Routing or intent explicitly requests external namespaces, OR
+    // 2) Default namespace retrieval has low confidence (fallback)
+    const shouldRetrieveExternal = candidateNs.length > 0 || dynamicThreshold < 0.30;
+
+    if (shouldRetrieveExternal) {
+      const bestEmbedding = embeddings[1] || embeddings[0];
+      // Use only the candidate namespaces (routing + intent), NOT all additionalNamespaces
+      // Unless this is a low-confidence fallback, then search broadly
+      const namespacesToQuery = candidateNs.length > 0
+        ? candidateNs
+        : RAG_CONFIG.additionalNamespaces;
+      multiSourceChunks = await retrieveMultiNamespace(
+        bestEmbedding,
+        namespacesToQuery as PineconeNamespace[]
+      );
+    }
   }
 
   return { chunks, query, multiSourceChunks, dynamicThreshold, queryType };

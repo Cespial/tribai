@@ -35,13 +35,11 @@ export async function assembleContext(
   // Sort groups by max score
   groups.sort((a, b) => b.maxScore - a.maxScore);
 
-  // Dynamic external budget: scale based on external source quality
+  // Proportional external budget: scales with number of external sources
+  // Min 25% when any external sources exist, up to 45% with many sources
   let externalRatio = 0;
-  if (multiSourceChunks.length > 0) {
-    const highScoreCount = multiSourceChunks.filter((c) => c.rerankedScore > 0.7).length;
-    externalRatio = highScoreCount > 3
-      ? 0.40
-      : RAG_CONFIG.externalSourceBudgetRatio;
+  if (multiSourceChunks && multiSourceChunks.length > 0) {
+    externalRatio = Math.max(0.25, Math.min(0.45, 0.15 + multiSourceChunks.length * 0.04));
   }
   const externalBudget = Math.floor(maxTokens * externalRatio);
   const articleBudget = maxTokens - externalBudget;
