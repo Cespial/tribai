@@ -122,11 +122,24 @@ function isComplexQuery(query: string): boolean {
 
 async function decomposeQuery(query: string): Promise<string[]> {
   try {
+    const lower = query.toLowerCase();
+    const isComparative = /diferencia|compar|versus|vs\b|distinción|mientras que|en cambio|cuál es mejor|entre\s+.*\s+y\s+/i.test(lower);
+
+    const systemPrompt = isComparative
+      ? "Eres un experto en el Estatuto Tributario colombiano. " +
+        "Dada esta consulta comparativa, genera exactamente 2-3 sub-consultas específicas. " +
+        "Cada sub-consulta debe buscar UN SOLO LADO de la comparación e incluir " +
+        "el artículo del ET específico si es inferible. " +
+        "Ejemplo: 'diferencia entre renta PJ y PN' → " +
+        "'tarifa renta personas jurídicas Art. 240 ET' y 'tarifa renta personas naturales Art. 241 ET'. " +
+        "Responde con una sub-consulta por línea, sin numeración ni viñetas."
+      : "Descompón esta pregunta tributaria en 2-3 sub-preguntas simples. " +
+        "Responde con una sub-pregunta por línea, sin numeración ni viñetas.";
+
     const { text } = await generateText({
       model: anthropic("claude-haiku-4-5-20251001"),
       maxOutputTokens: 300,
-      system:
-        "Descompón esta pregunta tributaria en 2-3 sub-preguntas simples. Responde con una sub-pregunta por línea, sin numeración ni viñetas.",
+      system: systemPrompt,
       prompt: query,
     });
     return text

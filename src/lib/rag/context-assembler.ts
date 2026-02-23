@@ -86,7 +86,7 @@ export async function assembleContext(
 async function fetchSiblingChunks(
   chunks: RerankedChunk[]
 ): Promise<RerankedChunk[]> {
-  const MAX_SIBLINGS_PER_ARTICLE = 4;
+  const MAX_SIBLINGS_PER_ARTICLE = 2;
   const index = getIndex();
 
   // Find articles that have multiple chunks (total_chunks > 1)
@@ -150,11 +150,16 @@ async function fetchSiblingChunks(
   const result: RerankedChunk[] = [...chunks];
   const siblingsAdded = new Map<string, number>();
 
-  // Sort all matches by chunk_index for correct ordering
+  // Sort all matches: prioritize contenido chunks, then by chunk_index
   const sorted = [...allMatches].sort((a, b) => {
-    const aIdx = (a.metadata as unknown as ChunkMetadata)?.chunk_index ?? 0;
-    const bIdx = (b.metadata as unknown as ChunkMetadata)?.chunk_index ?? 0;
-    return aIdx - bIdx;
+    const aMeta = a.metadata as unknown as ChunkMetadata;
+    const bMeta = b.metadata as unknown as ChunkMetadata;
+    // Prioritize contenido chunks over others
+    const typeOrder: Record<string, number> = { contenido: 0, modificaciones: 1, texto_anterior: 2 };
+    const aType = typeOrder[aMeta?.chunk_type] ?? 3;
+    const bType = typeOrder[bMeta?.chunk_type] ?? 3;
+    if (aType !== bType) return aType - bType;
+    return (aMeta?.chunk_index ?? 0) - (bMeta?.chunk_index ?? 0);
   });
 
   for (const match of sorted) {
@@ -269,8 +274,30 @@ function applyTokenBudget(
       if (totalTokens + minTokens <= maxTokens) {
         selected.push(minimalGroup);
         totalTokens += minTokens;
+      } else {
+        // 3rd fallback: truncate contenido to fit within remaining budget
+        const remainingBudget = maxTokens - totalTokens;
+        if (remainingBudget > 200) {
+          const truncatedContenido = group.contenido.map(c => c).join("\n\n");
+          // Estimate chars per token (~3.5 for Spanish legal text)
+          const maxChars = Math.floor(remainingBudget * 3.5);
+          const truncated = truncatedContenido.slice(0, maxChars);
+          if (truncated.length > 100) {
+            const truncatedGroup: ArticleGroup = {
+              ...group,
+              contenido: [truncated + "\n[...texto truncado...]"],
+              modificaciones: [],
+              textoAnterior: [],
+            };
+            const truncTokens = estimateTokens(formatArticleForContext(truncatedGroup));
+            if (totalTokens + truncTokens <= maxTokens) {
+              selected.push(truncatedGroup);
+              totalTokens += truncTokens;
+            }
+          }
+        }
       }
-      // If even minimal doesn't fit, skip and try next (don't break — smaller articles might fit)
+      // If even truncated doesn't fit, skip and try next (don't break — smaller articles might fit)
     } else {
       // First article always included even if it overflows
       selected.push(group);

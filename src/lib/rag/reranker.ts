@@ -264,6 +264,17 @@ export function heuristicRerank(
       groupIdx = (groupIdx + 1) % sortedGroups.length;
     }
 
+    // Coverage guarantee: ensure at least 2 distinct articles in top results
+    const resultArticles = new Set(roundRobin.slice(0, maxResults).map(c => c.metadata.id_articulo));
+    if (resultArticles.size < 2 && sortedGroups.length >= 2) {
+      // Force second article's best chunk into position 1 (after first article's best)
+      const secondGroupBest = sortedGroups[1][0];
+      const alreadyIncluded = roundRobin.slice(0, maxResults).some(c => c.id === secondGroupBest.id);
+      if (!alreadyIncluded) {
+        roundRobin.splice(1, 0, secondGroupBest);
+      }
+    }
+
     return roundRobin.slice(0, maxResults);
   }
 
