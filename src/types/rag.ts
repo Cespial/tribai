@@ -107,6 +107,8 @@ export interface RAGConfig {
   multiNamespaceTopK: number;
   /** Ratio of token budget for external sources (0-1) */
   externalSourceBudgetRatio: number;
+  /** Per-namespace similarity thresholds (lower for external sources) */
+  namespaceThresholds?: Partial<Record<PineconeNamespace, number>>;
 }
 
 export interface PipelineTimings {

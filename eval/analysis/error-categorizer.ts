@@ -83,18 +83,28 @@ export function analyzeErrors(
     }
   }
 
-  // Check for hallucinated articles in answer
-  const articlePattern = /Art(?:ículo|\.)\s*(\d+(?:-\d+)?)/gi;
-  let match;
-  while ((match = articlePattern.exec(answer)) !== null) {
-    const citedArt = `Art. ${match[1]}`;
-    if (!contextArticles.has(citedArt) && !retrievedArticles.has(citedArt)) {
+  // Check for expected articles missing from assembled context
+  // (Previously this scanned the context string for cross-referenced article
+  //  mentions and counted each as a "hallucination" error — this inflated the
+  //  error count massively since legal texts naturally cite many articles.)
+  for (const expected of expectedArticles) {
+    if (contextArticles.has(expected)) {
+      // Expected article IS in context — check it has content
+      const articleGroup = context.articles.find((a) => a.idArticulo === expected);
+      if (articleGroup && articleGroup.contenido.length > 0) {
+        // Good — article is present with content, no error
+        continue;
+      }
+      // Falls through to truncation check above (already handled)
+    } else if (retrievedArticles.has(expected)) {
+      // Retrieved but didn't make it into assembled context (token budget cut)
       errors.push({
-        category: ErrorCategory.HALLUCINATION,
-        detail: `Answer cites ${citedArt} which was not in context or retrieved chunks`,
-        severity: "high",
+        category: ErrorCategory.TRUNCATION,
+        detail: `${expected} was retrieved but excluded from assembled context (token budget)`,
+        severity: "medium",
       });
     }
+    // MISSING_ARTICLE and WRONG_RANKING already handled above
   }
 
   // Determine overall severity

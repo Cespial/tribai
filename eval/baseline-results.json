@@ -1,0 +1,84 @@
+{
+  "avgPrecisionAt5": 0.15333333333333338,
+  "avgRecallAt5": 0.5633333333333334,
+  "avgMRR": 0.3423902809719187,
+  "avgNDCGAt5": 0.5632698398034232,
+  "avgCitationAcc": 0.6133333333333333,
+  "avgSourcePresence": 0.485,
+  "avgContainsExpected": 0.8716666666666663,
+  "errorAnalysis": {
+    "totalErrors": 238,
+    "byCategory": {
+      "article_not_retrieved": 103,
+      "article_ranked_too_low": 78,
+      "context_truncated": 57
+    },
+    "bySeverity": {
+      "low": 0,
+      "medium": 135,
+      "high": 103
+    },
+    "errorRate": 0.5433333333333333
+  },
+  "byCategory": {
+    "factual": {
+      "count": 43,
+      "avgPrecision5": 0.1348837209302326,
+      "avgRecall5": 0.5116279069767442,
+      "avgMRR": 0.3906173073145059
+    },
+    "comparative": {
+      "count": 40,
+      "avgPrecision5": 0.19500000000000006,
+      "avgRecall5": 0.4,
+      "avgMRR": 0.3726536134201229
+    },
+    "procedural": {
+      "count": 60,
+      "avgPrecision5": 0.19,
+      "avgRecall5": 0.5916666666666667,
+      "avgMRR": 0.42991742825076157
+    },
+    "temporal": {
+      "count": 20,
+      "avgPrecision5": 0.20000000000000004,
+      "avgRecall5": 0.525,
+      "avgMRR": 0.39858187134502926
+    },
+    "edge_case": {
+      "count": 30,
+      "avgPrecision5": 0.1866666666666667,
+      "avgRecall5": 0.48333333333333334,
+      "avgMRR": 0.4123148148148148
+    },
+    "negative": {
+      "count": 40,
+      "avgPrecision5": 0,
+      "avgRecall5": 1,
+      "avgMRR": 0
+    },
+    "sanctions": {
+      "count": 27,
+      "avgPrecision5": 0.13333333333333333,
+      "avgRecall5": 0.5,
+      "avgMRR": 0.3732691842168966
+    },
+    "doctrina": {
+      "count": 20,
+      "avgPrecision5": 0.16000000000000003,
+      "avgRecall5": 0.4,
+      "avgMRR": 0.355
+    },
+    "multi_source": {
+      "count": 20,
+      "avgPrecision5": 0.23000000000000004,
+      "avgRecall5": 0.45,
+      "avgMRR": 0.385
+    }
+  },
+  "avgLatencyMs": 2262.96,
+  "p95LatencyMs": 5091,
+  "avgTokensUsed": 9061.896666666667,
+  "avgExternalSourcePresence": 0.95,
+  "avgSourceTypeAccuracy": 0.95
+}

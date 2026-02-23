@@ -5,7 +5,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { enhanceQuery } from "../src/lib/rag/query-enhancer";
 import { retrieve } from "../src/lib/rag/retriever";
-import { heuristicRerank } from "../src/lib/rag/reranker";
+import { heuristicRerank, heuristicRerankMultiSource } from "../src/lib/rag/reranker";
 import { assembleContext, buildContextString } from "../src/lib/rag/context-assembler";
 import { computeRetrievalMetrics, RetrievalMetrics } from "./metrics/retrieval";
 import {
@@ -112,10 +112,16 @@ async function runSingleQuestion(
   // 4. Rerank
   const reranked = heuristicRerank(chunks, enhanced, mergedConfig.maxRerankedResults);
 
-  // 5. Assemble context
+  // 4b. Rerank multi-source chunks (doctrina, jurisprudencia, etc.)
+  const rerankedMultiSource = multiSourceChunks
+    ? heuristicRerankMultiSource(multiSourceChunks, enhanced)
+    : [];
+
+  // 5. Assemble context (with multi-source chunks)
   const context = await assembleContext(reranked, {
     useSiblingRetrieval: mergedConfig.useSiblingRetrieval,
     maxTokens: mergedConfig.maxContextTokens,
+    multiSourceChunks: rerankedMultiSource,
   });
 
   // 6. Metrics (no LLM call for speed)
@@ -262,8 +268,23 @@ async function runExperiment(
     avgLatencyMs: avg(latencies),
     p95LatencyMs: percentile(latencies, 95),
     avgTokensUsed: avg(results.map((r) => r.tokensUsed)),
-    avgExternalSourcePresence: avg(results.map((r) => r.externalSourcePresence)),
-    avgSourceTypeAccuracy: avg(results.map((r) => r.sourceTypeAccuracy)),
+    // Only average over questions that actually expect external sources (not all 300)
+    avgExternalSourcePresence: (() => {
+      const qMap = new Map(questions.map((q) => [q.id, q]));
+      const relevant = results.filter((r) => {
+        const q = qMap.get(r.questionId);
+        return q?.expected_external_sources && q.expected_external_sources.length > 0;
+      });
+      return relevant.length > 0 ? avg(relevant.map((r) => r.externalSourcePresence)) : 0;
+    })(),
+    avgSourceTypeAccuracy: (() => {
+      const qMap = new Map(questions.map((q) => [q.id, q]));
+      const relevant = results.filter((r) => {
+        const q = qMap.get(r.questionId);
+        return q?.expected_external_sources && q.expected_external_sources.length > 0;
+      });
+      return relevant.length > 0 ? avg(relevant.map((r) => r.sourceTypeAccuracy)) : 0;
+    })(),
   };
 
   console.log(`\n  AGGREGATED:`);

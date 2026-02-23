@@ -120,8 +120,7 @@ export async function retrieve(
     const namespacesToSearch = prioritized.filter((ns) => ns !== "");
     multiSourceChunks = await retrieveMultiNamespace(
       bestEmbedding,
-      namespacesToSearch.length > 0 ? namespacesToSearch : RAG_CONFIG.additionalNamespaces,
-      dynamicThreshold
+      namespacesToSearch.length > 0 ? namespacesToSearch : RAG_CONFIG.additionalNamespaces
     );
   }
 
@@ -130,18 +129,21 @@ export async function retrieve(
 
 /**
  * Query additional Pinecone namespaces in parallel for external legal sources.
+ * Uses per-namespace thresholds from RAG_CONFIG.namespaceThresholds.
  */
 async function retrieveMultiNamespace(
   vector: number[],
-  namespaces: PineconeNamespace[],
-  threshold: number
+  namespaces: PineconeNamespace[]
 ): Promise<ScoredMultiSourceChunk[]> {
   const index = getIndex();
   const topK = RAG_CONFIG.multiNamespaceTopK;
+  const nsThresholds = RAG_CONFIG.namespaceThresholds ?? {};
+  const fallbackThreshold = RAG_CONFIG.similarityThreshold;
 
   const nsPromises = namespaces
     .filter((ns) => ns !== "")
     .map(async (ns) => {
+      const threshold = nsThresholds[ns] ?? fallbackThreshold;
       try {
         const nsIndex = index.namespace(ns);
         const result = await withRetry(() =>

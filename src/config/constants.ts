@@ -11,8 +11,16 @@ export const RAG_CONFIG: RAGConfig = {
   useSiblingRetrieval: true,
   useMultiNamespace: true,
   additionalNamespaces: ["doctrina", "jurisprudencia", "decretos", "resoluciones", "leyes"],
-  multiNamespaceTopK: 8,
+  multiNamespaceTopK: 15,
   externalSourceBudgetRatio: 0.30,
+  namespaceThresholds: {
+    "": 0.28,           // default — adjusted dynamically at runtime
+    doctrina: 0.20,     // lower: doctrina embeddings score differently than ET articles
+    jurisprudencia: 0.20,
+    decretos: 0.23,
+    resoluciones: 0.23,
+    leyes: 0.23,
+  },
 };
 
 export const EMBEDDING_MODEL = "multilingual-e5-large";
