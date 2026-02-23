@@ -1,0 +1,13 @@
+# Scraped data (already embedded in Pinecone, not needed at runtime)
+data/scraped/
+data/graph/
+data/embeddings-cache/
+
+# Reference PDFs (not needed at runtime)
+bib/
+
+# Scripts (build-time only)
+scripts/
+
+# Eval framework
+eval/
