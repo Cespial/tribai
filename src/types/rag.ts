@@ -16,6 +16,8 @@ export interface RetrievalResult {
   multiSourceChunks?: ScoredMultiSourceChunk[];
   /** Dynamic threshold computed during retrieval */
   dynamicThreshold?: number;
+  /** Classified query type for routing decisions */
+  queryType?: string;
 }
 
 export interface RerankedChunk extends ScoredChunk {

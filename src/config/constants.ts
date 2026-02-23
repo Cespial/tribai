@@ -12,7 +12,7 @@ export const RAG_CONFIG: RAGConfig = {
   useMultiNamespace: true,
   additionalNamespaces: ["doctrina", "jurisprudencia", "decretos", "resoluciones", "leyes"],
   multiNamespaceTopK: 15,
-  externalSourceBudgetRatio: 0.30,
+  externalSourceBudgetRatio: 0.40,
   namespaceThresholds: {
     "": 0.28,           // default — adjusted dynamically at runtime
     doctrina: 0.20,     // lower: doctrina embeddings score differently than ET articles

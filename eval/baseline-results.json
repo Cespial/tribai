@@ -1,55 +1,55 @@
 {
-  "avgPrecisionAt5": 0.15333333333333338,
-  "avgRecallAt5": 0.5633333333333334,
-  "avgMRR": 0.3423902809719187,
-  "avgNDCGAt5": 0.5632698398034232,
-  "avgCitationAcc": 0.6133333333333333,
-  "avgSourcePresence": 0.485,
-  "avgContainsExpected": 0.8716666666666663,
+  "avgPrecisionAt5": 0.15600000000000003,
+  "avgRecallAt5": 0.5566666666666666,
+  "avgMRR": 0.3411210996243862,
+  "avgNDCGAt5": 0.5635191632777253,
+  "avgCitationAcc": 0.6266666666666667,
+  "avgSourcePresence": 0.5033333333333333,
+  "avgContainsExpected": 0.8655555555555552,
   "errorAnalysis": {
-    "totalErrors": 238,
+    "totalErrors": 250,
     "byCategory": {
-      "article_not_retrieved": 103,
-      "article_ranked_too_low": 78,
-      "context_truncated": 57
+      "article_ranked_too_low": 97,
+      "article_not_retrieved": 85,
+      "context_truncated": 68
     },
     "bySeverity": {
       "low": 0,
-      "medium": 135,
-      "high": 103
+      "medium": 165,
+      "high": 85
     },
-    "errorRate": 0.5433333333333333
+    "errorRate": 0.5566666666666666
   },
   "byCategory": {
     "factual": {
       "count": 43,
-      "avgPrecision5": 0.1348837209302326,
-      "avgRecall5": 0.5116279069767442,
-      "avgMRR": 0.3906173073145059
+      "avgPrecision5": 0.15813953488372098,
+      "avgRecall5": 0.5581395348837209,
+      "avgMRR": 0.38842867828485933
     },
     "comparative": {
       "count": 40,
-      "avgPrecision5": 0.19500000000000006,
-      "avgRecall5": 0.4,
-      "avgMRR": 0.3726536134201229
+      "avgPrecision5": 0.18000000000000005,
+      "avgRecall5": 0.375,
+      "avgMRR": 0.3609237984237984
     },
     "procedural": {
       "count": 60,
-      "avgPrecision5": 0.19,
-      "avgRecall5": 0.5916666666666667,
-      "avgMRR": 0.42991742825076157
+      "avgPrecision5": 0.16333333333333336,
+      "avgRecall5": 0.49166666666666664,
+      "avgMRR": 0.39575382326545117
     },
     "temporal": {
       "count": 20,
-      "avgPrecision5": 0.20000000000000004,
-      "avgRecall5": 0.525,
-      "avgMRR": 0.39858187134502926
+      "avgPrecision5": 0.18000000000000002,
+      "avgRecall5": 0.475,
+      "avgMRR": 0.3256347962382445
     },
     "edge_case": {
       "count": 30,
-      "avgPrecision5": 0.1866666666666667,
-      "avgRecall5": 0.48333333333333334,
-      "avgMRR": 0.4123148148148148
+      "avgPrecision5": 0.2133333333333334,
+      "avgRecall5": 0.5,
+      "avgMRR": 0.41425674032381354
     },
     "negative": {
       "count": 40,
@@ -59,26 +59,26 @@
     },
     "sanctions": {
       "count": 27,
-      "avgPrecision5": 0.13333333333333333,
-      "avgRecall5": 0.5,
-      "avgMRR": 0.3732691842168966
+      "avgPrecision5": 0.10370370370370371,
+      "avgRecall5": 0.46296296296296297,
+      "avgMRR": 0.3652656279467873
     },
     "doctrina": {
       "count": 20,
-      "avgPrecision5": 0.16000000000000003,
-      "avgRecall5": 0.4,
-      "avgMRR": 0.355
+      "avgPrecision5": 0.16000000000000006,
+      "avgRecall5": 0.425,
+      "avgMRR": 0.42662393162393164
     },
     "multi_source": {
       "count": 20,
-      "avgPrecision5": 0.23000000000000004,
-      "avgRecall5": 0.45,
-      "avgMRR": 0.385
+      "avgPrecision5": 0.35000000000000003,
+      "avgRecall5": 0.65,
+      "avgMRR": 0.5058333333333334
     }
   },
-  "avgLatencyMs": 2262.96,
-  "p95LatencyMs": 5091,
-  "avgTokensUsed": 9061.896666666667,
-  "avgExternalSourcePresence": 0.95,
-  "avgSourceTypeAccuracy": 0.95
+  "avgLatencyMs": 4301.613333333334,
+  "p95LatencyMs": 5559,
+  "avgTokensUsed": 9890.986666666666,
+  "avgExternalSourcePresence": 1,
+  "avgSourceTypeAccuracy": 0.5375
 }

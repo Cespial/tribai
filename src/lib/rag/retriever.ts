@@ -4,7 +4,7 @@ import { EnhancedQuery, RetrievalResult, PineconeNamespace } from "@/types/rag";
 import { ScoredChunk, ChunkMetadata, ScoredMultiSourceChunk, MultiSourceChunkMetadata } from "@/types/pinecone";
 import { RAG_CONFIG } from "@/config/constants";
 import { ChatPageContext } from "@/types/chat-history";
-import { prioritizeNamespaces } from "./namespace-router";
+import { prioritizeNamespaces, classifyQueryType, getQueryRoutingConfig } from "./namespace-router";
 
 interface RetrieveOptions {
   topK?: number;
@@ -21,7 +21,11 @@ export async function retrieve(
     similarityThreshold = RAG_CONFIG.similarityThreshold,
   } = options;
 
-  const topK = determineTopK(query, options.topK);
+  // Classify query type and get routing config
+  const queryType = classifyQueryType(query.original);
+  const routingConfig = getQueryRoutingConfig(queryType);
+
+  const topK = determineTopK(query, options.topK, routingConfig.topK);
   const filter = buildFilter(query, options.libroFilter, options.pageContext);
 
   // Build all query texts for parallel embedding — filter empty/duplicate
@@ -111,20 +115,22 @@ export async function retrieve(
     (a, b) => b.score - a.score
   );
 
-  // Multi-namespace retrieval for external sources — prioritized by query intent
+  // Multi-namespace retrieval for external sources — prioritized by query type + intent
   let multiSourceChunks: ScoredMultiSourceChunk[] | undefined;
   if (RAG_CONFIG.useMultiNamespace && RAG_CONFIG.additionalNamespaces.length > 0) {
     const bestEmbedding = embeddings[1] || embeddings[0];
-    const prioritized = prioritizeNamespaces(query.original);
-    // Use prioritized namespaces (excluding default ""), falling back to config
-    const namespacesToSearch = prioritized.filter((ns) => ns !== "");
+    // Use routing config priority namespaces first, then intent-based, then config fallback
+    const routingNs = routingConfig.priorityNamespaces.filter((ns) => ns !== "");
+    const intentNs = prioritizeNamespaces(query.original).filter((ns) => ns !== "");
+    // Merge: routing priorities first, then intent-based, deduped
+    const mergedNs = [...new Set([...routingNs, ...intentNs, ...RAG_CONFIG.additionalNamespaces])];
     multiSourceChunks = await retrieveMultiNamespace(
       bestEmbedding,
-      namespacesToSearch.length > 0 ? namespacesToSearch : RAG_CONFIG.additionalNamespaces
+      mergedNs as PineconeNamespace[]
     );
   }
 
-  return { chunks, query, multiSourceChunks, dynamicThreshold };
+  return { chunks, query, multiSourceChunks, dynamicThreshold, queryType };
 }
 
 /**
@@ -183,11 +189,11 @@ async function retrieveMultiNamespace(
   return Array.from(dedupMap.values()).sort((a, b) => b.score - a.score);
 }
 
-function determineTopK(query: EnhancedQuery, override?: number): number {
+function determineTopK(query: EnhancedQuery, override?: number, routingTopK?: number): number {
   if (override) return override;
   if (query.detectedArticles.length > 0) return 25;
-  if (query.subQueries && query.subQueries.length > 1) return 20;
-  return RAG_CONFIG.topK;
+  if (query.subQueries && query.subQueries.length > 1) return Math.max(routingTopK ?? 20, 20);
+  return routingTopK ?? RAG_CONFIG.topK;
 }
 
 function buildFilter(

@@ -13,20 +13,22 @@ const STOP_WORDS = new Set([
   "esa", "hay", "ser", "sobre", "entre", "tiene", "todos", "todo",
 ]);
 
-// Rebalanced boost values — more uniform distribution,
-// directArticle no longer dominates over semantic relevance
+// v3 boost values — stronger signals for precision, diversity penalty to avoid
+// single-article domination in top-5
 const BOOST = {
-  chunkContenido: 0.12,
+  chunkContenido: 0.15,
   chunkModificaciones: 0.08,
   chunkTextoAnterior: 0.03,
-  directArticleMention: 0.20,
-  titleMatchPerWord: 0.04,
-  titleMatchMax: 0.12,
+  directArticleMention: 0.35,     // v3: was 0.20 — significantly stronger for explicitly mentioned articles
+  exactArticleNumber: 0.40,       // v3: NEW — query contains "Art. 240" and chunk IS Art. 240
+  titleMatchPerWord: 0.05,        // v3: was 0.04
+  titleMatchMax: 0.20,            // v3: was 0.12
   derogatedPenalty: -0.10,
   derogatedHistoryBoost: 0.15,
   vigenteBoost: 0.06,
-  leyMatchBoost: 0.12,
+  leyMatchBoost: 0.15,            // v3: was 0.12
   complexityBoost: 0.03,
+  diversityPenalty: -0.12,        // v3: NEW — per-article repeat penalty in top-N
 } as const;
 
 // Extended law patterns for better matching
@@ -101,6 +103,14 @@ export function heuristicRerank(
   // Detect if query mentions a specific law (expanded patterns)
   const queryLey = extractLeyFromQuery(queryLower);
 
+  // v3: Extract exact article numbers from query for precision matching
+  const exactArticlePattern = /Art(?:ículo|\.)\s*(\d+(?:-\d+)?)/gi;
+  const queryArticleNumbers = new Set<string>();
+  let artMatch;
+  while ((artMatch = exactArticlePattern.exec(query.original)) !== null) {
+    queryArticleNumbers.add(`Art. ${artMatch[1]}`);
+  }
+
   const reranked: RerankedChunk[] = chunks.map((chunk) => {
     let boost = 0;
     const meta = chunk.metadata;
@@ -110,7 +120,12 @@ export function heuristicRerank(
     else if (meta.chunk_type === "modificaciones") boost += BOOST.chunkModificaciones;
     else if (meta.chunk_type === "texto_anterior") boost += BOOST.chunkTextoAnterior;
 
-    // Boost if article is directly mentioned in query
+    // v3: Exact article number match (strongest signal)
+    if (queryArticleNumbers.has(meta.id_articulo)) {
+      boost += BOOST.exactArticleNumber;
+    }
+
+    // Boost if article is directly mentioned in query (via detectedArticles)
     for (const artId of query.detectedArticles) {
       if (meta.id_articulo === artId) {
         boost += BOOST.directArticleMention;
@@ -174,6 +189,22 @@ export function heuristicRerank(
   // Sort by reranked score
   reranked.sort((a, b) => b.rerankedScore - a.rerankedScore);
 
+  // v3: Apply diversity penalty — penalize chunks from articles already in top-N
+  // This ensures comparative queries get chunks from multiple articles
+  const articleCounts = new Map<string, number>();
+  for (const chunk of reranked) {
+    const artId = chunk.metadata.id_articulo;
+    const count = articleCounts.get(artId) || 0;
+    if (count > 0) {
+      // Penalize repeat appearances of the same article
+      chunk.rerankedScore += BOOST.diversityPenalty * count;
+    }
+    articleCounts.set(artId, count + 1);
+  }
+
+  // Re-sort after diversity penalty
+  reranked.sort((a, b) => b.rerankedScore - a.rerankedScore);
+
   // Adaptive filtering: remove chunks significantly below the distribution
   if (reranked.length > 2) {
     const scores = reranked.map((r) => r.rerankedScore);
@@ -196,7 +227,7 @@ export function heuristicRerank(
 export function heuristicRerankMultiSource(
   chunks: ScoredMultiSourceChunk[],
   query: EnhancedQuery,
-  maxResults: number = 5
+  maxResults: number = 8
 ): RerankedMultiSourceChunk[] {
   const currentYear = new Date().getFullYear();
 
