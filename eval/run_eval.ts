@@ -7,7 +7,7 @@ import { enhanceQuery } from "../src/lib/rag/query-enhancer";
 import { retrieve } from "../src/lib/rag/retriever";
 import { heuristicRerank, heuristicRerankMultiSource } from "../src/lib/rag/reranker";
 import { assembleContext, buildContextString } from "../src/lib/rag/context-assembler";
-import { computeRetrievalMetrics, RetrievalMetrics } from "./metrics/retrieval";
+import { computeRetrievalMetrics, RetrievalMetrics, computeRetrievalMetricsAdjusted, RetrievalMetricsAdjusted } from "./metrics/retrieval";
 import {
   citationAccuracy,
   sourcePresence,
@@ -35,6 +35,7 @@ interface EvalResult {
   category: string;
   difficulty: string;
   retrievalMetrics: RetrievalMetrics;
+  retrievalMetricsAdj: RetrievalMetricsAdjusted;
   citationAcc: number;
   sourcePresenceScore: number;
   containsExpected: number;
@@ -80,6 +81,11 @@ interface ExperimentResult {
     // New: multi-source metrics
     avgExternalSourcePresence: number;
     avgSourceTypeAccuracy: number;
+    // Adjusted precision metrics
+    avgPrecisionAt5Adj: number;
+    // Separated external source metrics
+    avgExtSourceRetrieved: number;
+    avgExtSourceInContext: number;
   };
   timestamp: string;
 }
@@ -108,6 +114,7 @@ async function runSingleQuestion(
     chunks,
     question.expected_articles
   );
+  const retrievalMetricsAdj = computeRetrievalMetricsAdjusted(chunks, question.expected_articles);
 
   // 4. Rerank (pass queryType for comparative round-robin diversity)
   const reranked = heuristicRerank(chunks, enhanced, mergedConfig.maxRerankedResults, queryType);
@@ -184,6 +191,7 @@ async function runSingleQuestion(
     category: question.category,
     difficulty: question.difficulty,
     retrievalMetrics,
+    retrievalMetricsAdj,
     citationAcc,
     sourcePresenceScore,
     containsExpected,
@@ -285,10 +293,28 @@ async function runExperiment(
       });
       return relevant.length > 0 ? avg(relevant.map((r) => r.sourceTypeAccuracy)) : 0;
     })(),
+    avgPrecisionAt5Adj: avg(results.map((r) => r.retrievalMetricsAdj["precision@5_adj"])),
+    avgExtSourceRetrieved: (() => {
+      const qMap = new Map(questions.map((q) => [q.id, q]));
+      const relevant = results.filter((r) => {
+        const q = qMap.get(r.questionId);
+        return q?.expected_external_sources && q.expected_external_sources.length > 0;
+      });
+      return relevant.length > 0 ? avg(relevant.map((r) => r.externalSourcePresence)) : 0;
+    })(),
+    avgExtSourceInContext: (() => {
+      const qMap = new Map(questions.map((q) => [q.id, q]));
+      const relevant = results.filter((r) => {
+        const q = qMap.get(r.questionId);
+        return q?.expected_external_sources && q.expected_external_sources.length > 0;
+      });
+      return relevant.length > 0 ? avg(relevant.map((r) => r.sourceTypeAccuracy)) : 0;
+    })(),
   };
 
   console.log(`\n  AGGREGATED:`);
   console.log(`    Precision@5: ${aggregated.avgPrecisionAt5.toFixed(3)}`);
+  console.log(`    P@5 (adj):   ${aggregated.avgPrecisionAt5Adj.toFixed(3)}`);
   console.log(`    Recall@5:    ${aggregated.avgRecallAt5.toFixed(3)}`);
   console.log(`    MRR:         ${aggregated.avgMRR.toFixed(3)}`);
   console.log(`    NDCG@5:      ${aggregated.avgNDCGAt5.toFixed(3)}`);
@@ -298,8 +324,8 @@ async function runExperiment(
   console.log(`    Avg Latency:  ${aggregated.avgLatencyMs.toFixed(0)}ms`);
   console.log(`    P95 Latency:  ${aggregated.p95LatencyMs.toFixed(0)}ms`);
   console.log(`    Avg Tokens:   ${aggregated.avgTokensUsed.toFixed(0)}`);
-  console.log(`    Ext Source %: ${aggregated.avgExternalSourcePresence.toFixed(3)}`);
-  console.log(`    Src Type Acc: ${aggregated.avgSourceTypeAccuracy.toFixed(3)}`);
+  console.log(`    Ext Src Ret:  ${aggregated.avgExtSourceRetrieved.toFixed(3)}`);
+  console.log(`    Ext Src Ctx:  ${aggregated.avgExtSourceInContext.toFixed(3)}`);
   console.log(`\n  BY CATEGORY:`);
   for (const [cat, m] of Object.entries(byCategory)) {
     console.log(`    ${cat.padEnd(16)} n=${String(m.count).padEnd(4)} P@5=${m.avgPrecision5.toFixed(3)} R@5=${m.avgRecall5.toFixed(3)} MRR=${m.avgMRR.toFixed(3)}`);

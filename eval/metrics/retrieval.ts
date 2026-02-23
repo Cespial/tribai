@@ -92,3 +92,33 @@ export function computeRetrievalMetrics(
     "ndcg@10": ndcgAtK(retrieved, expectedArticles, 10),
   };
 }
+
+export function precisionAtKAdjusted(
+  retrieved: ScoredChunk[],
+  expectedArticles: string[],
+  k: number
+): number {
+  if (expectedArticles.length === 0) return 1; // No expected = nothing wrong retrieved
+  const topK = retrieved.slice(0, k);
+  const relevant = topK.filter((c) =>
+    expectedArticles.includes(c.metadata.id_articulo)
+  );
+  return relevant.length / Math.min(k, expectedArticles.length);
+}
+
+export interface RetrievalMetricsAdjusted {
+  "precision@3_adj": number;
+  "precision@5_adj": number;
+  "precision@10_adj": number;
+}
+
+export function computeRetrievalMetricsAdjusted(
+  retrieved: ScoredChunk[],
+  expectedArticles: string[]
+): RetrievalMetricsAdjusted {
+  return {
+    "precision@3_adj": precisionAtKAdjusted(retrieved, expectedArticles, 3),
+    "precision@5_adj": precisionAtKAdjusted(retrieved, expectedArticles, 5),
+    "precision@10_adj": precisionAtKAdjusted(retrieved, expectedArticles, 10),
+  };
+}

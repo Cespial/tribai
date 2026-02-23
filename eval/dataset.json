@@ -1835,6 +1835,7 @@
     {
       "id": "negative-1",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula el impuesto predial?",
       "expected_articles": [],
@@ -1850,6 +1851,7 @@
     {
       "id": "negative-2",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Cuál es la tarifa del impuesto de industria y comercio (ICA) en el Estatuto Tributario?",
       "expected_articles": [],
@@ -1864,6 +1866,7 @@
     {
       "id": "negative-3",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula las contribuciones parafiscales del SENA e ICBF?",
       "expected_articles": [],
@@ -1878,6 +1881,7 @@
     {
       "id": "negative-4",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el Estatuto Tributario sobre la sobretasa al impuesto de alumbrado público?",
       "expected_articles": [],
@@ -1892,6 +1896,7 @@
     {
       "id": "negative-5",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula los aranceles aduaneros?",
       "expected_articles": [],
@@ -1907,6 +1912,7 @@
     {
       "id": "negative-6",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Cuál es la regulación del impuesto de registro y anotación en el Estatuto Tributario?",
       "expected_articles": [],
@@ -1921,6 +1927,7 @@
     {
       "id": "negative-7",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario establece normas sobre la estampilla pro-universidad?",
       "expected_articles": [],
@@ -1936,6 +1943,7 @@
     {
       "id": "negative-8",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el Estatuto Tributario sobre la tasa por uso de agua?",
       "expected_articles": [],
@@ -1951,6 +1959,7 @@
     {
       "id": "negative-9",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula la contribución de valorización?",
       "expected_articles": [],
@@ -1966,6 +1975,7 @@
     {
       "id": "negative-10",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Cuál es la regulación del impuesto de vehículos en el Estatuto Tributario?",
       "expected_articles": [],
@@ -4036,6 +4046,7 @@
     {
       "id": "negative-11",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué establece el Estatuto Tributario sobre el impuesto de degüello de ganado?",
       "expected_articles": [],
@@ -4051,6 +4062,7 @@
     {
       "id": "negative-12",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Cuál es la regulación del impuesto sobre la telefonía celular en el Estatuto Tributario?",
       "expected_articles": [],
@@ -4065,6 +4077,7 @@
     {
       "id": "negative-13",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula las contribuciones a las Cámaras de Comercio?",
       "expected_articles": [],
@@ -4079,6 +4092,7 @@
     {
       "id": "negative-14",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el Estatuto Tributario sobre el impuesto de azar y juegos de suerte?",
       "expected_articles": [],
@@ -4093,6 +4107,7 @@
     {
       "id": "negative-15",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario establece normas sobre las regalías por explotación de recursos naturales no renovables?",
       "expected_articles": [],
@@ -4108,6 +4123,7 @@
     {
       "id": "negative-16",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula los aportes al sistema general de seguridad social en salud?",
       "expected_articles": [],
@@ -4123,6 +4139,7 @@
     {
       "id": "negative-17",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el ET sobre el impuesto a la publicidad exterior visual?",
       "expected_articles": [],
@@ -4138,6 +4155,7 @@
     {
       "id": "negative-18",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario establece normas sobre las tasas aeroportuarias?",
       "expected_articles": [],
@@ -4153,6 +4171,7 @@
     {
       "id": "negative-19",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Cuál es la regulación del impuesto de delineación urbana en el Estatuto Tributario?",
       "expected_articles": [],
@@ -4168,6 +4187,7 @@
     {
       "id": "negative-20",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el ET sobre la contribución especial de obra pública?",
       "expected_articles": [],
@@ -4182,6 +4202,7 @@
     {
       "id": "negative-21",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula el cobro de peajes en Colombia?",
       "expected_articles": [],
@@ -4196,6 +4217,7 @@
     {
       "id": "negative-22",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula el impuesto de espectáculos públicos?",
       "expected_articles": [],
@@ -4211,6 +4233,7 @@
     {
       "id": "negative-23",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el ET sobre las contribuciones al fondo de solidaridad pensional?",
       "expected_articles": [],
@@ -4226,6 +4249,7 @@
     {
       "id": "negative-24",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario tiene normas sobre el impuesto por la ocupación de vías?",
       "expected_articles": [],
@@ -4241,6 +4265,7 @@
     {
       "id": "negative-25",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Cuál es la regulación del impuesto de sobretasa a la gasolina en el ET?",
       "expected_articles": [],
@@ -4257,6 +4282,7 @@
     {
       "id": "negative-26",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario contiene normas sobre los derechos notariales?",
       "expected_articles": [],
@@ -4271,6 +4297,7 @@
     {
       "id": "negative-27",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula la contribución por la explotación de oro y minerales?",
       "expected_articles": [],
@@ -4286,6 +4313,7 @@
     {
       "id": "negative-28",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el ET sobre el impuesto departamental al consumo de licores?",
       "expected_articles": [],
@@ -4301,6 +4329,7 @@
     {
       "id": "negative-29",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula el IVA sobre servicios de streaming como Netflix o Spotify?",
       "expected_articles": [],
@@ -4316,6 +4345,7 @@
     {
       "id": "negative-30",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario contiene normas específicas sobre el impuesto al carbono?",
       "expected_articles": [],
@@ -4331,6 +4361,7 @@
     {
       "id": "negative-31",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el Estatuto Tributario sobre las tasas retributivas por contaminación ambiental?",
       "expected_articles": [],
@@ -4346,6 +4377,7 @@
     {
       "id": "negative-32",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula la contribución especial sobre contratos de obra pública con entidades estatales?",
       "expected_articles": [],
@@ -4361,6 +4393,7 @@
     {
       "id": "negative-33",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario tiene normas sobre el impuesto de salida del país?",
       "expected_articles": [],
@@ -4376,6 +4409,7 @@
     {
       "id": "negative-34",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el Estatuto Tributario sobre los peajes de valorización en zonas urbanas?",
       "expected_articles": [],
@@ -4391,6 +4425,7 @@
     {
       "id": "negative-35",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula las cuotas de afiliación a gremios empresariales?",
       "expected_articles": [],
@@ -4406,6 +4441,7 @@
     {
       "id": "negative-36",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el ET sobre la tasa por servicios de certificación digital de la ONAC?",
       "expected_articles": [],
@@ -4421,6 +4457,7 @@
     {
       "id": "negative-37",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario establece normas sobre el impuesto a las transacciones con criptomonedas?",
       "expected_articles": [],
@@ -4436,6 +4473,7 @@
     {
       "id": "negative-38",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario contiene disposiciones sobre la tasa por uso del espectro electromagnético?",
       "expected_articles": [],
@@ -4451,6 +4489,7 @@
     {
       "id": "negative-39",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿Qué dice el ET sobre el impuesto departamental de cigarrillos y tabaco?",
       "expected_articles": [],
@@ -4466,6 +4505,7 @@
     {
       "id": "negative-40",
       "category": "negative",
+      "scope": "out_of_scope",
       "difficulty": "hard",
       "question": "¿El Estatuto Tributario regula la contribución de solidaridad en servicios públicos domiciliarios?",
       "expected_articles": [],

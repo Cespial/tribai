@@ -1,55 +1,55 @@
 {
-  "avgPrecisionAt5": 0.15600000000000003,
-  "avgRecallAt5": 0.5566666666666666,
-  "avgMRR": 0.3411210996243862,
-  "avgNDCGAt5": 0.5635191632777253,
-  "avgCitationAcc": 0.6266666666666667,
-  "avgSourcePresence": 0.5033333333333333,
-  "avgContainsExpected": 0.8655555555555552,
+  "avgPrecisionAt5": 0.18333333333333346,
+  "avgRecallAt5": 0.5816666666666667,
+  "avgMRR": 0.3702050935971269,
+  "avgNDCGAt5": 0.6389478282370709,
+  "avgCitationAcc": 0.6183333333333333,
+  "avgSourcePresence": 0.5,
+  "avgContainsExpected": 0.8749999999999997,
   "errorAnalysis": {
-    "totalErrors": 250,
+    "totalErrors": 246,
     "byCategory": {
-      "article_ranked_too_low": 97,
-      "article_not_retrieved": 85,
-      "context_truncated": 68
+      "article_not_retrieved": 79,
+      "article_ranked_too_low": 91,
+      "context_truncated": 76
     },
     "bySeverity": {
       "low": 0,
-      "medium": 165,
-      "high": 85
+      "medium": 167,
+      "high": 79
     },
-    "errorRate": 0.5566666666666666
+    "errorRate": 0.22333333333333333
   },
   "byCategory": {
     "factual": {
       "count": 43,
-      "avgPrecision5": 0.15813953488372098,
+      "avgPrecision5": 0.1813953488372093,
       "avgRecall5": 0.5581395348837209,
-      "avgMRR": 0.38842867828485933
+      "avgMRR": 0.41847958910909994
     },
     "comparative": {
       "count": 40,
-      "avgPrecision5": 0.18000000000000005,
-      "avgRecall5": 0.375,
-      "avgMRR": 0.3609237984237984
+      "avgPrecision5": 0.20000000000000004,
+      "avgRecall5": 0.4,
+      "avgMRR": 0.40295637499590403
     },
     "procedural": {
       "count": 60,
-      "avgPrecision5": 0.16333333333333336,
-      "avgRecall5": 0.49166666666666664,
-      "avgMRR": 0.39575382326545117
+      "avgPrecision5": 0.2066666666666666,
+      "avgRecall5": 0.5416666666666666,
+      "avgMRR": 0.4363515497600863
     },
     "temporal": {
       "count": 20,
-      "avgPrecision5": 0.18000000000000002,
-      "avgRecall5": 0.475,
-      "avgMRR": 0.3256347962382445
+      "avgPrecision5": 0.22000000000000003,
+      "avgRecall5": 0.55,
+      "avgMRR": 0.46497619047619043
     },
     "edge_case": {
       "count": 30,
-      "avgPrecision5": 0.2133333333333334,
-      "avgRecall5": 0.5,
-      "avgMRR": 0.41425674032381354
+      "avgPrecision5": 0.20000000000000007,
+      "avgRecall5": 0.43333333333333335,
+      "avgMRR": 0.36426046176046173
     },
     "negative": {
       "count": 40,
@@ -59,26 +59,29 @@
     },
     "sanctions": {
       "count": 27,
-      "avgPrecision5": 0.10370370370370371,
-      "avgRecall5": 0.46296296296296297,
-      "avgMRR": 0.3652656279467873
+      "avgPrecision5": 0.21481481481481485,
+      "avgRecall5": 0.6296296296296297,
+      "avgMRR": 0.42901234567901236
     },
     "doctrina": {
       "count": 20,
-      "avgPrecision5": 0.16000000000000006,
-      "avgRecall5": 0.425,
-      "avgMRR": 0.42662393162393164
+      "avgPrecision5": 0.19000000000000003,
+      "avgRecall5": 0.475,
+      "avgMRR": 0.3851459256183093
     },
     "multi_source": {
       "count": 20,
-      "avgPrecision5": 0.35000000000000003,
-      "avgRecall5": 0.65,
-      "avgMRR": 0.5058333333333334
+      "avgPrecision5": 0.34,
+      "avgRecall5": 0.575,
+      "avgMRR": 0.5626984126984127
     }
   },
-  "avgLatencyMs": 4301.613333333334,
-  "p95LatencyMs": 5559,
-  "avgTokensUsed": 9890.986666666666,
+  "avgLatencyMs": 4590.806666666666,
+  "p95LatencyMs": 6116,
+  "avgTokensUsed": 9550.286666666667,
   "avgExternalSourcePresence": 1,
-  "avgSourceTypeAccuracy": 0.5375
+  "avgSourceTypeAccuracy": 0.5125,
+  "avgPrecisionAt5Adj": 0.8666666666666667,
+  "avgExtSourceRetrieved": 1,
+  "avgExtSourceInContext": 0.5125
 }

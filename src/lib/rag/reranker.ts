@@ -1,6 +1,6 @@
 import { EnhancedQuery, RerankedChunk, RerankedMultiSourceChunk } from "@/types/rag";
 import { ScoredChunk, ScoredMultiSourceChunk } from "@/types/pinecone";
-import { RAG_CONFIG, MULTI_SOURCE_BOOST } from "@/config/constants";
+import { RAG_CONFIG, MULTI_SOURCE_BOOST, LEGAL_ANCHOR_TERMS } from "@/config/constants";
 import { generateText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 
@@ -29,6 +29,9 @@ const BOOST = {
   leyMatchBoost: 0.15,            // v3: was 0.12
   complexityBoost: 0.03,
   diversityPenalty: -0.12,        // v3: NEW — per-article repeat penalty in top-N
+  paragraphoMatch: 0.12,          // Query "paragrafo 3" matches "Paragrafo 3" in chunk
+  legalAnchorMatch: 0.10,         // Legal term match between query and chunk text
+  articleTextMatch: 0.08,         // Chunk text confirms it's about the queried article
 } as const;
 
 // Extended law patterns for better matching
@@ -175,6 +178,41 @@ export function heuristicRerank(
     // PageRank boost: prefer structurally important articles in the tax graph
     if (meta.pagerank && meta.pagerank > 0.01) {
       boost += 0.08;
+    }
+
+    // --- v3.1 Hybrid legal signals ---
+
+    // Legal anchor: match specific tax terms between query and chunk text
+    const chunkTextLower = (meta.text || "").slice(0, 600).toLowerCase();
+    for (const term of LEGAL_ANCHOR_TERMS) {
+      if (queryLower.includes(term) && chunkTextLower.includes(term)) {
+        boost += BOOST.legalAnchorMatch;
+        break; // Only one anchor boost per chunk
+      }
+    }
+
+    // Paragrafo match: "paragrafo 3" in query matches "Paragrafo 3" in chunk
+    const paragraphoMatch = queryLower.match(/par[aá]grafo\s*(\d+)/i);
+    if (paragraphoMatch) {
+      const paraNum = paragraphoMatch[1];
+      if (chunkTextLower.includes(`paragrafo ${paraNum}`) ||
+          chunkTextLower.includes(`parágrafo ${paraNum}`) ||
+          chunkTextLower.includes(`par\u00e1grafo ${paraNum}`)) {
+        boost += BOOST.paragraphoMatch;
+      }
+    }
+
+    // Article number confirmation: chunk text explicitly mentions the article number
+    if (queryArticleNumbers.size > 0) {
+      for (const artNum of queryArticleNumbers) {
+        const numOnly = artNum.replace("Art. ", "");
+        if (chunkTextLower.includes(`artículo ${numOnly}`) ||
+            chunkTextLower.includes(`articulo ${numOnly}`) ||
+            chunkTextLower.includes(`art. ${numOnly}`)) {
+          boost += BOOST.articleTextMatch;
+          break;
+        }
+      }
     }
 
     // Multiplicative + additive scoring: preserves relative ranking better

@@ -51,3 +51,28 @@ export const MULTI_SOURCE_BOOST = {
   // Decreto boosts
   decretoReciente: 0.10,    // < 3 years old
 } as const;
+
+export const LEGAL_ANCHOR_TERMS = new Set([
+  "gmf", "gravamen movimientos financieros", "4x1000", "cuatro por mil",
+  "iva", "impuesto valor agregado", "impuesto sobre las ventas",
+  "ica", "industria y comercio",
+  "renta presuntiva", "renta liquida", "renta exenta", "rentas exentas",
+  "precios de transferencia", "vinculados economicos",
+  "retencion en la fuente", "agente retenedor", "autorretencion",
+  "sancion", "sanciones", "extemporaneidad", "inexactitud", "correccion",
+  "beneficio de auditoria", "firmeza",
+  "declaracion de renta", "declaracion iva",
+  "impuesto al patrimonio", "impuesto al consumo",
+  "entidades sin animo de lucro", "esal", "regimen tributario especial",
+  "zona franca", "zonas francas",
+  "descuento tributario", "renta cedular",
+  "dividendos", "ganancias ocasionales",
+  "procedimiento tributario", "recurso de reconsideracion",
+  "ingresos no constitutivos",
+  "impuesto de renta", "tarifa general",
+  "personas juridicas", "personas naturales",
+  "bienes excluidos", "bienes exentos",
+  "base gravable", "hecho generador",
+  "regimen simple", "regimen ordinario",
+  "renta liquida gravable",
+]);
