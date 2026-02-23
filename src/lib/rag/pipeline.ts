@@ -82,11 +82,15 @@ export async function runRAGPipeline(
   }
   timings.retrieval = performance.now() - retrieveStart;
 
-  // 3. Rerank article chunks
+  // 3. Rerank article chunks (pass queryType for comparative round-robin)
   const rerankStart = performance.now();
-  let reranked = heuristicRerank(retrievalResult.chunks, enhancedQuery);
+  let reranked = heuristicRerank(retrievalResult.chunks, enhancedQuery, undefined, retrievalResult.queryType);
 
-  if (options.useLLMRerank ?? RAG_CONFIG.useLLMRerank) {
+  // Conditional LLM rerank: only run when confidence is low (top score < 0.60)
+  // Saves ~500ms for high-confidence queries
+  const shouldLLMRerank = (options.useLLMRerank ?? RAG_CONFIG.useLLMRerank) &&
+    (retrievalResult.dynamicThreshold ?? 1) < 0.35;
+  if (shouldLLMRerank) {
     reranked = await llmRerank(reranked, query);
   }
 

@@ -115,7 +115,8 @@ function isComplexQuery(query: string): boolean {
   const lower = query.toLowerCase();
   const hasConjunctions = /\by\b/.test(lower) && query.length > 80;
   const hasMultipleClauses = (query.match(/[,;]/g) || []).length >= 2;
-  const hasComparison = /diferencia|compar|versus|vs\b/i.test(lower);
+  // Force decomposition for ALL comparative queries regardless of length
+  const hasComparison = /diferencia|compar|versus|vs\b|distinción|mientras que|en cambio|cuál es mejor/i.test(lower);
   return hasConjunctions || hasMultipleClauses || hasComparison;
 }
 

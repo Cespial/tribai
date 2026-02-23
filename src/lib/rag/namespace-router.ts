@@ -54,7 +54,7 @@ export function getQueryRoutingConfig(queryType: QueryType): {
     case "factual":
       return { topK: 10, maxRerankedResults: 5, priorityNamespaces: [""] };
     case "comparative":
-      return { topK: 25, maxRerankedResults: 12, priorityNamespaces: ["", "leyes"] };
+      return { topK: 30, maxRerankedResults: 15, priorityNamespaces: ["", "leyes"] };
     case "temporal":
       return { topK: 20, maxRerankedResults: 10, priorityNamespaces: ["", "leyes"] };
     case "procedural":

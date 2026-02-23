@@ -5,6 +5,8 @@ import { ChatPageContext } from "@/types/chat-history";
 
 const CITATION_INSTRUCTIONS = `
 
+REGLA ABSOLUTA DE CITACIÓN: SOLO cita artículos y fuentes que aparezcan en el <context>. Si el usuario pregunta por un artículo que NO está en el contexto, di "No tengo ese artículo en mi contexto actual" en lugar de inventar el contenido.
+
 Reglas de citación — Cita SIEMPRE las fuentes con el formato correcto según su tipo:
 - Artículos del ET: "Art. X ET" — cuando sea posible, incluye link en formato markdown [Art. X ET](/articulo/X)
 - Doctrina DIAN: "Concepto DIAN No. XXXXXX de YYYY" o "Oficio DIAN No. XXXXXX de YYYY"
@@ -29,19 +31,20 @@ export function buildMessages(
     ? `<page_context>\n${JSON.stringify(pageContext, null, 2)}\n</page_context>\n\n`
     : "";
 
-  const hasExternalSources =
-    context.externalSources && context.externalSources.length > 0;
+  // Build citation fence: explicit list of available articles in context
+  const availableArticles = context.articles.map((a) => a.idArticulo);
+  const citationFence = availableArticles.length > 0
+    ? `\nArtículos disponibles en contexto: ${availableArticles.join(", ")}`
+    : "";
 
   const contextBlock = contextString
-    ? `${pageContextBlock}<context>\n${contextString}\n</context>\n\nPregunta del usuario: ${userQuery}`
+    ? `${pageContextBlock}<context>${citationFence}\n${contextString}\n</context>\n\nPregunta del usuario: ${userQuery}`
     : `${pageContextBlock}No se encontraron artículos relevantes en las fuentes consultadas para esta consulta.\n\nPregunta del usuario: ${userQuery}`;
 
-  // Add citation instructions when external sources are present
-  const citationBlock = hasExternalSources ? CITATION_INSTRUCTIONS : "";
-
+  // Always inject citation instructions (not just when external sources are present)
   const enhancedSystem = conversationHistory
-    ? `${ENHANCED_SYSTEM_PROMPT}${citationBlock}\n\n${conversationHistory}`
-    : `${ENHANCED_SYSTEM_PROMPT}${citationBlock}`;
+    ? `${ENHANCED_SYSTEM_PROMPT}${CITATION_INSTRUCTIONS}\n\n${conversationHistory}`
+    : `${ENHANCED_SYSTEM_PROMPT}${CITATION_INSTRUCTIONS}`;
 
   return {
     system: enhancedSystem,

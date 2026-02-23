@@ -98,7 +98,7 @@ async function runSingleQuestion(
   });
 
   // 2. Retrieve
-  const { chunks, multiSourceChunks } = await retrieve(enhanced, {
+  const { chunks, multiSourceChunks, queryType } = await retrieve(enhanced, {
     topK: mergedConfig.topK,
     similarityThreshold: mergedConfig.similarityThreshold,
   });
@@ -109,8 +109,8 @@ async function runSingleQuestion(
     question.expected_articles
   );
 
-  // 4. Rerank
-  const reranked = heuristicRerank(chunks, enhanced, mergedConfig.maxRerankedResults);
+  // 4. Rerank (pass queryType for comparative round-robin diversity)
+  const reranked = heuristicRerank(chunks, enhanced, mergedConfig.maxRerankedResults, queryType);
 
   // 4b. Rerank multi-source chunks (doctrina, jurisprudencia, etc.)
   const rerankedMultiSource = multiSourceChunks
@@ -398,6 +398,40 @@ async function main() {
     const baselineResult = allResults[0];
     fs.writeFileSync(baselinePath, JSON.stringify(baselineResult.aggregated, null, 2));
     console.log(`\nBaseline saved to ${baselinePath}`);
+  }
+
+  // Quality gates — fail if metrics don't meet minimum thresholds
+  const QUALITY_GATES = {
+    minPrecisionAt5: 0.20,
+    minRecallAt5: 0.55,
+    maxErrorRate: 0.60,
+    minSourceTypeAcc: 0.50,
+    maxAvgLatency: 6000,
+  };
+
+  const gateFlag = args.includes("--gates");
+  if (gateFlag && allResults.length > 0) {
+    const agg = allResults[0].aggregated;
+    const failures: string[] = [];
+
+    if (agg.avgPrecisionAt5 < QUALITY_GATES.minPrecisionAt5)
+      failures.push(`P@5 ${agg.avgPrecisionAt5.toFixed(3)} < ${QUALITY_GATES.minPrecisionAt5}`);
+    if (agg.avgRecallAt5 < QUALITY_GATES.minRecallAt5)
+      failures.push(`R@5 ${agg.avgRecallAt5.toFixed(3)} < ${QUALITY_GATES.minRecallAt5}`);
+    if (agg.errorAnalysis.errorRate > QUALITY_GATES.maxErrorRate)
+      failures.push(`Error Rate ${agg.errorAnalysis.errorRate.toFixed(3)} > ${QUALITY_GATES.maxErrorRate}`);
+    if (agg.avgSourceTypeAccuracy < QUALITY_GATES.minSourceTypeAcc)
+      failures.push(`Source Type Acc ${agg.avgSourceTypeAccuracy.toFixed(3)} < ${QUALITY_GATES.minSourceTypeAcc}`);
+    if (agg.avgLatencyMs > QUALITY_GATES.maxAvgLatency)
+      failures.push(`Avg Latency ${agg.avgLatencyMs.toFixed(0)}ms > ${QUALITY_GATES.maxAvgLatency}ms`);
+
+    if (failures.length > 0) {
+      console.log("\n  QUALITY GATES FAILED:");
+      failures.forEach((f) => console.log(`    - ${f}`));
+      process.exit(1);
+    } else {
+      console.log("\n  QUALITY GATES: ALL PASSED");
+    }
   }
 }
 

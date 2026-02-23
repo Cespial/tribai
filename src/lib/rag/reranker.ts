@@ -93,7 +93,8 @@ export async function llmRerank(
 export function heuristicRerank(
   chunks: ScoredChunk[],
   query: EnhancedQuery,
-  maxResults: number = RAG_CONFIG.maxRerankedResults
+  maxResults: number = RAG_CONFIG.maxRerankedResults,
+  queryType?: string
 ): RerankedChunk[] {
   const queryLower = query.original.toLowerCase();
 
@@ -189,8 +190,46 @@ export function heuristicRerank(
   // Sort by reranked score
   reranked.sort((a, b) => b.rerankedScore - a.rerankedScore);
 
-  // v3: Apply diversity penalty — penalize chunks from articles already in top-N
-  // This ensures comparative queries get chunks from multiple articles
+  // v3: Comparative round-robin — interleave chunks from different articles
+  // to ensure diversity in top-N for side-by-side comparisons
+  const isComparative = queryType === "comparative" || isHistoryQuery;
+
+  if (isComparative && reranked.length > 3) {
+    // Group chunks by article, preserving score order within each group
+    const articleGroups = new Map<string, RerankedChunk[]>();
+    for (const chunk of reranked) {
+      const artId = chunk.metadata.id_articulo;
+      if (!articleGroups.has(artId)) articleGroups.set(artId, []);
+      articleGroups.get(artId)!.push(chunk);
+    }
+
+    // Sort groups by max score (best article first)
+    const sortedGroups = Array.from(articleGroups.values())
+      .sort((a, b) => b[0].rerankedScore - a[0].rerankedScore);
+
+    // Round-robin: take one chunk from each article group in rotation
+    const roundRobin: RerankedChunk[] = [];
+    let groupIdx = 0;
+    const groupPointers = new Array(sortedGroups.length).fill(0);
+    while (roundRobin.length < reranked.length) {
+      let found = false;
+      for (let i = 0; i < sortedGroups.length; i++) {
+        const gIdx = (groupIdx + i) % sortedGroups.length;
+        const group = sortedGroups[gIdx];
+        if (groupPointers[gIdx] < group.length) {
+          roundRobin.push(group[groupPointers[gIdx]]);
+          groupPointers[gIdx]++;
+          found = true;
+        }
+      }
+      if (!found) break;
+      groupIdx = (groupIdx + 1) % sortedGroups.length;
+    }
+
+    return roundRobin.slice(0, maxResults);
+  }
+
+  // Non-comparative: standard diversity penalty
   const articleCounts = new Map<string, number>();
   for (const chunk of reranked) {
     const artId = chunk.metadata.id_articulo;
