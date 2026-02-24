@@ -7,6 +7,10 @@ export interface EnhancedQuery {
   subQueries?: string[];
   detectedArticles: string[];
   detectedLibro?: string;
+  /** Whether query enhancement was degraded (LLM calls failed) */
+  degraded?: boolean;
+  /** Reason for degradation */
+  degradedReason?: string;
 }
 
 export interface RetrievalResult {
@@ -157,4 +161,8 @@ export interface RAGDebugInfo {
   namespaceContribution?: Record<string, number>;
   /** Whether contradictions were detected between sources */
   contradictionFlags?: boolean;
+  /** Whether pipeline ran in degraded mode (no LLM enhancement) */
+  degradedMode?: boolean;
+  /** Reason for degradation (e.g., "api_rate_limit", "api_error") */
+  degradedReason?: string;
 }

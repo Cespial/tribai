@@ -67,9 +67,14 @@ export async function runRAGPipeline(
       original: query,
       rewritten: query,
       detectedArticles: [],
+      degraded: true,
+      degradedReason: "enhancement_error",
     };
   }
   timings.queryEnhancement = performance.now() - enhanceStart;
+
+  const degradedMode = enhancedQuery.degraded ?? false;
+  const degradedReason = enhancedQuery.degradedReason;
   logger.debug("Query enhancement completed", {
     stage: "queryEnhancement",
     durationMs: Math.round(timings.queryEnhancement),
@@ -78,6 +83,7 @@ export async function runRAGPipeline(
       hydeGenerated: !!enhancedQuery.hyde,
       subQueries: enhancedQuery.subQueries?.length ?? 0,
       detectedArticles: enhancedQuery.detectedArticles.length,
+      degradedMode,
     },
   });
 
@@ -221,6 +227,9 @@ export async function runRAGPipeline(
     evidenceQuality: evidenceResult.evidenceQuality,
     namespaceContribution: evidenceResult.namespaceContribution,
     contradictionFlags: evidenceResult.contradictionFlags,
+    // Degraded mode
+    degradedMode,
+    degradedReason,
   };
 
   // Final pipeline trace log (single structured entry for full auditability)
@@ -229,6 +238,8 @@ export async function runRAGPipeline(
     durationMs: Math.round(timings.totalPipeline),
     metadata: {
       queryType,
+      degradedMode,
+      degradedReason,
       confidenceLevel: evidenceResult.confidenceLevel,
       evidenceQuality: Math.round(evidenceResult.evidenceQuality * 100) / 100,
       contradictionFlags: evidenceResult.contradictionFlags,

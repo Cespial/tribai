@@ -42,6 +42,9 @@ export async function enhanceQuery(
     isComplexQuery(query) ? decomposeQuery(query) : Promise.resolve(undefined),
   ]);
 
+  // Detect if all LLM enhancements failed (degraded mode)
+  const degraded = rewritten === expanded && !hyde && (!subQueries || subQueries.length === 0) && !isDirectLookup;
+
   return {
     original: query,
     rewritten,
@@ -49,6 +52,8 @@ export async function enhanceQuery(
     subQueries,
     detectedArticles,
     detectedLibro,
+    degraded,
+    degradedReason: degraded ? "llm_unavailable" : undefined,
   };
 }
 
@@ -84,7 +89,7 @@ async function rewriteQuery(query: string): Promise<string> {
     });
     return text.trim() || query;
   } catch (error) {
-    console.error("[query-enhancer] rewriteQuery failed:", error);
+    console.warn("[query-enhancer] rewriteQuery degraded:", (error as Error).message?.slice(0, 80));
     return query;
   }
 }
@@ -122,7 +127,7 @@ async function generateHyDE(query: string): Promise<string> {
     });
     return text.trim();
   } catch (error) {
-    console.error("[query-enhancer] generateHyDE failed:", error);
+    console.warn("[query-enhancer] generateHyDE degraded:", (error as Error).message?.slice(0, 80));
     return "";
   }
 }
@@ -164,7 +169,7 @@ async function decomposeQuery(query: string): Promise<string[]> {
       .filter((l) => l.length > 10)
       .slice(0, 3);
   } catch (error) {
-    console.error("[query-enhancer] decomposeQuery failed:", error);
+    console.warn("[query-enhancer] decomposeQuery degraded:", (error as Error).message?.slice(0, 80));
     return [];
   }
 }

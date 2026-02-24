@@ -183,6 +183,9 @@ export async function POST(req: Request) {
               : undefined,
             namespaceContribution: debugInfo?.namespaceContribution,
             contradictionFlags: debugInfo?.contradictionFlags,
+            // Degraded mode
+            degradedMode: debugInfo?.degradedMode,
+            degradedReason: debugInfo?.degradedReason,
           },
         };
       }

@@ -116,6 +116,7 @@ interface TestResult {
   articlesFound: string[];
   confidenceLevel: string;
   externalSources: number;
+  degradedMode: boolean;
 }
 
 async function runSmokeTest(test: SmokeTest): Promise<TestResult> {
@@ -166,6 +167,8 @@ async function runSmokeTest(test: SmokeTest): Promise<TestResult> {
     const topScore = scores[0] ?? 0;
     const medianScore = scores[Math.floor(scores.length / 2)] ?? 0;
     const evidence = checkEvidence(context, topScore, medianScore);
+
+    const degradedMode = enhanced.degraded ?? false;
 
     const latencyMs = Math.round(performance.now() - start);
 
@@ -218,6 +221,7 @@ async function runSmokeTest(test: SmokeTest): Promise<TestResult> {
       articlesFound,
       confidenceLevel: evidence.confidenceLevel,
       externalSources: context.externalSources.length,
+      degradedMode,
     };
   } catch (error) {
     const latencyMs = Math.round(performance.now() - start);
@@ -230,6 +234,7 @@ async function runSmokeTest(test: SmokeTest): Promise<TestResult> {
       articlesFound: [],
       confidenceLevel: "unknown",
       externalSources: 0,
+      degradedMode: true,
     };
   }
 }
@@ -246,7 +251,7 @@ async function main() {
     results.push(result);
 
     if (result.passed) {
-      console.log(`PASS  (${result.latencyMs}ms, ${result.confidenceLevel}, ${result.articlesFound.length} arts, ${result.externalSources} ext)`);
+      console.log(`PASS  (${result.latencyMs}ms, ${result.confidenceLevel}, ${result.articlesFound.length} arts, ${result.externalSources} ext${result.degradedMode ? ", DEGRADED" : ""})`);
     } else {
       console.log(`FAIL  (${result.latencyMs}ms)`);
       for (const f of result.failures) {
@@ -265,6 +270,10 @@ async function main() {
   console.log(`\n${"=".repeat(80)}`);
   console.log(`  SMOKE TEST RESULTS: ${passed}/${SMOKE_TESTS.length} passed, ${failed} failed`);
   console.log(`  Average latency: ${avgLatency}ms`);
+  const degradedCount = results.filter((r) => r.degradedMode).length;
+  if (degradedCount > 0) {
+    console.log(`  Degraded mode: ${degradedCount}/${SMOKE_TESTS.length} queries (LLM enhancement unavailable)`);
+  }
   console.log(`${"=".repeat(80)}\n`);
 
   if (failed > 0) {
