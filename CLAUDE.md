@@ -86,16 +86,21 @@ src/
 │   ├── constants.ts              # RAG config, Pinecone host, embeddings
 │   └── categories.ts             # Libros del ET, keywords
 ├── lib/
-│   ├── rag/                      # Pipeline RAG completo
-│   │   ├── pipeline.ts           # Orquestador: enhance → retrieve → rerank → assemble → build
-│   │   ├── query-enhancer.ts     # Rewrite + HyDE + decomposition (via Haiku)
-│   │   ├── retriever.ts          # Multi-query Pinecone search
-│   │   ├── reranker.ts           # Heuristic boost scoring
-│   │   ├── context-assembler.ts  # Sibling retrieval + token budget
-│   │   └── prompt-builder.ts     # XML context formatting
+│   ├── rag/                      # Pipeline RAG completo (9 módulos)
+│   │   ├── pipeline.ts           # Orquestador: enhance → route → retrieve → rerank → assemble → evidence → build
+│   │   ├── query-enhancer.ts     # Rewrite + HyDE + decomposition (Haiku) + early-exit
+│   │   ├── namespace-router.ts   # Clasificación de query → config de routing dinámico
+│   │   ├── retriever.ts          # Multi-namespace retrieval + multi-hop (2 rondas)
+│   │   ├── graph-retriever.ts    # PageRank, community detection, graph-based boosting
+│   │   ├── reranker.ts           # Heuristic boost scoring (ET + multi-source)
+│   │   ├── context-assembler.ts  # Sibling retrieval + token budget + namespace diversity
+│   │   ├── evidence-checker.ts   # Confidence scoring, contradiction detection, quality metrics
+│   │   └── prompt-builder.ts     # XML context + evidence warnings + calculator injection
+│   ├── cache/
+│   │   └── response-cache.ts     # LRU response cache (500 entries, 24h TTL)
 │   ├── pinecone/
 │   │   ├── client.ts             # Singleton Pinecone client
-│   │   └── embedder.ts           # multilingual-e5-large embeddings
+│   │   └── embedder.ts           # multilingual-e5-large embeddings (LRU cache 2000)
 │   ├── chat/
 │   │   ├── system-prompt.ts      # System prompt con constantes 2026
 │   │   ├── session-memory.ts     # Context de conversación (5 turnos)
@@ -129,13 +134,23 @@ public/
 │   └── graph-data.json           # Datos del grafo de relaciones (136KB)
 ├── hero/                         # 3 videos MP4 (~6MB total)
 scripts/
-├── build-analytics-datasets.mjs  # Genera dashboard-stats.json, graph-data.json, etc.
-└── verify-data-integrity.mjs     # Verificación de datos
-eval/                             # Framework de evaluación RAG
-├── dataset.json                  # Preguntas + respuestas esperadas
-├── config-grid.ts                # Grid de configuraciones
-├── prompt-variants.ts            # Variantes de prompts
-└── metrics/                      # answer-quality, llm-judge, retrieval
+├── build-analytics-datasets.mjs  # Genera dashboard-stats, graph-data, explorer-facets
+├── verify-data-integrity.mjs     # Verificación de datos
+├── orchestrator.ts               # Pipeline master: scrape → parse → chunk → embed → upsert
+├── scraping/                     # 7 scrapers + 3 parsers + utils
+├── chunking/                     # legal-chunker.ts, metadata-enricher.ts
+├── embedding/                    # batch-embedder.ts, upsert-pinecone.ts, validate-upsert.ts
+├── enrichment/                   # backfill-articles.ts (vincula fuentes externas a ET)
+└── graph/                        # build-graph.ts, compute-metrics.ts, extract-references.ts
+eval/                             # Framework de evaluación RAG (340 queries, 17 métricas)
+├── run_eval.ts                   # Evaluación completa: retrieval + answer quality + performance
+├── smoke-test.ts                 # 10 smoke tests con assertions (pass/fail)
+├── dataset.json                  # 300 standard + 40 complex queries
+├── baseline-results.json         # Resultados de referencia actuales
+├── experiments/config-grid.ts    # Grid de configuraciones para sweeps
+├── metrics/                      # retrieval, answer-quality, faithfulness, llm-judge
+├── analysis/                     # error-categorizer, significance testing
+└── results/                      # Historial de resultados por timestamp
 ```
 
 ---
@@ -223,63 +238,122 @@ eval/                             # Framework de evaluación RAG
 
 ---
 
-## Pipeline RAG — Arquitectura Completa
+## Pipeline RAG — Arquitectura Completa (Post v3.1 Sprint)
 
-### Flujo
+### Flujo (8 etapas)
 
 ```
 Query del usuario
     ↓
+[0] Cache Check
+    └── LRU response cache (500 entries, 24h TTL, normalized key)
+    ↓ (miss)
 [1] Query Enhancement (Haiku 4.5)
+    ├── Early-exit: queries directas (Art. X) saltan LLM calls
     ├── Rewrite: reformula con terminología legal colombiana
     ├── HyDE: genera respuesta hipotética para embedding
-    └── Decomposition: descompone queries complejas en sub-queries
+    ├── Decomposition: descompone queries complejas en sub-queries
+    └── Query expansion: sinónimos y términos legales colombianos
     ↓
-[2] Retrieval (Pinecone)
-    ├── Parallel embedding (multilingual-e5-large, 1024d)
-    ├── Multi-query search (original + rewritten + HyDE + sub-queries)
-    ├── topK: 15 por query
-    ├── Similarity threshold: 0.35
-    └── Metadata filters: libro, id_articulo
+[2] Query Routing (namespace-router.ts)
+    ├── classifyQueryType: factual | comparative | procedural | temporal | doctrina | sanctions
+    ├── getQueryRoutingConfig: topK, maxReranked, namespaces dinámicos por tipo
+    └── Detect article slugs para multi-hop
     ↓
-[3] Heuristic Reranking
-    ├── chunk_type boost: contenido +0.15, modificaciones +0.10
-    ├── Direct article mention: +0.30
-    ├── Title overlap: +0.05/word (max 0.15)
-    ├── Derogated penalty: -0.15 (salvo queries históricas: +0.20)
-    ├── Vigente boost: +0.05
-    ├── Ley match: +0.15
-    └── maxRerankedResults: 8
+[3] Retrieval (Pinecone — 6 namespaces)
+    ├── Ronda 1: Multi-query search en namespace default (ET)
+    │   ├── Parallel embedding (multilingual-e5-large, 1024d, cache 2000)
+    │   ├── topK: 20 por query
+    │   ├── Similarity threshold: 0.28 (dinámico por namespace)
+    │   └── Cross-namespace normalization (min-max scaling)
+    ├── Ronda 1b: Multi-namespace search (doctrina, jurisprudencia, decretos, resoluciones, leyes)
+    │   ├── topK: 15 por namespace
+    │   └── Namespace-specific thresholds (doctrina: 0.20, decretos: 0.23, etc.)
+    └── Ronda 2 (Multi-hop): Busca fuentes externas que citen artículos recuperados
+        └── Filter: { articulos_slugs: { $in: retrievedArticleSlugs } }
     ↓
-[4] Context Assembly
+[4] Heuristic Reranking (2 pipelines paralelos)
+    ├── ET Reranking:
+    │   ├── chunk_type boost: contenido +0.15, modificaciones +0.10
+    │   ├── Direct article mention: +0.30
+    │   ├── Title overlap: +0.05/word (max 0.15)
+    │   ├── Derogated penalty: -0.15 (salvo queries históricas: +0.20)
+    │   ├── Vigente boost: +0.05
+    │   ├── Ley match: +0.15
+    │   └── maxRerankedResults: 10
+    └── Multi-Source Reranking:
+        ├── PageRank boost: +0.10 (high PR > 0.01)
+        ├── Same community boost: +0.08
+        ├── Doctrina vigente: +0.15, revocada: -0.20
+        ├── Sentencia SU-: +0.25, C-: +0.20
+        ├── Multi-hop overlap: +0.12 base (cap 0.21)
+        └── Decreto reciente: +0.10 (< 3 años)
+    ↓
+[5] Context Assembly
     ├── Sibling retrieval: busca todos los chunks del mismo artículo
     ├── Dedup por chunk ID
     ├── Agrupación por artículo: contenido, modificaciones, textoAnterior
-    └── Token budget: 6,000 tokens max
+    ├── Token budget: 12,000 tokens max
+    └── External source budget: namespace diversity round-robin
+        ├── Phase 1: Best source from each namespace (guaranteed diversity)
+        └── Phase 2: Greedy fill by score (remaining budget)
     ↓
-[5] Prompt Building
-    ├── System prompt con constantes 2026 (UVT, SMLMV, tarifas)
-    ├── 35 sugerencias de calculadoras
-    ├── Contexto RAG en XML: <context><article>...</article></context>
+[6] Evidence Check (heuristic, <5ms)
+    ├── Confidence classification: high | medium | low
+    │   ├── high: topScore ≥ 0.75 AND sources ≥ 3
+    │   ├── medium: topScore ≥ 0.55 AND sources ≥ 1
+    │   └── low: everything else
+    ├── Evidence quality score (0-1): weighted(topScore, coverage, distribution, diversity)
+    ├── Namespace contribution tracking: Record<namespace, count>
+    └── Contradiction detection: derogated+vigente conflicts, conflicting percentages
+    ↓
+[7] Prompt Building
+    ├── System prompt con constantes 2026 (UVT $52,374, SMLMV $1,750,905)
+    ├── 35 sugerencias de calculadoras (dinámicas por keyword)
+    ├── Contexto RAG en XML: <context><article>...</article><external_sources>...</external_sources></context>
+    ├── <evidence quality="high|medium|low" confidence="0.XX">
+    ├── <low_evidence_warning> cuando topScore < 0.45
+    ├── <contradiction_warning> cuando se detectan conflictos
     ├── <page_context> si aplica
     └── <conversation_history> (últimos 5 turnos, 200 chars cada uno)
     ↓
-[6] Streaming Response (Sonnet 4.5)
-    └── Metadata on finish: sources, suggestedCalculators, ragMetadata
+[8] Streaming Response (Sonnet 4.5)
+    ├── Metadata on finish: sources, suggestedCalculators, ragMetadata
+    ├── ragMetadata incluye: confidenceLevel, evidenceQuality, namespaceContribution, contradictionFlags
+    └── Structured pipeline trace log (latency per stage, article counts, scores)
 ```
 
 ### Configuración RAG (`src/config/constants.ts`)
 
 ```typescript
 RAG_CONFIG = {
-  topK: 15,
-  similarityThreshold: 0.35,
-  maxContextTokens: 6000,
-  maxRerankedResults: 8,
+  topK: 20,
+  similarityThreshold: 0.28,
+  maxContextTokens: 12000,
+  maxRerankedResults: 10,
   useHyDE: true,
-  useLLMRerank: false,
+  useLLMRerank: true,
   useQueryExpansion: true,
   useSiblingRetrieval: true,
+  useMultiNamespace: true,
+  additionalNamespaces: ["doctrina", "jurisprudencia", "decretos", "resoluciones", "leyes"],
+  multiNamespaceTopK: 15,
+  externalSourceBudgetRatio: 0.30,
+  namespaceThresholds: {
+    "": 0.28,
+    doctrina: 0.20,
+    jurisprudencia: 0.20,
+    decretos: 0.23,
+    resoluciones: 0.23,
+    leyes: 0.23,
+  },
+}
+
+EVIDENCE_THRESHOLDS = {
+  highConfidenceScore: 0.75,
+  highConfidenceSources: 3,
+  mediumConfidenceScore: 0.55,
+  lowEvidenceFallback: 0.45,
 }
 ```
 
@@ -288,7 +362,9 @@ RAG_CONFIG = {
 - **Nombre:** `estatuto-tributario`
 - **Host:** `https://estatuto-tributario-vrkkwsx.svc.aped-4627-b74a.pinecone.io`
 - **Modelo de embedding:** `multilingual-e5-large` (1024 dimensiones)
-- **Chunk metadata:** id_articulo, titulo, libro, estado, chunk_type (contenido|modificaciones|texto_anterior), chunk_index, total_chunks, complexity_score, total_mods, has_normas, vigente
+- **Vectores totales:** ~36,000 (5K ET + 31K fuentes externas)
+- **Namespaces:** `""` (ET), `doctrina`, `jurisprudencia`, `decretos`, `resoluciones`, `leyes`
+- **Chunk metadata:** id_articulo, titulo, libro, estado, chunk_type, chunk_index, total_chunks, complexity_score, total_mods, has_normas, vigente, cross_references, pagerank, community, degree, articulos_slugs
 
 ### Esquema de Artículo (`public/data/articles/[slug].json`)
 
@@ -349,6 +425,8 @@ npm run build        # Build de producción (verifica TypeScript + genera 1,347 
 npm run lint         # ESLint
 npm run data:build   # Regenera datasets analíticos desde los JSONs de artículos
 npm run data:verify  # Verifica integridad de datos
+npm run smoke-test   # 10 smoke tests del pipeline RAG (pass/fail, exit code 0/1)
+npm run eval         # Evaluación completa: 340 queries, 17 métricas, ~6 min
 npx tsc --noEmit     # Type check sin emitir
 ```
 
@@ -383,123 +461,41 @@ Auxilio transporte: $249,095 (Decreto 1470 de 2025)
 
 ---
 
-## Próxima Fase: Scraping Exhaustivo para Agente IA Robusto
+## Base de Conocimiento — Fuentes Embebidas (COMPLETADO)
 
-### Objetivo
+~36,000 vectores en Pinecone distribuidos en 6 namespaces:
 
-Construir la base de conocimiento tributario más completa de Colombia para alimentar el agente RAG. Actualmente tenemos los 1,294 artículos del ET. Falta: jurisprudencia, doctrina DIAN completa, decretos reglamentarios, resoluciones, y conceptos.
+| Namespace | Fuente | Documentos | Chunks | Estado |
+|-----------|--------|-----------|--------|--------|
+| `""` (default) | Estatuto Tributario (estatuto.co) | 1,294 artículos | ~5,000 | COMPLETADO |
+| `doctrina` | DIAN + CIJUF | ~15,495 conceptos | ~30,000 | COMPLETADO |
+| `jurisprudencia` | Corte Constitucional | ~175 sentencias | ~700 | COMPLETADO |
+| `decretos` | DUR 1625/2016 (SUIN) | ~2,793 artículos | ~3,500 | COMPLETADO |
+| `resoluciones` | DIAN Resoluciones | ~626 resoluciones | ~1,300 | COMPLETADO |
+| `leyes` | Senado (Leyes tributarias) | ~8 leyes | ~60 | COMPLETADO |
 
-### Fuentes a Scrapear
-
-#### 1. Estatuto Tributario — Artículos (COMPLETADO)
-- **Fuente:** https://estatuto.co
-- **Estado:** 1,294 artículos scrapeados, parseados y embebidos en Pinecone
-- **Esquema:** Ver sección "Esquema de Artículo" arriba
-
-#### 2. Doctrina DIAN (PENDIENTE — Prioridad Alta)
-- **Fuente primaria:** https://www.dian.gov.co/normatividad/doctrina
-- **Fuente secundaria:** https://cijuf.org.co (Centro Interamericano Jurídico Financiero)
-- **Tipos:** Conceptos unificados, conceptos generales, oficios, circulares
-- **Volumen estimado:** ~15,000-25,000 documentos
-- **Campos a extraer:** número, fecha, tema, descriptor, texto completo, artículos del ET interpretados, vigencia, si fue revocado/modificado por otro concepto
-- **Esquema actual** (parcial en `doctrina-data.ts`):
-  ```typescript
-  {
-    id, numero, fecha, tema, pregunta, sintesis,
-    conclusionClave, articulosET[], tipoDocumento,
-    descriptores[], vigente
-  }
-  ```
-- **Objetivo:** Scraping completo → chunking → embedding → Pinecone (namespace `doctrina`)
-
-#### 3. Jurisprudencia Tributaria (PENDIENTE — Prioridad Alta)
-- **Fuentes:**
-  - Corte Constitucional: https://www.corteconstitucional.gov.co/relatoria/
-  - Consejo de Estado (Sección Cuarta — tributaria): https://www.consejodeestado.gov.co
-  - DIAN — Sentencias citadas en conceptos
-- **Tipos:** Sentencias C- (constitucionalidad), SU- (unificación), T- (tutela relevante), Sentencias Consejo de Estado Sección Cuarta
-- **Volumen estimado:** ~5,000-10,000 sentencias relevantes
-- **Campos a extraer:** tipo, número, año, magistrado ponente, tema, ratio decidendi, obiter dicta, artículos del ET analizados, normas demandadas, decisión (exequible/inexequible/condicionada), salvamentos de voto
-- **Objetivo:** Scraping → parsing → chunking → embedding → Pinecone (namespace `jurisprudencia`)
-
-#### 4. Decretos Reglamentarios (PENDIENTE — Prioridad Media)
-- **Fuente:** https://www.suin-juriscol.gov.co
-- **Tipos:** Decreto Único Reglamentario 1625/2016 (DUR Tributario) y sus modificaciones
-- **Volumen estimado:** ~2,000-5,000 artículos del DUR
-- **Campos:** número decreto, artículo, texto, artículo del ET reglamentado, vigencia
-- **Objetivo:** Conectar cada artículo del ET con su reglamentación
-
-#### 5. Resoluciones DIAN (PENDIENTE — Prioridad Media)
-- **Fuente:** https://www.dian.gov.co/normatividad/resoluciones
-- **Tipos:** Resoluciones de procedimiento, formatos, fechas de vencimiento
-- **Volumen estimado:** ~500-1,000 resoluciones vigentes
-- **Campos:** número, fecha, tema, texto, artículos del ET relacionados
-
-#### 6. Leyes Tributarias Completas (PENDIENTE — Prioridad Baja)
-- **Fuente:** https://www.suin-juriscol.gov.co, https://www.secretariasenado.gov.co
-- **Leyes clave:** 2277/2022 (Reforma Tributaria), 2010/2019, 1943/2018, 1819/2016, 1739/2014, 1607/2012
-- **Objetivo:** Texto completo de cada ley para contexto de modificaciones
-
-### Arquitectura de Scraping
+### Pipeline de Datos (scripts/)
 
 ```
+scripts/orchestrator.ts               # Pipeline master: scrape → parse → chunk → embed → upsert
 scripts/scraping/
-├── scrapers/
-│   ├── dian-doctrina.ts          # Scraper de doctrina DIAN
-│   ├── corte-constitucional.ts   # Scraper de sentencias CC
-│   ├── consejo-estado.ts         # Scraper de sentencias CE Sección 4a
-│   ├── suin-decretos.ts          # Scraper del DUR tributario
-│   └── dian-resoluciones.ts      # Scraper de resoluciones
-├── parsers/
-│   ├── doctrina-parser.ts        # Extrae estructura de conceptos DIAN
-│   ├── sentencia-parser.ts       # Extrae ratio decidendi, obiter, decisión
-│   ├── decreto-parser.ts         # Extrae articulado del DUR
-│   └── resolucion-parser.ts      # Extrae contenido de resoluciones
-├── chunkers/
-│   ├── legal-chunker.ts          # Chunking inteligente para texto legal
-│   └── metadata-enricher.ts      # Enriquece chunks con metadata
-├── embedders/
-│   ├── batch-embedder.ts         # Embedding masivo con rate limiting
-│   └── upsert-pinecone.ts        # Upsert a Pinecone con namespaces
-├── validators/
-│   ├── schema-validator.ts       # Valida esquema de datos scrapeados
-│   └── completeness-checker.ts   # Verifica cobertura vs fuentes
-└── orchestrator.ts               # Pipeline completo: scrape → parse → chunk → embed → upsert
+├── scrapers/                         # 7 scrapers (DIAN, CIJUF, CC, CE, SUIN, Senado)
+├── parsers/                          # doctrina-parser, sentencia-parser, decreto-parser
+└── utils/                            # rate-limiter, html-fetcher, dedup, regex-patterns
+scripts/chunking/
+├── legal-chunker.ts                  # 512 tokens target, respeta límites legales
+└── metadata-enricher.ts              # Agrega PageRank, community, degree, cross-references
+scripts/embedding/
+├── batch-embedder.ts                 # 96 chunks/batch, 16s delay, backoff exponencial
+├── upsert-pinecone.ts                # Upsert por namespace (idempotente)
+└── validate-upsert.ts                # Valida vectores por namespace + sample queries
+scripts/enrichment/
+└── backfill-articles.ts              # Vincula doctrina/jurisprudencia/decretos a artículos ET
+scripts/graph/
+├── build-graph.ts                    # Knowledge graph del ET (540 nodos, cross-references)
+├── compute-metrics.ts                # PageRank, Louvain communities, degree centrality
+└── extract-references.ts             # Extrae relaciones entre artículos
 ```
-
-### Consideraciones Críticas de Scraping
-
-1. **Rate limiting:** Respetar robots.txt y aplicar delays (1-3s entre requests). DIAN y cortes tienen servidores lentos.
-2. **Encoding:** Fuentes gubernamentales colombianas usan mezcla de UTF-8 y Latin-1. Normalizar siempre a UTF-8 NFC.
-3. **Formatos:** PDF (sentencias), HTML (doctrina DIAN), DOC (decretos antiguos). Necesitar parsers específicos por formato.
-4. **Deduplicación:** La misma sentencia puede aparecer en múltiples fuentes. Deduplicar por número+año.
-5. **Vigencia:** Marcar cada documento como vigente/revocado/derogado. Los conceptos DIAN se revocan entre sí.
-6. **Relaciones bidireccionales:** Un concepto DIAN interpreta artículos del ET → el artículo del ET debe enlazar de vuelta al concepto.
-7. **Chunks legales:** El texto legal no se puede chunker arbitrariamente. Respetar límites de párrafo, numeral, literal. Chunk size ideal: 500-800 tokens con 100 tokens de overlap.
-8. **Namespaces Pinecone:** Usar namespaces separados (`articulos`, `doctrina`, `jurisprudencia`, `decretos`, `resoluciones`) para filtrado eficiente.
-9. **Metadata enrichment:** Cada chunk debe llevar: fuente, tipo_documento, numero, fecha, articulos_et[], tema, vigente, relevancia_score.
-10. **Idempotencia:** Scripts deben ser re-ejecutables sin duplicar datos. Usar IDs determinísticos.
-
-### Pinecone — Estrategia de Namespaces
-
-```
-estatuto-tributario (index)
-├── namespace: "" (default)          # Artículos del ET (actual, 1,294 arts)
-├── namespace: "doctrina"            # Conceptos y oficios DIAN
-├── namespace: "jurisprudencia"      # Sentencias CC y CE
-├── namespace: "decretos"            # DUR 1625/2016 y modificaciones
-└── namespace: "resoluciones"        # Resoluciones DIAN
-```
-
-### Adaptación del RAG Pipeline
-
-Una vez scrapeados los datos adicionales, el pipeline RAG necesita:
-
-1. **Retriever multi-namespace:** Consultar múltiples namespaces en paralelo según la query
-2. **Reranker ampliado:** Nuevas señales de boost para doctrina (tipo_documento, vigencia, relevancia al tema)
-3. **Context assembler:** Agrupar por tipo de fuente (artículo + doctrina + jurisprudencia)
-4. **Prompt builder:** Secciones XML diferenciadas: `<articulo>`, `<doctrina>`, `<jurisprudencia>`
-5. **System prompt:** Instrucciones de cómo citar cada tipo de fuente (Art. X ET, Concepto DIAN No. X, Sentencia C-XXX/YYYY)
 
 ---
 
@@ -540,19 +536,63 @@ npx tsc --noEmit     # Type check limpio
 
 ---
 
-## Evaluación RAG (`eval/`)
+## Evaluación RAG (`eval/`) — Runbook
 
-El proyecto incluye un framework de evaluación para medir calidad del RAG:
+### Comandos
 
 ```bash
-# Ejecutar evaluación
-npx tsx eval/run_eval.ts
+npm run smoke-test   # Rápido: 10 queries, ~15s, pass/fail con exit code
+npm run eval         # Completo: 340 queries, 17 métricas, ~6 min
 ```
 
-- **Dataset:** `eval/dataset.json` — preguntas tributarias con respuestas esperadas
-- **Métricas:** retrieval precision/recall, answer quality (LLM judge), latencia
-- **Config grid:** `eval/config-grid.ts` — prueba diferentes combinaciones de topK, threshold, etc.
-- **Prompt variants:** `eval/prompt-variants.ts` — A/B test de system prompts
+### Dataset
+
+- **`eval/dataset.json`** — 340 queries (300 standard + 40 complejas)
+- **Categorías:** factual, comparative, procedural, temporal, edge_case, negative, sanctions, doctrina, multi_source, y 20+ categorías especializadas
+- **Dificultad:** easy (28), medium (99), hard (213)
+- **Campos:** `id`, `category`, `difficulty`, `question`, `expected_articles[]`, `expected_chunk_types[]`, `expected_answer_contains[]`, `expected_external_sources[]`, `complexity_tags[]`
+
+### Métricas (17 total)
+
+| Métrica | Descripción | Target |
+|---------|-------------|--------|
+| P@5 adj | Precision@5 ajustada (penaliza artículos irrelevantes) | ≥0.85 |
+| Recall@5 | % de artículos esperados encontrados en top-5 | ≥0.55 |
+| MRR | Mean Reciprocal Rank del primer artículo correcto | ≥0.38 |
+| NDCG@5 | Normalized DCG para ranking quality | ≥0.65 |
+| Citation Acc | % de artículos citados que son correctos | ≥0.65 |
+| Source Presence | % de fuentes esperadas presentes en contexto | ≥0.50 |
+| Contains Expected | % de respuestas con contenido esperado | ≥0.90 |
+| Error Rate | % de queries con errores de retrieval | ≤0.35 |
+| Ext Src Retrieved | % de queries con fuentes externas recuperadas | ≥0.99 |
+| Ext Src in Context | % de fuentes externas que llegan al contexto | ≥0.88 |
+| Abstention Quality | Calidad de abstención cuando evidencia insuficiente | ≥0.57 |
+| Completeness | % de respuestas completas (todos los aspectos cubiertos) | ≥0.91 |
+| Avg Latency | Latencia promedio del pipeline (ms) | ≤1,200 |
+| P95 Latency | Percentil 95 de latencia (ms) | ≤1,600 |
+| Avg Tokens | Tokens promedio por respuesta | ~9,350 |
+| Complex P@5 | Precision para queries complejas (40 casos) | ≥0.29 |
+| Complex Completeness | Completeness para queries complejas | ≥0.84 |
+
+### Resultados Actuales (Post v3.1 Sprint)
+
+```
+P@5 adj:          0.884    Ext Src Retrieved: 0.993
+Recall@5:         0.558    Ext Src in Context: 0.886
+MRR:              0.383    Abstention:         0.574
+Completeness:     0.913    Avg Latency:        1,094ms
+Complex P@5:      0.290    P95 Latency:        1,549ms
+```
+
+### Smoke Tests (10 queries)
+
+Cada smoke test verifica: artículos esperados en contexto, contenido presente, latencia bajo umbral, confidence_level presente, fuentes externas cuando se esperan. Exit code 0 = 10/10 pass.
+
+### Cómo agregar test cases
+
+1. Agregar al array `SMOKE_TESTS` en `eval/smoke-test.ts` para smoke tests
+2. Agregar al array en `eval/dataset.json` para evaluación completa
+3. Campos requeridos: `id`, `category`, `difficulty`, `question`, `expected_articles[]`, `expected_answer_contains[]`
 
 ---
 
