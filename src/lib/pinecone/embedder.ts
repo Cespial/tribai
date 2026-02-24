@@ -2,8 +2,8 @@ import { getPineconeClient } from "./client";
 import { EMBEDDING_MODEL } from "@/config/constants";
 import crypto from "crypto";
 
-// LRU Cache for embeddings — 500 covers ~5 concurrent sessions
-const CACHE_LIMIT = 500;
+// LRU Cache for embeddings — 2000 covers ~20 concurrent sessions
+const CACHE_LIMIT = 2000;
 const embeddingCache = new Map<string, number[]>();
 
 // Cache metrics

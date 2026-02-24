@@ -18,6 +18,22 @@ export async function enhanceQuery(
   const contextualized = applyPageContextHint(query, options.pageContext);
   const expanded = options.useQueryExpansion !== false ? expandQuery(contextualized) : contextualized;
 
+  // Early-exit for direct article lookups: skip all LLM calls
+  // "Qué dice el Art. 240", "Muéstrame artículo 592", "Art. 383 del ET"
+  const isDirectLookup = detectedArticles.length > 0 &&
+    query.length < 80 &&
+    /^(qu[eé]|cu[aá]l|mu[eé]str|dame|ver|art[ií]culo|art\.)\s/i.test(query) &&
+    !isComplexQuery(query);
+
+  if (isDirectLookup) {
+    return {
+      original: query,
+      rewritten: expanded,
+      detectedArticles,
+      detectedLibro,
+    };
+  }
+
   const [rewritten, hyde, subQueries] = await Promise.all([
     rewriteQuery(expanded),
     shouldUseHyDE(query, detectedArticles, options.useHyDE)

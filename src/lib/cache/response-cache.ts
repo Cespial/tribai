@@ -12,7 +12,7 @@
 import { PipelineResult } from "@/lib/rag/pipeline";
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
-const MAX_CACHE_SIZE = 100;
+const MAX_CACHE_SIZE = 500;
 
 interface CacheEntry {
   result: PipelineResult;

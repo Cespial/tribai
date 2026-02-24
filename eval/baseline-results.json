@@ -1,8 +1,8 @@
 {
-  "avgPrecisionAt5": 0.19823529411764712,
+  "avgPrecisionAt5": 0.19941176470588243,
   "avgRecallAt5": 0.557843137254902,
-  "avgMRR": 0.38317135736640384,
-  "avgNDCGAt5": 0.6564984357516831,
+  "avgMRR": 0.38316554476468323,
+  "avgNDCGAt5": 0.6587740405001217,
   "avgCitationAcc": 0.6664705882352941,
   "avgSourcePresence": 0.5120588235294118,
   "avgContainsExpected": 0.9131372549019608,
@@ -25,7 +25,7 @@
       "count": 43,
       "avgPrecision5": 0.2093023255813954,
       "avgRecall5": 0.5813953488372093,
-      "avgMRR": 0.4391102114939324
+      "avgMRR": 0.43906425138730487
     },
     "comparative": {
       "count": 40,
@@ -41,7 +41,7 @@
     },
     "temporal": {
       "count": 21,
-      "avgPrecision5": 0.19047619047619047,
+      "avgPrecision5": 0.20000000000000004,
       "avgRecall5": 0.5952380952380952,
       "avgMRR": 0.4687423687423687
     },
@@ -227,7 +227,7 @@
     },
     "RUT": {
       "count": 1,
-      "avgPrecision5": 0.2,
+      "avgPrecision5": 0.4,
       "avgRecall5": 1,
       "avgMRR": 1
     },
@@ -280,12 +280,12 @@
       "avgMRR": 0
     }
   },
-  "avgLatencyMs": 1110.6911764705883,
-  "p95LatencyMs": 1572,
-  "avgTokensUsed": 9353.758823529412,
+  "avgLatencyMs": 1070.3647058823528,
+  "p95LatencyMs": 1488,
+  "avgTokensUsed": 9355.552941176471,
   "avgExternalSourcePresence": 0.993421052631579,
   "avgSourceTypeAccuracy": 0.8859649122807018,
-  "avgPrecisionAt5Adj": 0.8838235294117643,
+  "avgPrecisionAt5Adj": 0.8897058823529408,
   "avgExtSourceRetrieved": 0.993421052631579,
   "avgExtSourceInContext": 0.8859649122807018,
   "avgAbstentionQuality": 0.5735294117647058,
@@ -295,7 +295,7 @@
       "count": 28,
       "avgPrecision5": 0.2,
       "avgRecall5": 0.5714285714285714,
-      "avgMRR": 0.420856524427953
+      "avgMRR": 0.42078594283563225
     },
     "medium": {
       "count": 99,
@@ -305,14 +305,14 @@
     },
     "hard": {
       "count": 213,
-      "avgPrecision5": 0.1868544600938967,
+      "avgPrecision5": 0.18873239436619713,
       "avgRecall5": 0.5594679186228482,
       "avgMRR": 0.34484985301330756
     }
   },
   "complexQuestionMetrics": {
     "count": 40,
-    "avgPrecision5": 0.2899999999999999,
+    "avgPrecision5": 0.295,
     "avgRecall5": 0.4416666666666666,
     "avgMRR": 0.511547619047619,
     "avgCompletenessScore": 0.8450000000000001
