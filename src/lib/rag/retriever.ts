@@ -142,7 +142,37 @@ export async function retrieve(
     }
   }
 
-  return { chunks, query, multiSourceChunks, dynamicThreshold, queryType };
+  // Multi-hop: second retrieval round using retrieved article IDs
+  // Finds external sources (doctrina, jurisprudencia, etc.) that specifically cite the retrieved articles
+  let retrievedArticleSlugs: string[] | undefined;
+  if (multiSourceChunks !== undefined && chunks.length > 0) {
+    const articleSlugs = extractArticleSlugs(chunks);
+    if (articleSlugs.length > 0) {
+      retrievedArticleSlugs = articleSlugs;
+      const linkedSources = await retrieveArticleLinkedSources(
+        embeddings[0],
+        articleSlugs,
+        RAG_CONFIG.additionalNamespaces.filter((ns) => ns !== "") as PineconeNamespace[]
+      );
+      if (linkedSources.length > 0) {
+        // Merge with existing multi-source chunks, deduplicating by doc_id::chunk_index
+        const existingKeys = new Set(
+          multiSourceChunks.map((c) => `${c.metadata.doc_id}::${c.metadata.chunk_index}`)
+        );
+        for (const chunk of linkedSources) {
+          const key = `${chunk.metadata.doc_id}::${chunk.metadata.chunk_index}`;
+          if (!existingKeys.has(key)) {
+            multiSourceChunks.push(chunk);
+            existingKeys.add(key);
+          }
+        }
+        // Re-sort by score
+        multiSourceChunks.sort((a, b) => b.score - a.score);
+      }
+    }
+  }
+
+  return { chunks, query, multiSourceChunks, dynamicThreshold, queryType, retrievedArticleSlugs };
 }
 
 /**
@@ -215,6 +245,70 @@ async function retrieveMultiNamespace(
   }
 
   return Array.from(dedupMap.values()).sort((a, b) => b.score - a.score);
+}
+
+/**
+ * Extract article slugs from retrieved chunks for multi-hop filtering.
+ * Converts "Art. 240" → "240", "Art. 20-1" → "20-1", etc.
+ */
+function extractArticleSlugs(chunks: ScoredChunk[]): string[] {
+  const slugs = new Set<string>();
+  for (const chunk of chunks) {
+    const artId = chunk.metadata.id_articulo;
+    if (artId) {
+      const match = artId.match(/Art\.\s*(.+)/);
+      if (match) {
+        slugs.add(match[1].trim());
+      }
+    }
+  }
+  return Array.from(slugs).slice(0, 10); // Cap at 10 to avoid overly broad $in filters
+}
+
+/**
+ * Multi-hop: second retrieval round.
+ * Searches external namespaces for sources that cite the retrieved ET articles
+ * using the articulos_slugs metadata field.
+ */
+async function retrieveArticleLinkedSources(
+  vector: number[],
+  articleSlugs: string[],
+  namespaces: PineconeNamespace[]
+): Promise<ScoredMultiSourceChunk[]> {
+  if (articleSlugs.length === 0 || namespaces.length === 0) return [];
+
+  const index = getIndex();
+  const nsThresholds = RAG_CONFIG.namespaceThresholds ?? {};
+  const fallbackThreshold = RAG_CONFIG.similarityThreshold;
+
+  const nsPromises = namespaces.map(async (ns) => {
+    const threshold = nsThresholds[ns] ?? fallbackThreshold;
+    try {
+      const nsIndex = index.namespace(ns);
+      const result = await withRetry(() =>
+        nsIndex.query({
+          vector,
+          topK: 5,
+          includeMetadata: true,
+          filter: { articulos_slugs: { $in: articleSlugs } },
+        })
+      );
+
+      return (result.matches || [])
+        .filter((m) => m.metadata && (m.score ?? 0) >= threshold)
+        .map((m) => ({
+          id: m.id,
+          score: m.score ?? 0,
+          metadata: m.metadata as unknown as MultiSourceChunkMetadata,
+          namespace: ns,
+        }));
+    } catch {
+      return [];
+    }
+  });
+
+  const allResults = await Promise.all(nsPromises);
+  return allResults.flat().sort((a, b) => b.score - a.score);
 }
 
 function determineTopK(query: EnhancedQuery, override?: number, routingTopK?: number): number {

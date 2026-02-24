@@ -315,7 +315,8 @@ export function heuristicRerank(
 export function heuristicRerankMultiSource(
   chunks: ScoredMultiSourceChunk[],
   query: EnhancedQuery,
-  maxResults: number = 8
+  maxResults: number = 8,
+  retrievedArticleSlugs?: string[]
 ): RerankedMultiSourceChunk[] {
   const currentYear = new Date().getFullYear();
 
@@ -370,6 +371,18 @@ export function heuristicRerankMultiSource(
       });
       if (overlap.length > 0) {
         boost += 0.15;
+      }
+    }
+
+    // Multi-hop boost: boost external sources that cite articles discovered during retrieval
+    // (not just query-detected articles). These are precision-targeted by the multi-hop filter.
+    if (retrievedArticleSlugs && retrievedArticleSlugs.length > 0 && meta.articulos_slugs) {
+      const hopOverlap = retrievedArticleSlugs.filter((slug) =>
+        meta.articulos_slugs.includes(slug)
+      );
+      if (hopOverlap.length > 0) {
+        // +0.12 base, +0.03 per additional overlapping article (cap at +0.21)
+        boost += Math.min(0.21, 0.12 + (hopOverlap.length - 1) * 0.03);
       }
     }
 

@@ -435,15 +435,45 @@ function applyExternalTokenBudget(
   const selected: ExternalSourceGroup[] = [];
   let totalTokens = 0;
 
+  // Namespace-diversity round-robin: ensure each namespace gets at least one source
+  // before filling the rest by score order. This prevents one namespace from
+  // hogging the budget and causing Ext Src Ctx regressions.
+  const byNamespace = new Map<string, ExternalSourceGroup[]>();
   for (const group of groups) {
+    const ns = group.namespace;
+    if (!byNamespace.has(ns)) byNamespace.set(ns, []);
+    byNamespace.get(ns)!.push(group);
+  }
+
+  // Phase 1: Take the best source from each namespace (round-robin by score)
+  const namespacesRanked = Array.from(byNamespace.entries())
+    .sort((a, b) => b[1][0].maxScore - a[1][0].maxScore);
+
+  const usedIds = new Set<string>();
+  for (const [, nsGroups] of namespacesRanked) {
+    const best = nsGroups[0];
+    const text = formatExternalSourceForContext(best);
+    const tokens = estimateTokens(text);
+    if (totalTokens + tokens <= maxTokens || selected.length === 0) {
+      selected.push(best);
+      usedIds.add(best.docId);
+      totalTokens += tokens;
+    }
+  }
+
+  // Phase 2: Fill remaining budget with highest-scored sources across all namespaces
+  for (const group of groups) {
+    if (usedIds.has(group.docId)) continue;
     const text = formatExternalSourceForContext(group);
     const tokens = estimateTokens(text);
-
-    if (totalTokens + tokens > maxTokens && selected.length > 0) break;
-
+    if (totalTokens + tokens > maxTokens) continue; // skip oversized, try next
     selected.push(group);
+    usedIds.add(group.docId);
     totalTokens += tokens;
   }
+
+  // Re-sort by score descending for consistent context ordering
+  selected.sort((a, b) => b.maxScore - a.maxScore);
 
   return { sources: selected, totalTokens };
 }

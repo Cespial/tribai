@@ -101,8 +101,9 @@ export async function runRAGPipeline(
   }
 
   // 3b. Rerank multi-source chunks (doctrina, jurisprudencia, etc.)
+  // Pass retrievedArticleSlugs for multi-hop boost (sources citing retrieved articles get boosted)
   const rerankedMultiSource = retrievalResult.multiSourceChunks
-    ? heuristicRerankMultiSource(retrievalResult.multiSourceChunks, enhancedQuery)
+    ? heuristicRerankMultiSource(retrievalResult.multiSourceChunks, enhancedQuery, undefined, retrievalResult.retrievedArticleSlugs)
     : [];
   timings.reranking = performance.now() - rerankStart;
 

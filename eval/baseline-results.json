@@ -1,11 +1,11 @@
 {
   "avgPrecisionAt5": 0.19823529411764712,
   "avgRecallAt5": 0.557843137254902,
-  "avgMRR": 0.3845743579605808,
-  "avgNDCGAt5": 0.657583936476473,
-  "avgCitationAcc": 0.6738235294117646,
+  "avgMRR": 0.38317135736640384,
+  "avgNDCGAt5": 0.6564984357516831,
+  "avgCitationAcc": 0.6664705882352941,
   "avgSourcePresence": 0.5120588235294118,
-  "avgContainsExpected": 0.9214705882352942,
+  "avgContainsExpected": 0.9131372549019608,
   "errorAnalysis": {
     "totalErrors": 275,
     "byCategory": {
@@ -25,19 +25,19 @@
       "count": 43,
       "avgPrecision5": 0.2093023255813954,
       "avgRecall5": 0.5813953488372093,
-      "avgMRR": 0.45073811847067663
+      "avgMRR": 0.4391102114939324
     },
     "comparative": {
       "count": 40,
       "avgPrecision5": 0.2,
       "avgRecall5": 0.4,
-      "avgMRR": 0.3731814713064713
+      "avgMRR": 0.3735286935286935
     },
     "procedural": {
       "count": 60,
       "avgPrecision5": 0.24666666666666667,
       "avgRecall5": 0.5833333333333334,
-      "avgMRR": 0.47305370555370546
+      "avgMRR": 0.4732052207052206
     },
     "temporal": {
       "count": 21,
@@ -280,34 +280,34 @@
       "avgMRR": 0
     }
   },
-  "avgLatencyMs": 921.4470588235295,
-  "p95LatencyMs": 1363,
-  "avgTokensUsed": 8976.447058823529,
-  "avgExternalSourcePresence": 0.9473684210526315,
-  "avgSourceTypeAccuracy": 0.9078947368421053,
+  "avgLatencyMs": 1059.7088235294118,
+  "p95LatencyMs": 1441,
+  "avgTokensUsed": 9353.39705882353,
+  "avgExternalSourcePresence": 0.993421052631579,
+  "avgSourceTypeAccuracy": 0.8859649122807018,
   "avgPrecisionAt5Adj": 0.8838235294117643,
-  "avgExtSourceRetrieved": 0.9473684210526315,
-  "avgExtSourceInContext": 0.9078947368421053,
+  "avgExtSourceRetrieved": 0.993421052631579,
+  "avgExtSourceInContext": 0.8859649122807018,
   "avgAbstentionQuality": 0.5735294117647058,
-  "avgCompletenessScore": 0.9214705882352942,
+  "avgCompletenessScore": 0.9131372549019608,
   "byDifficulty": {
     "easy": {
       "count": 28,
       "avgPrecision5": 0.2,
       "avgRecall5": 0.5714285714285714,
-      "avgMRR": 0.43871366728509587
+      "avgMRR": 0.420856524427953
     },
     "medium": {
       "count": 99,
       "avgPrecision5": 0.22222222222222215,
       "avgRecall5": 0.5505050505050505,
-      "avgMRR": 0.4548703961582751
+      "avgMRR": 0.4549622235228297
     },
     "hard": {
       "count": 213,
       "avgPrecision5": 0.1868544600938967,
       "avgRecall5": 0.5594679186228482,
-      "avgMRR": 0.3447846469621861
+      "avgMRR": 0.34484985301330756
     }
   },
   "complexQuestionMetrics": {
@@ -315,7 +315,7 @@
     "avgPrecision5": 0.2899999999999999,
     "avgRecall5": 0.4416666666666666,
     "avgMRR": 0.511547619047619,
-    "avgCompletenessScore": 0.8866666666666667
+    "avgCompletenessScore": 0.8450000000000001
   },
   "totalMetricsCount": 17
 }

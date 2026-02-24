@@ -18,6 +18,8 @@ export interface RetrievalResult {
   dynamicThreshold?: number;
   /** Classified query type for routing decisions */
   queryType?: string;
+  /** Article slugs discovered during retrieval (for multi-hop boost in reranker) */
+  retrievedArticleSlugs?: string[];
 }
 
 export interface RerankedChunk extends ScoredChunk {
