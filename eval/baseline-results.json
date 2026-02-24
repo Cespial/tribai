@@ -1,49 +1,49 @@
 {
-  "avgPrecisionAt5": 0.18533333333333335,
+  "avgPrecisionAt5": 0.186,
   "avgRecallAt5": 0.5733333333333334,
-  "avgMRR": 0.3655294163417734,
-  "avgNDCGAt5": 0.6558566274819678,
-  "avgCitationAcc": 0.6766666666666666,
+  "avgMRR": 0.3661533617454671,
+  "avgNDCGAt5": 0.6575825693513212,
+  "avgCitationAcc": 0.6733333333333333,
   "avgSourcePresence": 0.5216666666666666,
   "avgContainsExpected": 0.9261111111111107,
   "errorAnalysis": {
-    "totalErrors": 210,
+    "totalErrors": 212,
     "byCategory": {
-      "article_ranked_too_low": 63,
-      "article_not_retrieved": 114,
-      "context_truncated": 33
+      "article_ranked_too_low": 64,
+      "article_not_retrieved": 113,
+      "context_truncated": 35
     },
     "bySeverity": {
       "low": 0,
-      "medium": 96,
-      "high": 114
+      "medium": 99,
+      "high": 113
     },
-    "errorRate": 0.31333333333333335
+    "errorRate": 0.31
   },
   "byCategory": {
     "factual": {
       "count": 43,
-      "avgPrecision5": 0.2046511627906977,
+      "avgPrecision5": 0.2093023255813954,
       "avgRecall5": 0.5813953488372093,
-      "avgMRR": 0.43518828239505686
+      "avgMRR": 0.4391102114939324
     },
     "comparative": {
       "count": 40,
       "avgPrecision5": 0.2,
       "avgRecall5": 0.4,
-      "avgMRR": 0.3735286935286935
+      "avgMRR": 0.3731814713064713
     },
     "procedural": {
       "count": 60,
       "avgPrecision5": 0.24666666666666667,
       "avgRecall5": 0.5833333333333334,
-      "avgMRR": 0.4732052207052206
+      "avgMRR": 0.47305370555370546
     },
     "temporal": {
       "count": 20,
-      "avgPrecision5": 0.20000000000000004,
+      "avgPrecision5": 0.19,
       "avgRecall5": 0.575,
-      "avgMRR": 0.44273504273504266
+      "avgMRR": 0.4448110661268555
     },
     "edge_case": {
       "count": 30,
@@ -71,17 +71,17 @@
     },
     "multi_source": {
       "count": 20,
-      "avgPrecision5": 0.33,
+      "avgPrecision5": 0.33999999999999997,
       "avgRecall5": 0.55,
       "avgMRR": 0.5199999999999999
     }
   },
-  "avgLatencyMs": 929.4266666666666,
-  "p95LatencyMs": 1443,
-  "avgTokensUsed": 8908.65,
+  "avgLatencyMs": 900.8933333333333,
+  "p95LatencyMs": 1408,
+  "avgTokensUsed": 8909.1,
   "avgExternalSourcePresence": 1,
   "avgSourceTypeAccuracy": 1,
-  "avgPrecisionAt5Adj": 0.8916666666666667,
+  "avgPrecisionAt5Adj": 0.895,
   "avgExtSourceRetrieved": 1,
   "avgExtSourceInContext": 1
 }

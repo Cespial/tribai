@@ -1,6 +1,6 @@
 import { AssembledContext } from "@/types/rag";
 import { buildContextString } from "./context-assembler";
-import { ENHANCED_SYSTEM_PROMPT } from "../chat/system-prompt";
+import { buildSystemPrompt } from "../chat/system-prompt";
 import { ChatPageContext } from "@/types/chat-history";
 
 const CITATION_INSTRUCTIONS = `
@@ -37,14 +37,28 @@ export function buildMessages(
     ? `\nArtículos disponibles en contexto: ${availableArticles.join(", ")}`
     : "";
 
-  const contextBlock = contextString
-    ? `${pageContextBlock}<context>${citationFence}\n${contextString}\n</context>\n\nPregunta del usuario: ${userQuery}`
-    : `${pageContextBlock}No se encontraron artículos relevantes en las fuentes consultadas para esta consulta.\n\nPregunta del usuario: ${userQuery}`;
+  // Evidence quality signal: helps the LLM calibrate confidence
+  const topScore = context.articles.length > 0
+    ? Math.max(...context.articles.map(a => a.maxScore))
+    : 0;
+  const uniqueArticles = context.articles.length;
+  const evidenceQuality = topScore >= 0.6 && uniqueArticles >= 2
+    ? "alta"
+    : topScore >= 0.35 && uniqueArticles >= 1
+      ? "media"
+      : "baja";
 
-  // Always inject citation instructions (not just when external sources are present)
+  const evidenceTag = `<evidence_quality score="${topScore.toFixed(2)}" articles="${uniqueArticles}" quality="${evidenceQuality}" />`;
+
+  const contextBlock = contextString
+    ? `${pageContextBlock}${evidenceTag}\n<context>${citationFence}\n${contextString}\n</context>\n\nPregunta del usuario: ${userQuery}`
+    : `${pageContextBlock}${evidenceTag}\nNo se encontraron artículos relevantes en las fuentes consultadas para esta consulta.\n\nPregunta del usuario: ${userQuery}`;
+
+  // Dynamic system prompt with calculator filtering based on query
+  const systemPrompt = buildSystemPrompt(userQuery);
   const enhancedSystem = conversationHistory
-    ? `${ENHANCED_SYSTEM_PROMPT}${CITATION_INSTRUCTIONS}\n\n${conversationHistory}`
-    : `${ENHANCED_SYSTEM_PROMPT}${CITATION_INSTRUCTIONS}`;
+    ? `${systemPrompt}${CITATION_INSTRUCTIONS}\n\n${conversationHistory}`
+    : `${systemPrompt}${CITATION_INSTRUCTIONS}`;
 
   return {
     system: enhancedSystem,
