@@ -5,11 +5,12 @@ import { assembleContext } from "./context-assembler";
 import { buildMessages } from "./prompt-builder";
 import { classifyQueryType, getQueryRoutingConfig } from "./namespace-router";
 import { AssembledContext, SourceCitation, RAGDebugInfo, PipelineTimings } from "@/types/rag";
-import { checkEvidence, EvidenceCheckResult } from "./evidence-checker";
+import { checkEvidence } from "./evidence-checker";
 import { RAG_CONFIG } from "@/config/constants";
 import { ChatPageContext } from "@/types/chat-history";
 import { getCacheStats } from "@/lib/pinecone/embedder";
 import { getCachedResult, setCachedResult } from "@/lib/cache/response-cache";
+import { logger } from "@/lib/logging/structured-logger";
 
 export interface PipelineOptions {
   libroFilter?: string;
@@ -69,6 +70,16 @@ export async function runRAGPipeline(
     };
   }
   timings.queryEnhancement = performance.now() - enhanceStart;
+  logger.debug("Query enhancement completed", {
+    stage: "queryEnhancement",
+    durationMs: Math.round(timings.queryEnhancement),
+    metadata: {
+      rewritten: enhancedQuery.rewritten !== query,
+      hydeGenerated: !!enhancedQuery.hyde,
+      subQueries: enhancedQuery.subQueries?.length ?? 0,
+      detectedArticles: enhancedQuery.detectedArticles.length,
+    },
+  });
 
   // 1b. Classify query type for dynamic routing
   const queryType = classifyQueryType(query);
@@ -88,6 +99,16 @@ export async function runRAGPipeline(
     throw new Error("No se pudieron recuperar los artículos relevantes.");
   }
   timings.retrieval = performance.now() - retrieveStart;
+  logger.debug("Retrieval completed", {
+    stage: "retrieval",
+    durationMs: Math.round(timings.retrieval),
+    metadata: {
+      chunksRetrieved: retrievalResult.chunks.length,
+      multiSourceChunks: retrievalResult.multiSourceChunks?.length ?? 0,
+      dynamicThreshold: retrievalResult.dynamicThreshold,
+      queryType,
+    },
+  });
 
   // 3. Rerank article chunks (dynamic maxRerankedResults from routing)
   const rerankStart = performance.now();
@@ -107,6 +128,15 @@ export async function runRAGPipeline(
     ? heuristicRerankMultiSource(retrievalResult.multiSourceChunks, enhancedQuery, undefined, retrievalResult.retrievedArticleSlugs)
     : [];
   timings.reranking = performance.now() - rerankStart;
+  logger.debug("Reranking completed", {
+    stage: "reranking",
+    durationMs: Math.round(timings.reranking),
+    metadata: {
+      chunksAfterRerank: reranked.length,
+      multiSourceAfterRerank: rerankedMultiSource.length,
+      llmRerankUsed: shouldLLMRerank,
+    },
+  });
 
   // 4. Assemble context
   let context;
@@ -121,12 +151,30 @@ export async function runRAGPipeline(
     throw new Error("Error al ensamblar el contexto de respuesta.");
   }
   timings.contextAssembly = performance.now() - assembleStart;
+  logger.debug("Context assembly completed", {
+    stage: "contextAssembly",
+    durationMs: Math.round(timings.contextAssembly),
+    metadata: {
+      articles: context.articles.length,
+      externalSources: context.externalSources?.length ?? 0,
+      tokensUsed: context.totalTokensEstimate,
+    },
+  });
 
   // 4.5 Evidence check (confidence scoring + contradiction detection)
   const allScoresForEvidence = retrievalResult.chunks.map((c) => c.score).sort((a, b) => b - a);
   const evidenceTopScore = allScoresForEvidence[0] ?? 0;
   const evidenceMedianScore = allScoresForEvidence[Math.floor(allScoresForEvidence.length / 2)] ?? 0;
   const evidenceResult = checkEvidence(context, evidenceTopScore, evidenceMedianScore);
+  logger.debug("Evidence check completed", {
+    stage: "evidenceCheck",
+    metadata: {
+      confidenceLevel: evidenceResult.confidenceLevel,
+      evidenceQuality: Math.round(evidenceResult.evidenceQuality * 100) / 100,
+      contradictionFlags: evidenceResult.contradictionFlags,
+      namespaceContribution: evidenceResult.namespaceContribution,
+    },
+  });
 
   // 5. Build prompt (pass evidence for low-confidence fallback)
   const promptStart = performance.now();
@@ -174,6 +222,33 @@ export async function runRAGPipeline(
     namespaceContribution: evidenceResult.namespaceContribution,
     contradictionFlags: evidenceResult.contradictionFlags,
   };
+
+  // Final pipeline trace log (single structured entry for full auditability)
+  logger.info("RAG pipeline trace", {
+    stage: "pipeline",
+    durationMs: Math.round(timings.totalPipeline),
+    metadata: {
+      queryType,
+      confidenceLevel: evidenceResult.confidenceLevel,
+      evidenceQuality: Math.round(evidenceResult.evidenceQuality * 100) / 100,
+      contradictionFlags: evidenceResult.contradictionFlags,
+      topScore: evidenceTopScore,
+      chunksRetrieved: retrievalResult.chunks.length,
+      chunksAfterReranking: reranked.length,
+      uniqueArticles: uniqueArticles.size,
+      externalSources: context.externalSources?.length ?? 0,
+      tokensUsed: context.totalTokensEstimate,
+      namespaceContribution: evidenceResult.namespaceContribution,
+      timings: {
+        enhancement: Math.round(timings.queryEnhancement),
+        retrieval: Math.round(timings.retrieval),
+        reranking: Math.round(timings.reranking),
+        assembly: Math.round(timings.contextAssembly),
+        prompt: Math.round(timings.promptBuilding),
+        total: Math.round(timings.totalPipeline),
+      },
+    },
+  });
 
   const result: PipelineResult = {
     system,

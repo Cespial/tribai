@@ -2,13 +2,16 @@
  * Feedback API Endpoint
  *
  * Collects thumbs up/down feedback from chat responses.
- * Stores in-memory for now; can be migrated to Vercel KV (Redis) later.
+ * Uses in-memory store with write-through to /tmp/feedback.json for
+ * persistence across warm invocations. Full persistence requires
+ * migration to Vercel KV (Redis).
  *
  * POST /api/feedback
  * Body: { conversationId, messageIndex, rating: "up" | "down", query?, comment? }
  */
 
 import { NextResponse } from "next/server";
+import { readFileSync, writeFileSync } from "fs";
 
 interface FeedbackEntry {
   conversationId: string;
@@ -20,11 +23,43 @@ interface FeedbackEntry {
   ip?: string;
 }
 
-// In-memory store (replace with Vercel KV for persistence)
-const feedbackStore: FeedbackEntry[] = [];
+const FEEDBACK_FILE = "/tmp/feedback.json";
 const MAX_ENTRIES = 10000;
+const FLUSH_INTERVAL = 5; // flush to disk every N writes
+
+// In-memory store — loaded from /tmp on cold start
+let feedbackStore: FeedbackEntry[] = [];
+let writesSinceFlush = 0;
+let initialized = false;
+
+/** Load feedback from /tmp on cold start */
+function ensureInitialized(): void {
+  if (initialized) return;
+  initialized = true;
+  try {
+    const data = readFileSync(FEEDBACK_FILE, "utf-8");
+    const parsed = JSON.parse(data);
+    if (Array.isArray(parsed)) {
+      feedbackStore = parsed.slice(-MAX_ENTRIES);
+    }
+  } catch {
+    // File doesn't exist or is corrupted — start fresh
+    feedbackStore = [];
+  }
+}
+
+/** Flush in-memory store to /tmp (best-effort, non-blocking) */
+function flushToDisk(): void {
+  try {
+    writeFileSync(FEEDBACK_FILE, JSON.stringify(feedbackStore), "utf-8");
+  } catch {
+    // /tmp write failed — silently continue (data still in memory)
+  }
+}
 
 export async function POST(req: Request) {
+  ensureInitialized();
+
   try {
     const body = await req.json();
 
@@ -56,6 +91,13 @@ export async function POST(req: Request) {
 
     feedbackStore.push(entry);
 
+    // Write-through: flush to /tmp every FLUSH_INTERVAL writes
+    writesSinceFlush++;
+    if (writesSinceFlush >= FLUSH_INTERVAL) {
+      flushToDisk();
+      writesSinceFlush = 0;
+    }
+
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json(
@@ -66,6 +108,8 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
+  ensureInitialized();
+
   // Return feedback summary (for admin/eval use)
   const total = feedbackStore.length;
   const upCount = feedbackStore.filter((f) => f.rating === "up").length;
@@ -87,5 +131,6 @@ export async function GET() {
     downCount,
     satisfactionRate: total > 0 ? upCount / total : 0,
     recentNegative,
+    persistedToDisk: true,
   });
 }

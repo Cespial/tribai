@@ -120,10 +120,12 @@ export async function POST(req: Request) {
     pageContext as ChatPageContext | undefined
   );
 
-  logger.info("RAG pipeline completed", {
+  logger.info("Chat response ready", {
     metadata: {
       chunksRetrieved: debugInfo?.chunksRetrieved,
       uniqueArticles: debugInfo?.uniqueArticles,
+      confidenceLevel: debugInfo?.confidenceLevel,
+      contradictionFlags: debugInfo?.contradictionFlags,
       pipelineMs: debugInfo?.timings?.totalPipeline
         ? Math.round(debugInfo.timings.totalPipeline)
         : undefined,
