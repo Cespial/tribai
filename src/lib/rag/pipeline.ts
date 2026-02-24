@@ -3,6 +3,7 @@ import { retrieve } from "./retriever";
 import { heuristicRerank, llmRerank, heuristicRerankMultiSource } from "./reranker";
 import { assembleContext } from "./context-assembler";
 import { buildMessages } from "./prompt-builder";
+import { classifyQueryType, getQueryRoutingConfig } from "./namespace-router";
 import { AssembledContext, SourceCitation, RAGDebugInfo, PipelineTimings } from "@/types/rag";
 import { RAG_CONFIG } from "@/config/constants";
 import { ChatPageContext } from "@/types/chat-history";
@@ -68,11 +69,16 @@ export async function runRAGPipeline(
   }
   timings.queryEnhancement = performance.now() - enhanceStart;
 
-  // 2. Retrieve from Pinecone
+  // 1b. Classify query type for dynamic routing
+  const queryType = classifyQueryType(query);
+  const routingConfig = getQueryRoutingConfig(queryType);
+
+  // 2. Retrieve from Pinecone (with dynamic topK from routing)
   let retrievalResult;
   const retrieveStart = performance.now();
   try {
     retrievalResult = await retrieve(enhancedQuery, {
+      topK: routingConfig.topK,
       libroFilter: options.libroFilter || undefined,
       pageContext: options.pageContext,
     });
@@ -82,9 +88,9 @@ export async function runRAGPipeline(
   }
   timings.retrieval = performance.now() - retrieveStart;
 
-  // 3. Rerank article chunks (pass queryType for comparative round-robin)
+  // 3. Rerank article chunks (dynamic maxRerankedResults from routing)
   const rerankStart = performance.now();
-  let reranked = heuristicRerank(retrievalResult.chunks, enhancedQuery, undefined, retrievalResult.queryType);
+  let reranked = heuristicRerank(retrievalResult.chunks, enhancedQuery, routingConfig.maxRerankedResults, retrievalResult.queryType);
 
   // Conditional LLM rerank: only run when confidence is low (top score < 0.60)
   // Saves ~500ms for high-confidence queries
@@ -139,6 +145,7 @@ export async function runRAGPipeline(
     chunksAfterReranking: reranked.length,
     uniqueArticles: uniqueArticles.size,
     namespacesSearched,
+    queryType,
     topScore: allScores[0] ?? 0,
     medianScore: allScores[Math.floor(allScores.length / 2)] ?? 0,
     dynamicThreshold: retrievalResult.dynamicThreshold ?? RAG_CONFIG.similarityThreshold,

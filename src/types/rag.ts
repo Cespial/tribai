@@ -128,6 +128,8 @@ export interface RAGDebugInfo {
   chunksAfterReranking: number;
   uniqueArticles: number;
   namespacesSearched: string[];
+  /** Classified query type from namespace-router */
+  queryType?: string;
   // Quality signals
   topScore: number;
   medianScore: number;

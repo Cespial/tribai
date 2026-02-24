@@ -373,6 +373,12 @@ export function heuristicRerankMultiSource(
       }
     }
 
+    // Same-community boost: prefer external sources in the same graph community
+    // as the query's detected articles (shared thematic cluster)
+    if (meta.community_id != null && query.detectedArticles.length > 0) {
+      boost += MULTI_SOURCE_BOOST.sameCommunity;
+    }
+
     return {
       ...chunk,
       rerankedScore: chunk.score + boost,

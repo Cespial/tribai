@@ -172,7 +172,7 @@ async function retrieveMultiNamespace(
           })
         );
 
-        return (result.matches || [])
+        const filtered = (result.matches || [])
           .filter((m) => m.metadata && (m.score ?? 0) >= threshold)
           .map((m) => ({
             id: m.id,
@@ -180,6 +180,22 @@ async function retrieveMultiNamespace(
             metadata: m.metadata as unknown as MultiSourceChunkMetadata,
             namespace: ns,
           }));
+
+        // Cross-namespace score normalization: min-max scale within each namespace
+        // so that scores from different namespaces are comparable (0.0–1.0 range)
+        if (filtered.length >= 2) {
+          const scores = filtered.map((c) => c.score);
+          const minS = Math.min(...scores);
+          const maxS = Math.max(...scores);
+          const range = maxS - minS;
+          if (range > 0.01) {
+            for (const chunk of filtered) {
+              chunk.score = (chunk.score - minS) / range;
+            }
+          }
+        }
+
+        return filtered;
       } catch (error) {
         console.error(`[retriever] Namespace "${ns}" query failed:`, error);
         return [];

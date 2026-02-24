@@ -158,6 +158,7 @@ export async function POST(req: Request) {
             topScore: debugInfo?.topScore,
             medianScore: debugInfo?.medianScore,
             dynamicThreshold: debugInfo?.dynamicThreshold,
+            queryType: debugInfo?.queryType,
             namespacesSearched: debugInfo?.namespacesSearched,
             siblingChunksAdded: debugInfo?.siblingChunksAdded,
             embeddingCacheHitRate: debugInfo?.embeddingCacheHitRate,
