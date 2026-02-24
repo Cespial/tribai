@@ -25,6 +25,9 @@ export interface ChunkMetadata {
   // Graph metrics (enrichment)
   pagerank?: number;
   community_id?: number;
+  // Vigencia metadata (Fase 2)
+  vigencia_desde?: number;
+  ley_vigente?: string;
 }
 
 /** Multi-source chunk metadata for doctrina, jurisprudencia, decretos, resoluciones */

@@ -108,6 +108,20 @@ function generateArticleContextualPrefix(
  */
 function chunkArticleWithContext(article: ArticleJSON): EmbeddingInput[] {
   const inputs: EmbeddingInput[] = [];
+  // Merge cross_references with parsed concordancias slugs for comprehensive linking
+  const crossRefs = [...(article.cross_references || [])];
+  if (article.concordancias) {
+    const concordMatches = article.concordancias.matchAll(/Art(?:s?\.?\s*)(\d+(?:-\d+)?)/gi);
+    for (const m of concordMatches) {
+      if (!crossRefs.includes(m[1])) crossRefs.push(m[1]);
+    }
+  }
+
+  // Extract ley_vigente (most recent modifying law)
+  const leyVigente = article.leyes_modificatorias.length > 0
+    ? article.leyes_modificatorias[0]  // First entry is most recent
+    : undefined;
+
   const baseMetadata = {
     id_articulo: article.id_articulo,
     titulo: article.titulo,
@@ -119,12 +133,15 @@ function chunkArticleWithContext(article: ArticleJSON): EmbeddingInput[] {
     total_modificaciones: article.total_modificaciones,
     ultima_modificacion_year: article.ultima_modificacion_year,
     leyes_modificatorias: article.leyes_modificatorias,
-    cross_ref_articles: article.cross_references,
+    cross_ref_articles: crossRefs,
     has_concordancias: !!(article.concordancias && article.concordancias.length > 10),
     concordancias: article.concordancias?.slice(0, 500) || "",
     slug: article.slug,
     has_modifications: article.total_modificaciones > 0,
     has_derogated_text: article.texto_derogado.length > 0,
+    // Vigencia metadata (Fase 2)
+    vigencia_desde: article.ultima_modificacion_year > 0 ? article.ultima_modificacion_year : undefined,
+    ley_vigente: leyVigente,
   };
 
   // 1. Chunk contenido (main content)

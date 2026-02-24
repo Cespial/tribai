@@ -29,13 +29,19 @@ const CHARS_PER_TOKEN = 3.5;
 
 /**
  * Legal boundary patterns, ordered by hierarchy (highest priority first).
+ * High-priority patterns (artículo, parágrafo) use a wider search window
+ * to avoid cutting structural units in half.
  */
-const BOUNDARY_PATTERNS = [
+const BOUNDARY_PATTERNS_HIGH = [
   // Artículo boundary
   /(?=ART[IÍ]CULO\s+\d)/i,
-  // Parágrafo boundary
-  /(?=PAR[AÁ]GRAFO\s+(?:TRANSITORIO\s+)?\d)/i,
-  /(?=Par[aá]grafo\s+(?:transitorio\s+)?\d)/,
+  // Parágrafo boundary (including "PARÁGRAFO." without number)
+  /(?=PAR[AÁ]GRAFO\s+(?:TRANSITORIO\s+)?(?:\d|\.|\b))/i,
+  // Inciso boundary (e.g., "Inciso 2o.", "Inciso segundo")
+  /(?=INCISO\s+(?:\d|primero|segundo|tercero|cuarto|quinto))/i,
+];
+
+const BOUNDARY_PATTERNS_LOW = [
   // Numeral boundary
   /(?=\n\s*\d+\.\s+)/,
   // Literal boundary
@@ -70,32 +76,58 @@ function getSemanticOverlap(previousChunk: string, maxChars: number = 263): stri
 
 /**
  * Split text at the best legal boundary near the target position.
+ * Uses a wider window (±400 chars) for high-priority structural boundaries
+ * (artículo, parágrafo, inciso) to avoid cutting legal units in half.
  */
 function findBestSplit(text: string, targetChars: number): number {
-  // Search within a window around the target position
-  const windowStart = Math.max(0, targetChars - 200);
-  const windowEnd = Math.min(text.length, targetChars + 200);
-  const window = text.slice(windowStart, windowEnd);
+  // Wide window for high-priority patterns (structural boundaries)
+  const wideStart = Math.max(0, targetChars - 400);
+  const wideEnd = Math.min(text.length, targetChars + 400);
+  const wideWindow = text.slice(wideStart, wideEnd);
 
-  // Try each boundary pattern (highest priority first)
-  for (const pattern of BOUNDARY_PATTERNS) {
-    const matches = [...window.matchAll(new RegExp(pattern, "g"))];
+  for (const pattern of BOUNDARY_PATTERNS_HIGH) {
+    const matches = [...wideWindow.matchAll(new RegExp(pattern, "g"))];
     if (matches.length > 0) {
       // Find the match closest to target
       let bestMatch = matches[0];
       let bestDist = Math.abs(
-        (windowStart + bestMatch.index!) - targetChars
+        (wideStart + bestMatch.index!) - targetChars
       );
 
       for (const match of matches) {
-        const dist = Math.abs((windowStart + match.index!) - targetChars);
+        const dist = Math.abs((wideStart + match.index!) - targetChars);
         if (dist < bestDist) {
           bestMatch = match;
           bestDist = dist;
         }
       }
 
-      return windowStart + bestMatch.index!;
+      return wideStart + bestMatch.index!;
+    }
+  }
+
+  // Narrow window for lower-priority patterns (numeral, literal, paragraph)
+  const narrowStart = Math.max(0, targetChars - 200);
+  const narrowEnd = Math.min(text.length, targetChars + 200);
+  const narrowWindow = text.slice(narrowStart, narrowEnd);
+
+  for (const pattern of BOUNDARY_PATTERNS_LOW) {
+    const matches = [...narrowWindow.matchAll(new RegExp(pattern, "g"))];
+    if (matches.length > 0) {
+      let bestMatch = matches[0];
+      let bestDist = Math.abs(
+        (narrowStart + bestMatch.index!) - targetChars
+      );
+
+      for (const match of matches) {
+        const dist = Math.abs((narrowStart + match.index!) - targetChars);
+        if (dist < bestDist) {
+          bestMatch = match;
+          bestDist = dist;
+        }
+      }
+
+      return narrowStart + bestMatch.index!;
     }
   }
 
