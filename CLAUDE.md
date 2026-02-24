@@ -427,6 +427,7 @@ npm run data:build   # Regenera datasets analíticos desde los JSONs de artícul
 npm run data:verify  # Verifica integridad de datos
 npm run smoke-test   # 10 smoke tests del pipeline RAG (pass/fail, exit code 0/1)
 npm run eval         # Evaluación completa: 340 queries, 17 métricas, ~6 min
+npm run eval:judge   # Eval + LLM Judge: genera respuestas + evalúa calidad (30 sample, ~15 min)
 npx tsc --noEmit     # Type check sin emitir
 ```
 
@@ -573,6 +574,14 @@ npm run eval         # Completo: 340 queries, 17 métricas, ~6 min
 | Avg Tokens | Tokens promedio por respuesta | ~9,350 |
 | Complex P@5 | Precision para queries complejas (40 casos) | ≥0.29 |
 | Complex Completeness | Completeness para queries complejas | ≥0.84 |
+| Judge Faithfulness* | Fidelidad de respuesta al contexto (1-5) | ≥4.0 |
+| Judge Completeness* | Cobertura de todos los aspectos (1-5) | ≥3.5 |
+| Judge Relevance* | Relevancia de la respuesta (1-5) | ≥4.0 |
+| Judge Citation* | Calidad de citaciones (1-5) | ≥3.5 |
+| Judge Clarity* | Claridad y estructura (1-5) | ≥4.0 |
+| Judge Composite* | Promedio de las 5 dimensiones (1-5) | ≥3.8 |
+
+*Métricas de Judge requieren `--judge` flag. Usan Haiku como evaluador + Sonnet para generar respuestas.
 
 ### Resultados Actuales (Post v3.1 Sprint)
 

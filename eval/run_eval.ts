@@ -3,10 +3,14 @@ config({ path: ".env.local" });
 
 import * as fs from "fs";
 import * as path from "path";
+import { generateText } from "ai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { enhanceQuery } from "../src/lib/rag/query-enhancer";
 import { retrieve } from "../src/lib/rag/retriever";
 import { heuristicRerank, heuristicRerankMultiSource } from "../src/lib/rag/reranker";
 import { assembleContext, buildContextString } from "../src/lib/rag/context-assembler";
+import { buildMessages } from "../src/lib/rag/prompt-builder";
+import { checkEvidence } from "../src/lib/rag/evidence-checker";
 import { computeRetrievalMetrics, RetrievalMetrics, computeRetrievalMetricsAdjusted, RetrievalMetricsAdjusted } from "./metrics/retrieval";
 import {
   citationAccuracy,
@@ -14,6 +18,7 @@ import {
   answerContainsExpected,
 } from "./metrics/answer-quality";
 import { quickHallucinationCheck } from "./metrics/faithfulness";
+import { llmJudge, compositeScore, JudgeResult } from "./metrics/llm-judge";
 import { analyzeErrors, aggregateErrors, ErrorAnalysis } from "./analysis/error-categorizer";
 import { EXPERIMENT_GRID, ExperimentConfig } from "./experiments/config-grid";
 import { RAG_CONFIG } from "../src/config/constants";
@@ -54,6 +59,10 @@ interface EvalResult {
   abstentionQuality: number;
   completenessScore: number;
   complexityTags: string[];
+  // RLP-004: LLM Judge (optional, only when --judge flag)
+  judgeResult?: JudgeResult | null;
+  judgeComposite?: number;
+  generatedAnswer?: string;
   timestamp: string;
 }
 
@@ -103,6 +112,17 @@ interface ExperimentResult {
       avgCompletenessScore: number;
     };
     totalMetricsCount: number;
+    // RLP-004: LLM Judge aggregated metrics
+    judgeMetrics?: {
+      sampleSize: number;
+      judgedCount: number;
+      avgFaithfulness: number;
+      avgCompleteness: number;
+      avgRelevance: number;
+      avgCitationQuality: number;
+      avgClarity: number;
+      avgComposite: number;
+    };
   };
   timestamp: string;
 }
@@ -254,7 +274,8 @@ async function runSingleQuestion(
 
 async function runExperiment(
   experimentConfig: ExperimentConfig,
-  questions: EvalQuestion[]
+  questions: EvalQuestion[],
+  judgeOptions?: { enabled: boolean; sampleSize: number }
 ): Promise<ExperimentResult> {
   console.log(`\n--- Experiment: ${experimentConfig.name} ---`);
   console.log(`  ${experimentConfig.description}`);
@@ -372,6 +393,7 @@ async function runExperiment(
     byDifficulty,
     complexQuestionMetrics,
     totalMetricsCount: 17,
+    judgeMetrics: undefined as ExperimentResult["aggregated"]["judgeMetrics"],
   };
 
   console.log(`\n  AGGREGATED (${aggregated.totalMetricsCount} metrics):`);
@@ -409,6 +431,108 @@ async function runExperiment(
     console.log(`    Completeness:    ${complexQuestionMetrics.avgCompletenessScore.toFixed(3)}`);
   }
 
+  // RLP-004: LLM Judge pass (optional, runs on a sample of questions)
+  if (judgeOptions?.enabled && results.length > 0) {
+    const sampleSize = Math.min(judgeOptions.sampleSize, results.length);
+    // Deterministic sample: take evenly spaced indices for reproducibility
+    const step = results.length / sampleSize;
+    const sampleIndices = Array.from({ length: sampleSize }, (_, i) => Math.floor(i * step));
+    const sampleResults = sampleIndices.map((i) => results[i]);
+
+    console.log(`\n  LLM JUDGE (sample=${sampleSize}/${results.length}):`);
+
+    let judgedCount = 0;
+    const judgeScores = { faith: [] as number[], comp: [] as number[], rel: [] as number[], cite: [] as number[], clar: [] as number[], composite: [] as number[] };
+
+    for (let i = 0; i < sampleResults.length; i++) {
+      const r = sampleResults[i];
+      const q = questions.find((qq) => qq.id === r.questionId)!;
+      process.stdout.write(`    [${i + 1}/${sampleSize}] ${r.questionId}...`);
+
+      try {
+        // Generate LLM answer using the full pipeline
+        const enhanced = await enhanceQuery(q.question, {
+          useHyDE: RAG_CONFIG.useHyDE,
+          useQueryExpansion: RAG_CONFIG.useQueryExpansion,
+        });
+        const { chunks, multiSourceChunks } = await retrieve(enhanced, {
+          topK: RAG_CONFIG.topK,
+          similarityThreshold: RAG_CONFIG.similarityThreshold,
+        });
+        const reranked = heuristicRerank(chunks, enhanced, RAG_CONFIG.maxRerankedResults);
+        const rerankedMS = multiSourceChunks ? heuristicRerankMultiSource(multiSourceChunks, enhanced) : [];
+        const context = await assembleContext(reranked, {
+          useSiblingRetrieval: RAG_CONFIG.useSiblingRetrieval,
+          maxTokens: RAG_CONFIG.maxContextTokens,
+          multiSourceChunks: rerankedMS,
+        });
+
+        // Evidence check for prompt building
+        const allScores = chunks.map((c) => c.score).sort((a, b) => b - a);
+        const evidenceResult = checkEvidence(context, allScores[0] ?? 0, allScores[Math.floor(allScores.length / 2)] ?? 0);
+
+        const { system, contextBlock } = buildMessages(q.question, context, "", undefined, evidenceResult);
+
+        // Generate answer (non-streaming)
+        const { text: answer } = await generateText({
+          model: anthropic(process.env.CHAT_MODEL || "claude-sonnet-4-6"),
+          system: system + "\n\n" + contextBlock,
+          prompt: q.question,
+          maxOutputTokens: 1500,
+        });
+
+        // Judge the answer
+        const contextString = buildContextString(context);
+        const judge = await llmJudge(q.question, answer, contextString, q.expected_articles);
+
+        // Store in the result
+        r.generatedAnswer = answer;
+        r.judgeResult = judge;
+        r.judgeComposite = judge ? compositeScore(judge) : undefined;
+
+        if (judge) {
+          judgedCount++;
+          judgeScores.faith.push(judge.faithfulness);
+          judgeScores.comp.push(judge.completeness);
+          judgeScores.rel.push(judge.relevance);
+          judgeScores.cite.push(judge.citation_quality);
+          judgeScores.clar.push(judge.clarity);
+          judgeScores.composite.push(compositeScore(judge));
+          console.log(` F=${judge.faithfulness} C=${judge.completeness} R=${judge.relevance} Cite=${judge.citation_quality} Cl=${judge.clarity} => ${compositeScore(judge).toFixed(2)}`);
+        } else {
+          console.log(` JUDGE DEGRADED`);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message.slice(0, 60) : String(err);
+        console.log(` ERROR: ${msg}`);
+      }
+    }
+
+    if (judgedCount > 0) {
+      aggregated.judgeMetrics = {
+        sampleSize,
+        judgedCount,
+        avgFaithfulness: avg(judgeScores.faith),
+        avgCompleteness: avg(judgeScores.comp),
+        avgRelevance: avg(judgeScores.rel),
+        avgCitationQuality: avg(judgeScores.cite),
+        avgClarity: avg(judgeScores.clar),
+        avgComposite: avg(judgeScores.composite),
+      };
+      aggregated.totalMetricsCount = 23; // 17 retrieval + 6 judge
+
+      console.log(`\n    JUDGE AGGREGATED (${judgedCount}/${sampleSize} judged):`);
+      console.log(`      Faithfulness:    ${aggregated.judgeMetrics.avgFaithfulness.toFixed(2)}/5`);
+      console.log(`      Completeness:    ${aggregated.judgeMetrics.avgCompleteness.toFixed(2)}/5`);
+      console.log(`      Relevance:       ${aggregated.judgeMetrics.avgRelevance.toFixed(2)}/5`);
+      console.log(`      Citation Qual:   ${aggregated.judgeMetrics.avgCitationQuality.toFixed(2)}/5`);
+      console.log(`      Clarity:         ${aggregated.judgeMetrics.avgClarity.toFixed(2)}/5`);
+      console.log(`      COMPOSITE:       ${aggregated.judgeMetrics.avgComposite.toFixed(2)}/5`);
+    } else {
+      console.log(`\n    JUDGE: All queries degraded (LLM unavailable)`);
+    }
+  }
+
   return {
     experiment: experimentConfig.name,
     config: experimentConfig,
@@ -437,7 +561,12 @@ async function main() {
     ? questions.filter((q) => q.category === categoryFilter)
     : questions;
 
-  console.log(`Loaded ${filteredQuestions.length} evaluation questions${categoryFilter ? ` (category: ${categoryFilter})` : ""}`);
+  // Judge mode: --judge enables LLM answer generation + judge scoring
+  const judgeEnabled = args.includes("--judge");
+  const judgeSampleFlag = args.indexOf("--judge-sample");
+  const judgeSampleSize = judgeSampleFlag >= 0 ? parseInt(args[judgeSampleFlag + 1], 10) : 30;
+
+  console.log(`Loaded ${filteredQuestions.length} evaluation questions${categoryFilter ? ` (category: ${categoryFilter})` : ""}${judgeEnabled ? ` [JUDGE mode: sample=${judgeSampleSize}]` : ""}`);
 
   // Find experiment(s)
   let experiments: ExperimentConfig[];
@@ -457,7 +586,11 @@ async function main() {
   // Run experiments
   const allResults: ExperimentResult[] = [];
   for (const exp of experiments) {
-    const result = await runExperiment(exp, filteredQuestions);
+    const result = await runExperiment(
+      exp,
+      filteredQuestions,
+      judgeEnabled ? { enabled: true, sampleSize: judgeSampleSize } : undefined
+    );
     allResults.push(result);
 
     // Save incrementally

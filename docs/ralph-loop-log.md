@@ -58,6 +58,35 @@ Registro de iteraciones del Ralph Loop (RLP) para mejora continua del pipeline R
 
 ---
 
+## RLP-004 — Answer Quality (LLM Judge)
+
+**Fecha:** 2026-02-24
+**Hipotesis:** Un LLM judge (Haiku) que evalua respuestas generadas completas (no solo retrieval) permite medir calidad end-to-end: faithfulness, completeness, relevance, citation quality, clarity.
+
+**Cambios:**
+- `eval/metrics/llm-judge.ts`: Upgraded con degradacion graceful (retorna `null` si Haiku unavailable), prompt mejorado con rubrica detallada 1-5, contexto truncado a 4K para eficiencia
+- `eval/run_eval.ts`: Integrado `--judge` flag + `--judge-sample N` (default 30)
+  - Genera respuesta LLM completa (Sonnet) con pipeline completo (enhance → retrieve → rerank → assemble → evidence → prompt → generateText)
+  - Juzga con `llmJudge` (Haiku): 5 dimensiones × 1-5 escala → composite score
+  - Muestreo determinista (evenly spaced) para reproducibilidad
+  - Metricas judge agregadas en output + JSON results
+  - Total metricas: 17 retrieval + 6 judge = 23
+- `package.json`: Nuevo script `eval:judge` (shortcut para `--judge --judge-sample 30`)
+
+**Metricas pre:**
+- Smoke: 10/10
+- Typecheck: clean
+- Judge: N/A (no existia)
+
+**Metricas post:**
+- Smoke: 10/10 (9/10 degraded, 1/10 early-exit)
+- Typecheck: clean
+- Judge: integrado, pendiente ejecucion completa cuando Haiku disponible (2026-03-01)
+
+**Decision:** MANTENER. Agrega dimension end-to-end al eval framework. El flag `--judge` es opt-in, no afecta el eval normal. Cuando Haiku este disponible, `npm run eval:judge` dara las primeras metricas de answer quality.
+
+---
+
 ## Backlog
 
 | ID | Titulo | Estado |
@@ -65,5 +94,5 @@ Registro de iteraciones del Ralph Loop (RLP) para mejora continua del pipeline R
 | RLP-001 | Degrade Mode Formal | COMPLETADO |
 | RLP-002 | Circuit Breaker Pinecone | COMPLETADO |
 | RLP-003 | LLM Rerank real | PENDIENTE |
-| RLP-004 | Answer Quality (LLM Judge) | PENDIENTE |
+| RLP-004 | Answer Quality (LLM Judge) | COMPLETADO |
 | RLP-005 | Observabilidad de produccion | PENDIENTE |

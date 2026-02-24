@@ -33,34 +33,44 @@ const judgeSchema = z.object({
 
 export type JudgeResult = z.infer<typeof judgeSchema>;
 
+/**
+ * LLM Judge: evaluates answer quality on 5 dimensions (1-5 scale).
+ * Returns null if the judge LLM is unavailable (rate limit, error).
+ */
 export async function llmJudge(
   question: string,
   answer: string,
   context: string,
   expectedArticles: string[]
-): Promise<JudgeResult> {
-  const { object } = await generateObject({
-    model: anthropic("claude-haiku-4-5-20251001"),
-    schema: judgeSchema,
-    prompt: `Evalúa la siguiente respuesta sobre el Estatuto Tributario colombiano.
+): Promise<JudgeResult | null> {
+  try {
+    const { object } = await generateObject({
+      model: anthropic("claude-haiku-4-5-20251001"),
+      schema: judgeSchema,
+      prompt: `Evalúa la siguiente respuesta sobre el Estatuto Tributario colombiano.
 
 Pregunta: ${question}
 
 Respuesta: ${answer}
 
-Contexto proporcionado: ${context}
+Contexto proporcionado (resumen): ${context.slice(0, 4000)}
 
 Artículos esperados: ${expectedArticles.join(", ")}
 
 Evalúa en escala 1-5 cada dimensión:
-1. Faithfulness: ¿La respuesta es fiel al contexto proporcionado?
-2. Completeness: ¿La respuesta cubre todos los aspectos de la pregunta?
-3. Relevance: ¿La respuesta es relevante a la pregunta?
-4. Citation quality: ¿Cita correctamente los artículos del ET?
-5. Clarity: ¿La respuesta es clara y bien estructurada?`,
-  });
+1. Faithfulness: ¿La respuesta es fiel al contexto proporcionado? (5 = todo viene del contexto, 1 = inventa datos)
+2. Completeness: ¿La respuesta cubre todos los aspectos de la pregunta? (5 = completa, 1 = parcial)
+3. Relevance: ¿La respuesta es relevante a la pregunta? (5 = directamente relevante, 1 = fuera de tema)
+4. Citation quality: ¿Cita correctamente los artículos del ET y fuentes? (5 = citas precisas, 1 = sin citas o inventadas)
+5. Clarity: ¿La respuesta es clara y bien estructurada? (5 = excelente estructura, 1 = confusa)`,
+    });
 
-  return object;
+    return object;
+  } catch (error) {
+    const msg = error instanceof Error ? error.message.slice(0, 80) : String(error);
+    console.warn(`[llm-judge] Judge unavailable: ${msg}`);
+    return null;
+  }
 }
 
 export function compositeScore(judge: JudgeResult): number {

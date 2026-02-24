@@ -14,7 +14,8 @@
     "data:build": "node scripts/build-analytics-datasets.mjs",
     "data:verify": "node scripts/verify-data-integrity.mjs",
     "smoke-test": "tsx eval/smoke-test.ts",
-    "eval": "tsx eval/run_eval.ts"
+    "eval": "tsx eval/run_eval.ts",
+    "eval:judge": "tsx eval/run_eval.ts --judge --judge-sample 30"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.44",
