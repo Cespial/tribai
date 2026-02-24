@@ -6,14 +6,23 @@ import { SourceCitation } from "./source-citation";
 import { CalculatorSuggestions } from "./calculator-suggestions";
 import { MessageActions } from "./message-actions";
 import { TypingIndicator } from "./typing-indicator";
+import { ConfidenceBadge } from "./confidence-badge";
 import type { UIMessage } from "ai";
 import type { SourceCitation as SourceType } from "@/types/rag";
 import { CalculatorSuggestion } from "@/lib/chat/calculator-context";
+
+interface RagMetadata {
+  confidenceLevel?: "high" | "medium" | "low";
+  evidenceQuality?: number;
+  pipelineMs?: number;
+  degradedMode?: boolean;
+}
 
 interface MessageMetadata {
   suggestedCalculators?: CalculatorSuggestion[];
   sources?: SourceType[];
   timestamp?: string;
+  ragMetadata?: RagMetadata;
 }
 
 interface MessageListProps {
@@ -58,6 +67,7 @@ export function MessageList({
       {messages.map((message, index) => {
         const metadata = (message.metadata as MessageMetadata | undefined) || {};
         const suggestedCalculators = metadata.suggestedCalculators || [];
+        const ragMetadata = metadata.ragMetadata;
         const messageSources = metadata.sources || (index === messages.length - 1 ? sources : []);
         const isLastMessage = index === messages.length - 1;
         const text = getMessageText(message);
@@ -79,6 +89,17 @@ export function MessageList({
                     slug={source.slug}
                   />
                 ))}
+              </div>
+            )}
+
+            {message.role === "assistant" && isLastMessage && ragMetadata?.confidenceLevel && (
+              <div className="ml-11 mt-1.5">
+                <ConfidenceBadge
+                  confidenceLevel={ragMetadata.confidenceLevel}
+                  sourcesCount={messageSources.length}
+                  pipelineMs={ragMetadata.pipelineMs}
+                  degradedMode={ragMetadata.degradedMode}
+                />
               </div>
             )}
 
