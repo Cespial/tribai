@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "verify": "npm run lint:strict && npm run typecheck && npm run build:ci",
     "data:build": "node scripts/build-analytics-datasets.mjs",
-    "data:verify": "node scripts/verify-data-integrity.mjs"
+    "data:verify": "node scripts/verify-data-integrity.mjs",
+    "smoke-test": "tsx eval/smoke-test.ts",
+    "eval": "tsx eval/run_eval.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.44",
