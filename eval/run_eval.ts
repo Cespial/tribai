@@ -27,6 +27,7 @@ interface EvalQuestion {
   expected_chunk_types: string[];
   expected_answer_contains: string[];
   expected_external_sources?: string[];
+  complexity_tags?: string[];
 }
 
 interface EvalResult {
@@ -49,6 +50,10 @@ interface EvalResult {
   // Multi-source metrics
   externalSourcePresence: number;
   sourceTypeAccuracy: number;
+  // Fase 4 metrics
+  abstentionQuality: number;
+  completenessScore: number;
+  complexityTags: string[];
   timestamp: string;
 }
 
@@ -86,6 +91,18 @@ interface ExperimentResult {
     // Separated external source metrics
     avgExtSourceRetrieved: number;
     avgExtSourceInContext: number;
+    // Fase 4: new metrics
+    avgAbstentionQuality: number;
+    avgCompletenessScore: number;
+    byDifficulty: Record<string, CategoryMetrics>;
+    complexQuestionMetrics: {
+      count: number;
+      avgPrecision5: number;
+      avgRecall5: number;
+      avgMRR: number;
+      avgCompletenessScore: number;
+    };
+    totalMetricsCount: number;
   };
   timestamp: string;
 }
@@ -185,6 +202,31 @@ async function runSingleQuestion(
   const latencyMs = Math.round(performance.now() - startTime);
   const tokensUsed = context.totalTokensEstimate;
 
+  // 10. Abstention quality: for questions with no expected articles (negative/abstention),
+  // check if system correctly has minimal/no fabricated content
+  let abstentionQuality = 0;
+  if (question.expected_articles.length === 0) {
+    // Should abstain: good if context has few articles and no hallucinated articles
+    const uncitedCount = hallucinationCheck.uncitedArticles.length;
+    const contextArticleCount = context.articles.length;
+    // Perfect abstention: no articles in context for out-of-scope questions
+    // Partial credit: few articles (may be tangentially related)
+    if (contextArticleCount === 0 && uncitedCount === 0) {
+      abstentionQuality = 1.0;
+    } else if (contextArticleCount <= 2) {
+      abstentionQuality = 0.5;
+    } else {
+      abstentionQuality = 0.0;
+    }
+  } else {
+    // Has expected articles: abstention quality = 1 if articles were found (should NOT abstain)
+    abstentionQuality = sourcePresenceScore > 0 ? 1.0 : 0.0;
+  }
+
+  // 11. Completeness score: how many expected_answer_contains terms appear in context
+  // This is already computed as containsExpected, but for complex questions we track separately
+  const completenessScore = containsExpected;
+
   return {
     questionId: question.id,
     question: question.question,
@@ -203,6 +245,9 @@ async function runSingleQuestion(
     tokensUsed,
     externalSourcePresence,
     sourceTypeAccuracy,
+    abstentionQuality,
+    completenessScore,
+    complexityTags: question.complexity_tags || [],
     timestamp: new Date().toISOString(),
   };
 }
@@ -263,6 +308,46 @@ async function runExperiment(
 
   const latencies = results.map((r) => r.latencyMs);
 
+  // Metrics by difficulty
+  const difficultyMap: Record<string, { p5: number[]; r5: number[]; mrr: number[] }> = {};
+  for (const r of results) {
+    if (!difficultyMap[r.difficulty]) {
+      difficultyMap[r.difficulty] = { p5: [], r5: [], mrr: [] };
+    }
+    difficultyMap[r.difficulty].p5.push(r.retrievalMetrics["precision@5"]);
+    difficultyMap[r.difficulty].r5.push(r.retrievalMetrics["recall@5"]);
+    difficultyMap[r.difficulty].mrr.push(r.retrievalMetrics.mrr);
+  }
+  const byDifficulty: Record<string, CategoryMetrics> = {};
+  for (const [diff, vals] of Object.entries(difficultyMap)) {
+    byDifficulty[diff] = {
+      count: vals.p5.length,
+      avgPrecision5: avg(vals.p5),
+      avgRecall5: avg(vals.r5),
+      avgMRR: avg(vals.mrr),
+    };
+  }
+
+  // Complex questions subset (complexity_tags present)
+  const complexResults = results.filter((r) => r.complexityTags.length > 0);
+  const complexQuestionMetrics = {
+    count: complexResults.length,
+    avgPrecision5: avg(complexResults.map((r) => r.retrievalMetrics["precision@5"])),
+    avgRecall5: avg(complexResults.map((r) => r.retrievalMetrics["recall@5"])),
+    avgMRR: avg(complexResults.map((r) => r.retrievalMetrics.mrr)),
+    avgCompletenessScore: avg(complexResults.map((r) => r.completenessScore)),
+  };
+
+  // Helper for external source metrics (only over relevant questions)
+  const extSourceAvg = (mapper: (r: EvalResult) => number) => {
+    const qMap = new Map(questions.map((q) => [q.id, q]));
+    const relevant = results.filter((r) => {
+      const q = qMap.get(r.questionId);
+      return q?.expected_external_sources && q.expected_external_sources.length > 0;
+    });
+    return relevant.length > 0 ? avg(relevant.map(mapper)) : 0;
+  };
+
   const aggregated = {
     avgPrecisionAt5: avg(results.map((r) => r.retrievalMetrics["precision@5"])),
     avgRecallAt5: avg(results.map((r) => r.retrievalMetrics["recall@5"])),
@@ -276,59 +361,52 @@ async function runExperiment(
     avgLatencyMs: avg(latencies),
     p95LatencyMs: percentile(latencies, 95),
     avgTokensUsed: avg(results.map((r) => r.tokensUsed)),
-    // Only average over questions that actually expect external sources (not all 300)
-    avgExternalSourcePresence: (() => {
-      const qMap = new Map(questions.map((q) => [q.id, q]));
-      const relevant = results.filter((r) => {
-        const q = qMap.get(r.questionId);
-        return q?.expected_external_sources && q.expected_external_sources.length > 0;
-      });
-      return relevant.length > 0 ? avg(relevant.map((r) => r.externalSourcePresence)) : 0;
-    })(),
-    avgSourceTypeAccuracy: (() => {
-      const qMap = new Map(questions.map((q) => [q.id, q]));
-      const relevant = results.filter((r) => {
-        const q = qMap.get(r.questionId);
-        return q?.expected_external_sources && q.expected_external_sources.length > 0;
-      });
-      return relevant.length > 0 ? avg(relevant.map((r) => r.sourceTypeAccuracy)) : 0;
-    })(),
+    avgExternalSourcePresence: extSourceAvg((r) => r.externalSourcePresence),
+    avgSourceTypeAccuracy: extSourceAvg((r) => r.sourceTypeAccuracy),
     avgPrecisionAt5Adj: avg(results.map((r) => r.retrievalMetricsAdj["precision@5_adj"])),
-    avgExtSourceRetrieved: (() => {
-      const qMap = new Map(questions.map((q) => [q.id, q]));
-      const relevant = results.filter((r) => {
-        const q = qMap.get(r.questionId);
-        return q?.expected_external_sources && q.expected_external_sources.length > 0;
-      });
-      return relevant.length > 0 ? avg(relevant.map((r) => r.externalSourcePresence)) : 0;
-    })(),
-    avgExtSourceInContext: (() => {
-      const qMap = new Map(questions.map((q) => [q.id, q]));
-      const relevant = results.filter((r) => {
-        const q = qMap.get(r.questionId);
-        return q?.expected_external_sources && q.expected_external_sources.length > 0;
-      });
-      return relevant.length > 0 ? avg(relevant.map((r) => r.sourceTypeAccuracy)) : 0;
-    })(),
+    avgExtSourceRetrieved: extSourceAvg((r) => r.externalSourcePresence),
+    avgExtSourceInContext: extSourceAvg((r) => r.sourceTypeAccuracy),
+    // Fase 4: new metrics
+    avgAbstentionQuality: avg(results.map((r) => r.abstentionQuality)),
+    avgCompletenessScore: avg(results.map((r) => r.completenessScore)),
+    byDifficulty,
+    complexQuestionMetrics,
+    totalMetricsCount: 17,
   };
 
-  console.log(`\n  AGGREGATED:`);
-  console.log(`    Precision@5: ${aggregated.avgPrecisionAt5.toFixed(3)}`);
-  console.log(`    P@5 (adj):   ${aggregated.avgPrecisionAt5Adj.toFixed(3)}`);
-  console.log(`    Recall@5:    ${aggregated.avgRecallAt5.toFixed(3)}`);
-  console.log(`    MRR:         ${aggregated.avgMRR.toFixed(3)}`);
-  console.log(`    NDCG@5:      ${aggregated.avgNDCGAt5.toFixed(3)}`);
-  console.log(`    Source Pres:  ${aggregated.avgSourcePresence.toFixed(3)}`);
-  console.log(`    Contains Exp: ${aggregated.avgContainsExpected.toFixed(3)}`);
-  console.log(`    Error Rate:   ${aggregated.errorAnalysis.errorRate.toFixed(3)}`);
-  console.log(`    Avg Latency:  ${aggregated.avgLatencyMs.toFixed(0)}ms`);
-  console.log(`    P95 Latency:  ${aggregated.p95LatencyMs.toFixed(0)}ms`);
-  console.log(`    Avg Tokens:   ${aggregated.avgTokensUsed.toFixed(0)}`);
-  console.log(`    Ext Src Ret:  ${aggregated.avgExtSourceRetrieved.toFixed(3)}`);
-  console.log(`    Ext Src Ctx:  ${aggregated.avgExtSourceInContext.toFixed(3)}`);
+  console.log(`\n  AGGREGATED (${aggregated.totalMetricsCount} metrics):`);
+  console.log(`    Precision@5:     ${aggregated.avgPrecisionAt5.toFixed(3)}`);
+  console.log(`    P@5 (adj):       ${aggregated.avgPrecisionAt5Adj.toFixed(3)}`);
+  console.log(`    Recall@5:        ${aggregated.avgRecallAt5.toFixed(3)}`);
+  console.log(`    MRR:             ${aggregated.avgMRR.toFixed(3)}`);
+  console.log(`    NDCG@5:          ${aggregated.avgNDCGAt5.toFixed(3)}`);
+  console.log(`    Source Pres:     ${aggregated.avgSourcePresence.toFixed(3)}`);
+  console.log(`    Contains Exp:    ${aggregated.avgContainsExpected.toFixed(3)}`);
+  console.log(`    Error Rate:      ${aggregated.errorAnalysis.errorRate.toFixed(3)}`);
+  console.log(`    Avg Latency:     ${aggregated.avgLatencyMs.toFixed(0)}ms`);
+  console.log(`    P95 Latency:     ${aggregated.p95LatencyMs.toFixed(0)}ms`);
+  console.log(`    Avg Tokens:      ${aggregated.avgTokensUsed.toFixed(0)}`);
+  console.log(`    Ext Src Ret:     ${aggregated.avgExtSourceRetrieved.toFixed(3)}`);
+  console.log(`    Ext Src Ctx:     ${aggregated.avgExtSourceInContext.toFixed(3)}`);
+  console.log(`    Abstention Qual: ${aggregated.avgAbstentionQuality.toFixed(3)}`);
+  console.log(`    Completeness:    ${aggregated.avgCompletenessScore.toFixed(3)}`);
+
   console.log(`\n  BY CATEGORY:`);
   for (const [cat, m] of Object.entries(byCategory)) {
-    console.log(`    ${cat.padEnd(16)} n=${String(m.count).padEnd(4)} P@5=${m.avgPrecision5.toFixed(3)} R@5=${m.avgRecall5.toFixed(3)} MRR=${m.avgMRR.toFixed(3)}`);
+    console.log(`    ${cat.padEnd(24)} n=${String(m.count).padEnd(4)} P@5=${m.avgPrecision5.toFixed(3)} R@5=${m.avgRecall5.toFixed(3)} MRR=${m.avgMRR.toFixed(3)}`);
+  }
+
+  console.log(`\n  BY DIFFICULTY:`);
+  for (const [diff, m] of Object.entries(byDifficulty)) {
+    console.log(`    ${diff.padEnd(12)} n=${String(m.count).padEnd(4)} P@5=${m.avgPrecision5.toFixed(3)} R@5=${m.avgRecall5.toFixed(3)} MRR=${m.avgMRR.toFixed(3)}`);
+  }
+
+  if (complexQuestionMetrics.count > 0) {
+    console.log(`\n  COMPLEX QUESTIONS (n=${complexQuestionMetrics.count}):`);
+    console.log(`    P@5:             ${complexQuestionMetrics.avgPrecision5.toFixed(3)}`);
+    console.log(`    R@5:             ${complexQuestionMetrics.avgRecall5.toFixed(3)}`);
+    console.log(`    MRR:             ${complexQuestionMetrics.avgMRR.toFixed(3)}`);
+    console.log(`    Completeness:    ${complexQuestionMetrics.avgCompletenessScore.toFixed(3)}`);
   }
 
   return {

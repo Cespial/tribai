@@ -1,31 +1,31 @@
 {
-  "avgPrecisionAt5": 0.186,
-  "avgRecallAt5": 0.5733333333333334,
-  "avgMRR": 0.3661533617454671,
-  "avgNDCGAt5": 0.6575825693513212,
-  "avgCitationAcc": 0.6733333333333333,
-  "avgSourcePresence": 0.5216666666666666,
-  "avgContainsExpected": 0.9261111111111107,
+  "avgPrecisionAt5": 0.19823529411764712,
+  "avgRecallAt5": 0.557843137254902,
+  "avgMRR": 0.3845743579605808,
+  "avgNDCGAt5": 0.657583936476473,
+  "avgCitationAcc": 0.6738235294117646,
+  "avgSourcePresence": 0.5120588235294118,
+  "avgContainsExpected": 0.9214705882352942,
   "errorAnalysis": {
-    "totalErrors": 212,
+    "totalErrors": 275,
     "byCategory": {
-      "article_ranked_too_low": 64,
-      "article_not_retrieved": 113,
-      "context_truncated": 35
+      "article_ranked_too_low": 76,
+      "article_not_retrieved": 160,
+      "context_truncated": 39
     },
     "bySeverity": {
       "low": 0,
-      "medium": 99,
-      "high": 113
+      "medium": 115,
+      "high": 160
     },
-    "errorRate": 0.31
+    "errorRate": 0.35
   },
   "byCategory": {
     "factual": {
       "count": 43,
       "avgPrecision5": 0.2093023255813954,
       "avgRecall5": 0.5813953488372093,
-      "avgMRR": 0.4391102114939324
+      "avgMRR": 0.45073811847067663
     },
     "comparative": {
       "count": 40,
@@ -40,10 +40,10 @@
       "avgMRR": 0.47305370555370546
     },
     "temporal": {
-      "count": 20,
-      "avgPrecision5": 0.19,
-      "avgRecall5": 0.575,
-      "avgMRR": 0.4448110661268555
+      "count": 21,
+      "avgPrecision5": 0.19047619047619047,
+      "avgRecall5": 0.5952380952380952,
+      "avgMRR": 0.4687423687423687
     },
     "edge_case": {
       "count": 30,
@@ -74,14 +74,248 @@
       "avgPrecision5": 0.33999999999999997,
       "avgRecall5": 0.55,
       "avgMRR": 0.5199999999999999
+    },
+    "multi_norma": {
+      "count": 2,
+      "avgPrecision5": 0.4,
+      "avgRecall5": 0.41666666666666663,
+      "avgMRR": 0.625
+    },
+    "conflicto_interpretativo": {
+      "count": 2,
+      "avgPrecision5": 0.1,
+      "avgRecall5": 0.25,
+      "avgMRR": 0.5
+    },
+    "excepcion": {
+      "count": 2,
+      "avgPrecision5": 0.30000000000000004,
+      "avgRecall5": 0.41666666666666663,
+      "avgMRR": 0.41666666666666663
+    },
+    "calculo_complejo": {
+      "count": 1,
+      "avgPrecision5": 0.2,
+      "avgRecall5": 0.3333333333333333,
+      "avgMRR": 0.3333333333333333
+    },
+    "jerarquia_normativa": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0
+    },
+    "multi_sujeto": {
+      "count": 1,
+      "avgPrecision5": 0.4,
+      "avgRecall5": 0.4,
+      "avgMRR": 0.5
+    },
+    "procedimiento_complejo": {
+      "count": 2,
+      "avgPrecision5": 0.3,
+      "avgRecall5": 0.3,
+      "avgMRR": 0.5
+    },
+    "abstention": {
+      "count": 2,
+      "avgPrecision5": 0.2,
+      "avgRecall5": 1,
+      "avgMRR": 0.5
+    },
+    "vigencia": {
+      "count": 1,
+      "avgPrecision5": 1,
+      "avgRecall5": 1,
+      "avgMRR": 1
+    },
+    "sancion_compleja": {
+      "count": 1,
+      "avgPrecision5": 0.6,
+      "avgRecall5": 0.3333333333333333,
+      "avgMRR": 1
+    },
+    "multi_impuesto": {
+      "count": 1,
+      "avgPrecision5": 0.2,
+      "avgRecall5": 0.25,
+      "avgMRR": 1
+    },
+    "zona_franca": {
+      "count": 1,
+      "avgPrecision5": 0.8,
+      "avgRecall5": 1,
+      "avgMRR": 1
+    },
+    "precios_transferencia": {
+      "count": 1,
+      "avgPrecision5": 0.6,
+      "avgRecall5": 0.6666666666666666,
+      "avgMRR": 1
+    },
+    "patrimonio": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0
+    },
+    "renta_PN": {
+      "count": 1,
+      "avgPrecision5": 0.6,
+      "avgRecall5": 0.5,
+      "avgMRR": 1
+    },
+    "IVA_complejo": {
+      "count": 1,
+      "avgPrecision5": 0.2,
+      "avgRecall5": 0.3333333333333333,
+      "avgMRR": 0.2
+    },
+    "dividendos": {
+      "count": 1,
+      "avgPrecision5": 0.8,
+      "avgRecall5": 0.6666666666666666,
+      "avgMRR": 1
+    },
+    "nomina_electronica": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0
+    },
+    "regimen_especial": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0
+    },
+    "retencion_servicios": {
+      "count": 1,
+      "avgPrecision5": 0.8,
+      "avgRecall5": 0.6666666666666666,
+      "avgMRR": 1
+    },
+    "impuesto_consumo": {
+      "count": 1,
+      "avgPrecision5": 0.6,
+      "avgRecall5": 0.5,
+      "avgMRR": 1
+    },
+    "ganancias_ocasionales": {
+      "count": 1,
+      "avgPrecision5": 0.2,
+      "avgRecall5": 0.25,
+      "avgMRR": 1
+    },
+    "regimen_transicion": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0.047619047619047616
+    },
+    "GMF": {
+      "count": 1,
+      "avgPrecision5": 1,
+      "avgRecall5": 0.5,
+      "avgMRR": 1
+    },
+    "informacion_faltante": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0
+    },
+    "RUT": {
+      "count": 1,
+      "avgPrecision5": 0.2,
+      "avgRecall5": 1,
+      "avgMRR": 1
+    },
+    "renta_presuntiva": {
+      "count": 1,
+      "avgPrecision5": 0.4,
+      "avgRecall5": 0.5,
+      "avgMRR": 0.25
+    },
+    "ICA_vs_renta": {
+      "count": 1,
+      "avgPrecision5": 0.2,
+      "avgRecall5": 1,
+      "avgMRR": 1
+    },
+    "subcapitalizacion": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0
+    },
+    "contrato_estabilidad": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 1,
+      "avgMRR": 0
+    },
+    "facturacion": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0
+    },
+    "obras_por_impuestos": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0.047619047619047616
+    },
+    "tasa_minima": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 0,
+      "avgMRR": 0
+    },
+    "negativo_complejo": {
+      "count": 1,
+      "avgPrecision5": 0,
+      "avgRecall5": 1,
+      "avgMRR": 0
     }
   },
-  "avgLatencyMs": 900.8933333333333,
-  "p95LatencyMs": 1408,
-  "avgTokensUsed": 8909.1,
-  "avgExternalSourcePresence": 1,
-  "avgSourceTypeAccuracy": 1,
-  "avgPrecisionAt5Adj": 0.895,
-  "avgExtSourceRetrieved": 1,
-  "avgExtSourceInContext": 1
+  "avgLatencyMs": 921.4470588235295,
+  "p95LatencyMs": 1363,
+  "avgTokensUsed": 8976.447058823529,
+  "avgExternalSourcePresence": 0.9473684210526315,
+  "avgSourceTypeAccuracy": 0.9078947368421053,
+  "avgPrecisionAt5Adj": 0.8838235294117643,
+  "avgExtSourceRetrieved": 0.9473684210526315,
+  "avgExtSourceInContext": 0.9078947368421053,
+  "avgAbstentionQuality": 0.5735294117647058,
+  "avgCompletenessScore": 0.9214705882352942,
+  "byDifficulty": {
+    "easy": {
+      "count": 28,
+      "avgPrecision5": 0.2,
+      "avgRecall5": 0.5714285714285714,
+      "avgMRR": 0.43871366728509587
+    },
+    "medium": {
+      "count": 99,
+      "avgPrecision5": 0.22222222222222215,
+      "avgRecall5": 0.5505050505050505,
+      "avgMRR": 0.4548703961582751
+    },
+    "hard": {
+      "count": 213,
+      "avgPrecision5": 0.1868544600938967,
+      "avgRecall5": 0.5594679186228482,
+      "avgMRR": 0.3447846469621861
+    }
+  },
+  "complexQuestionMetrics": {
+    "count": 40,
+    "avgPrecision5": 0.2899999999999999,
+    "avgRecall5": 0.4416666666666666,
+    "avgMRR": 0.511547619047619,
+    "avgCompletenessScore": 0.8866666666666667
+  },
+  "totalMetricsCount": 17
 }
