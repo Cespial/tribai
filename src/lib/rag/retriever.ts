@@ -227,7 +227,8 @@ async function retrieveMultiNamespace(
 
         return filtered;
       } catch (error) {
-        console.error(`[retriever] Namespace "${ns}" query failed:`, error);
+        const msg = error instanceof Error ? error.message.slice(0, 80) : String(error);
+        console.warn(`[retriever] Namespace "${ns}" query failed: ${msg}`);
         return [];
       }
     });

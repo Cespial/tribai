@@ -11,6 +11,7 @@ import { ChatPageContext } from "@/types/chat-history";
 import { getCacheStats } from "@/lib/pinecone/embedder";
 import { getCachedResult, setCachedResult } from "@/lib/cache/response-cache";
 import { logger } from "@/lib/logging/structured-logger";
+import { getPineconeHealth } from "@/lib/pinecone/client";
 
 export interface PipelineOptions {
   libroFilter?: string;
@@ -101,7 +102,12 @@ export async function runRAGPipeline(
       pageContext: options.pageContext,
     });
   } catch (error) {
-    console.error("[rag-pipeline] Retrieval failed:", error);
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg.includes("circuit breaker")) {
+      console.warn(`[rag-pipeline] Retrieval skipped: ${msg}`);
+      throw new Error("Pinecone no está disponible temporalmente. Intente de nuevo en unos segundos.");
+    }
+    console.warn(`[rag-pipeline] Retrieval failed: ${msg.slice(0, 120)}`);
     throw new Error("No se pudieron recuperar los artículos relevantes.");
   }
   timings.retrieval = performance.now() - retrieveStart;
@@ -233,6 +239,7 @@ export async function runRAGPipeline(
   };
 
   // Final pipeline trace log (single structured entry for full auditability)
+  const pineconeHealth = getPineconeHealth();
   logger.info("RAG pipeline trace", {
     stage: "pipeline",
     durationMs: Math.round(timings.totalPipeline),
@@ -240,6 +247,11 @@ export async function runRAGPipeline(
       queryType,
       degradedMode,
       degradedReason,
+      pineconeHealth: {
+        healthy: pineconeHealth.healthy,
+        consecutiveFailures: pineconeHealth.consecutiveFailures,
+        breakerOpen: pineconeHealth.breakerOpen,
+      },
       confidenceLevel: evidenceResult.confidenceLevel,
       evidenceQuality: Math.round(evidenceResult.evidenceQuality * 100) / 100,
       contradictionFlags: evidenceResult.contradictionFlags,
