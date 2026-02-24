@@ -5,6 +5,7 @@ import { assembleContext } from "./context-assembler";
 import { buildMessages } from "./prompt-builder";
 import { classifyQueryType, getQueryRoutingConfig } from "./namespace-router";
 import { AssembledContext, SourceCitation, RAGDebugInfo, PipelineTimings } from "@/types/rag";
+import { checkEvidence, EvidenceCheckResult } from "./evidence-checker";
 import { RAG_CONFIG } from "@/config/constants";
 import { ChatPageContext } from "@/types/chat-history";
 import { getCacheStats } from "@/lib/pinecone/embedder";
@@ -121,19 +122,25 @@ export async function runRAGPipeline(
   }
   timings.contextAssembly = performance.now() - assembleStart;
 
-  // 5. Build prompt
+  // 4.5 Evidence check (confidence scoring + contradiction detection)
+  const allScoresForEvidence = retrievalResult.chunks.map((c) => c.score).sort((a, b) => b - a);
+  const evidenceTopScore = allScoresForEvidence[0] ?? 0;
+  const evidenceMedianScore = allScoresForEvidence[Math.floor(allScoresForEvidence.length / 2)] ?? 0;
+  const evidenceResult = checkEvidence(context, evidenceTopScore, evidenceMedianScore);
+
+  // 5. Build prompt (pass evidence for low-confidence fallback)
   const promptStart = performance.now();
   const { system, contextBlock } = buildMessages(
     query,
     context,
     options.conversationHistory,
-    options.pageContext
+    options.pageContext,
+    evidenceResult
   );
   timings.promptBuilding = performance.now() - promptStart;
   timings.totalPipeline = performance.now() - pipelineStart;
 
   // Compute debug info
-  const allScores = retrievalResult.chunks.map((c) => c.score).sort((a, b) => b - a);
   const cacheStats = getCacheStats();
   const uniqueArticles = new Set(reranked.map((c) => c.metadata.id_articulo));
   const namespacesSearched = [""];
@@ -147,8 +154,8 @@ export async function runRAGPipeline(
     uniqueArticles: uniqueArticles.size,
     namespacesSearched,
     queryType,
-    topScore: allScores[0] ?? 0,
-    medianScore: allScores[Math.floor(allScores.length / 2)] ?? 0,
+    topScore: evidenceTopScore,
+    medianScore: evidenceMedianScore,
     dynamicThreshold: retrievalResult.dynamicThreshold ?? RAG_CONFIG.similarityThreshold,
     siblingChunksAdded: Math.max(0, context.articles.reduce(
       (sum, a) => sum + a.contenido.length + a.modificaciones.length + a.textoAnterior.length,
@@ -161,6 +168,11 @@ export async function runRAGPipeline(
     subQueriesCount: enhancedQuery.subQueries?.length ?? 0,
     timings,
     embeddingCacheHitRate: cacheStats.hitRate,
+    // Evidence quality (Fase 6)
+    confidenceLevel: evidenceResult.confidenceLevel,
+    evidenceQuality: evidenceResult.evidenceQuality,
+    namespaceContribution: evidenceResult.namespaceContribution,
+    contradictionFlags: evidenceResult.contradictionFlags,
   };
 
   const result: PipelineResult = {

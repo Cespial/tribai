@@ -174,6 +174,13 @@ export async function POST(req: Request) {
                   promptBuilding: Math.round(debugInfo.timings.promptBuilding),
                 }
               : undefined,
+            // Evidence quality (Fase 6)
+            confidenceLevel: debugInfo?.confidenceLevel,
+            evidenceQuality: debugInfo?.evidenceQuality
+              ? Math.round(debugInfo.evidenceQuality * 100) / 100
+              : undefined,
+            namespaceContribution: debugInfo?.namespaceContribution,
+            contradictionFlags: debugInfo?.contradictionFlags,
           },
         };
       }

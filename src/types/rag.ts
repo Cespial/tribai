@@ -148,4 +148,13 @@ export interface RAGDebugInfo {
   timings: PipelineTimings;
   // Cache
   embeddingCacheHitRate: number;
+  // Evidence quality (Fase 6)
+  /** Overall confidence: "high" | "medium" | "low" */
+  confidenceLevel?: "high" | "medium" | "low";
+  /** Numeric evidence quality score 0-1 */
+  evidenceQuality?: number;
+  /** Chunks per namespace in final context */
+  namespaceContribution?: Record<string, number>;
+  /** Whether contradictions were detected between sources */
+  contradictionFlags?: boolean;
 }

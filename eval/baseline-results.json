@@ -1,8 +1,8 @@
 {
   "avgPrecisionAt5": 0.19823529411764712,
   "avgRecallAt5": 0.557843137254902,
-  "avgMRR": 0.38317135736640384,
-  "avgNDCGAt5": 0.6564984357516831,
+  "avgMRR": 0.3826811612879724,
+  "avgNDCGAt5": 0.6561133482411788,
   "avgCitationAcc": 0.6664705882352941,
   "avgSourcePresence": 0.5120588235294118,
   "avgContainsExpected": 0.9131372549019608,
@@ -25,7 +25,7 @@
       "count": 43,
       "avgPrecision5": 0.2093023255813954,
       "avgRecall5": 0.5813953488372093,
-      "avgMRR": 0.4391102114939324
+      "avgMRR": 0.43523424250168435
     },
     "comparative": {
       "count": 40,
@@ -280,9 +280,9 @@
       "avgMRR": 0
     }
   },
-  "avgLatencyMs": 1059.7088235294118,
-  "p95LatencyMs": 1441,
-  "avgTokensUsed": 9353.39705882353,
+  "avgLatencyMs": 1025.0764705882352,
+  "p95LatencyMs": 1456,
+  "avgTokensUsed": 9353.4,
   "avgExternalSourcePresence": 0.993421052631579,
   "avgSourceTypeAccuracy": 0.8859649122807018,
   "avgPrecisionAt5Adj": 0.8838235294117643,
@@ -295,7 +295,7 @@
       "count": 28,
       "avgPrecision5": 0.2,
       "avgRecall5": 0.5714285714285714,
-      "avgMRR": 0.420856524427953
+      "avgMRR": 0.4149041434755721
     },
     "medium": {
       "count": 99,

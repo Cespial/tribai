@@ -52,6 +52,14 @@ export const MULTI_SOURCE_BOOST = {
   decretoReciente: 0.10,    // < 3 years old
 } as const;
 
+/** Evidence confidence thresholds (configurable for Fase 6 guardrails) */
+export const EVIDENCE_THRESHOLDS = {
+  highConfidenceScore: 0.75,   // topScore >= this AND sources >= highConfidenceSources → "high"
+  highConfidenceSources: 3,
+  mediumConfidenceScore: 0.55, // topScore >= this AND sources >= 1 → "medium"
+  lowEvidenceFallback: 0.45,   // topScore < this → inject warning into prompt
+} as const;
+
 export const LEGAL_ANCHOR_TERMS = new Set([
   "gmf", "gravamen movimientos financieros", "4x1000", "cuatro por mil",
   "iva", "impuesto valor agregado", "impuesto sobre las ventas",
