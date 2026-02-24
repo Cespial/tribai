@@ -87,6 +87,37 @@ Registro de iteraciones del Ralph Loop (RLP) para mejora continua del pipeline R
 
 ---
 
+## RLP-005 — Observabilidad de Produccion
+
+**Fecha:** 2026-02-24
+**Hipotesis:** Un endpoint `/api/health` y un log consolidado por request mejoran la operabilidad en produccion: monitoreo, alerting, debugging.
+
+**Cambios:**
+- `src/app/api/health/route.ts`: Nuevo endpoint `GET /api/health`
+  - Retorna status (healthy/degraded), Pinecone circuit breaker state, embedding cache stats, uptimeMs
+  - Ideal para uptime monitors (UptimeRobot, Vercel Cron, etc.)
+- `src/app/api/chat/route.ts`: Reescrito logging de requests
+  - Reemplaza 2 logs separados ("request received" + "response ready") con 1 log consolidado `request_complete`
+  - Log incluye: requestId, query, ip, conversationId, queryType, degradedMode, confidenceLevel, evidenceQuality, topScore, chunks, tokens, contradictions, namespaceContribution, timings completos
+  - Agrega `try/catch` con `logger.error` estructurado en caso de fallo del pipeline (query, ip, stage, error message)
+  - Error response retorna el mensaje de error del pipeline (ej: "Pinecone no esta disponible temporalmente")
+
+**Metricas pre:**
+- Smoke: 10/10
+- Typecheck: clean
+- Health endpoint: N/A
+
+**Metricas post:**
+- Typecheck: clean
+- Smoke: latency-flaky (Pinecone lento, no relacionado con cambios — solo afecta LATENCY, correctness 10/10)
+- `GET /api/health` funcional
+- 1 JSON line por request en lugar de 2
+- Errores estructurados con logger.error
+
+**Decision:** MANTENER. Mejora operabilidad sin afectar correctness. Health endpoint es base para monitoring. Log consolidado reduce ruido y mejora parseabilidad.
+
+---
+
 ## Backlog
 
 | ID | Titulo | Estado |
@@ -95,4 +126,4 @@ Registro de iteraciones del Ralph Loop (RLP) para mejora continua del pipeline R
 | RLP-002 | Circuit Breaker Pinecone | COMPLETADO |
 | RLP-003 | LLM Rerank real | PENDIENTE |
 | RLP-004 | Answer Quality (LLM Judge) | COMPLETADO |
-| RLP-005 | Observabilidad de produccion | PENDIENTE |
+| RLP-005 | Observabilidad de produccion | COMPLETADO |

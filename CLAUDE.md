@@ -42,7 +42,8 @@ src/
 ├── app/                          # App Router — páginas y API
 │   ├── page.tsx                  # Landing page (8 secciones)
 │   ├── layout.tsx                # Root layout (fonts, providers, metadata)
-│   ├── api/chat/route.ts         # Streaming RAG chat endpoint
+│   ├── api/chat/route.ts         # Streaming RAG chat endpoint (consolidated request logging)
+│   ├── api/health/route.ts      # Health check: Pinecone breaker, cache stats, uptime
 │   ├── articulo/[slug]/          # 1,294 artículos SSG
 │   ├── calculadoras/             # 35 calculadoras (client components)
 │   ├── calendario/               # Calendario fiscal 2026

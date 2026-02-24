@@ -102,16 +102,41 @@ export async function POST(req: Request) {
 
   // Initialize structured logging for this request
   const requestId = setRequestId();
-  logger.info("Chat request received", {
-    metadata: { query: userQuery.slice(0, 100), ip, conversationId },
-  });
+  const requestStart = performance.now();
 
   // Run RAG pipeline
-  const { system, contextBlock, sources, debugInfo } = await runRAGPipeline(userQuery, {
-    libroFilter,
-    conversationHistory,
-    pageContext: pageContext as ChatPageContext | undefined,
-  });
+  let system: string;
+  let contextBlock: string;
+  let sources: Awaited<ReturnType<typeof runRAGPipeline>>["sources"];
+  let debugInfo: Awaited<ReturnType<typeof runRAGPipeline>>["debugInfo"];
+  try {
+    const pipeline = await runRAGPipeline(userQuery, {
+      libroFilter,
+      conversationHistory,
+      pageContext: pageContext as ChatPageContext | undefined,
+    });
+    system = pipeline.system;
+    contextBlock = pipeline.contextBlock;
+    sources = pipeline.sources;
+    debugInfo = pipeline.debugInfo;
+  } catch (error) {
+    const totalMs = Math.round(performance.now() - requestStart);
+    const msg = error instanceof Error ? error.message : String(error);
+    logger.error("Chat request failed", {
+      durationMs: totalMs,
+      metadata: {
+        query: userQuery.slice(0, 100),
+        ip,
+        conversationId,
+        error: msg.slice(0, 200),
+        stage: "pipeline",
+      },
+    });
+    return new Response(
+      JSON.stringify({ error: msg }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   // Suggest Calculators
   const suggestedCalculators = suggestCalculators(
@@ -120,14 +145,38 @@ export async function POST(req: Request) {
     pageContext as ChatPageContext | undefined
   );
 
-  logger.info("Chat response ready", {
+  // Consolidated request log — single JSON line with all observability data
+  const totalMs = Math.round(performance.now() - requestStart);
+  logger.info("request_complete", {
+    durationMs: totalMs,
     metadata: {
-      chunksRetrieved: debugInfo?.chunksRetrieved,
-      uniqueArticles: debugInfo?.uniqueArticles,
+      requestId,
+      query: userQuery.slice(0, 100),
+      ip,
+      conversationId,
+      queryType: debugInfo?.queryType,
+      degradedMode: debugInfo?.degradedMode,
+      degradedReason: debugInfo?.degradedReason,
       confidenceLevel: debugInfo?.confidenceLevel,
+      evidenceQuality: debugInfo?.evidenceQuality
+        ? Math.round(debugInfo.evidenceQuality * 100) / 100
+        : undefined,
+      topScore: debugInfo?.topScore,
+      chunksRetrieved: debugInfo?.chunksRetrieved,
+      chunksAfterReranking: debugInfo?.chunksAfterReranking,
+      uniqueArticles: debugInfo?.uniqueArticles,
+      tokensUsed: debugInfo?.contextTokensUsed,
       contradictionFlags: debugInfo?.contradictionFlags,
-      pipelineMs: debugInfo?.timings?.totalPipeline
-        ? Math.round(debugInfo.timings.totalPipeline)
+      namespaceContribution: debugInfo?.namespaceContribution,
+      timings: debugInfo?.timings
+        ? {
+            enhancement: Math.round(debugInfo.timings.queryEnhancement),
+            retrieval: Math.round(debugInfo.timings.retrieval),
+            reranking: Math.round(debugInfo.timings.reranking),
+            assembly: Math.round(debugInfo.timings.contextAssembly),
+            prompt: Math.round(debugInfo.timings.promptBuilding),
+            total: Math.round(debugInfo.timings.totalPipeline),
+          }
         : undefined,
     },
   });
