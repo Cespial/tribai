@@ -1,6 +1,16 @@
 import { generateText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
+import { openai } from "@ai-sdk/openai";
 import { EnhancedQuery } from "@/types/rag";
+
+const LLM_PROVIDER = process.env.LLM_PROVIDER || "anthropic";
+
+function getEnhancerModel() {
+  if (LLM_PROVIDER === "openai") {
+    return openai("gpt-4o-mini");
+  }
+  return getEnhancerModel();
+}
 import { extractArticleRefs, articleNumberToId } from "@/lib/utils/article-parser";
 import { detectLibro, expandQuery } from "@/lib/utils/legal-terms";
 import { ChatPageContext } from "@/types/chat-history";
@@ -77,7 +87,7 @@ function applyPageContextHint(query: string, pageContext?: ChatPageContext): str
 async function rewriteQuery(query: string): Promise<string> {
   try {
     const { text } = await generateText({
-      model: anthropic("claude-haiku-4-5-20251001"),
+      model: getEnhancerModel(),
       maxOutputTokens: 300,
       system:
         "Eres un experto en el Estatuto Tributario colombiano (Decreto 624 de 1989). " +
@@ -119,7 +129,7 @@ function shouldUseHyDE(
 async function generateHyDE(query: string): Promise<string> {
   try {
     const { text } = await generateText({
-      model: anthropic("claude-haiku-4-5-20251001"),
+      model: getEnhancerModel(),
       maxOutputTokens: 200,
       system:
         "Eres un experto en el Estatuto Tributario colombiano. Genera un párrafo hipotético que podría ser el texto de un artículo del Estatuto Tributario que respondería esta pregunta. Escribe SOLO el párrafo, sin preámbulos.",
@@ -158,7 +168,7 @@ async function decomposeQuery(query: string): Promise<string[]> {
         "Responde con una sub-pregunta por línea, sin numeración ni viñetas.";
 
     const { text } = await generateText({
-      model: anthropic("claude-haiku-4-5-20251001"),
+      model: getEnhancerModel(),
       maxOutputTokens: 300,
       system: systemPrompt,
       prompt: query,

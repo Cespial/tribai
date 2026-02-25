@@ -3,6 +3,16 @@ import { ScoredChunk, ScoredMultiSourceChunk } from "@/types/pinecone";
 import { RAG_CONFIG, MULTI_SOURCE_BOOST, LEGAL_ANCHOR_TERMS } from "@/config/constants";
 import { generateText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
+import { openai } from "@ai-sdk/openai";
+
+const LLM_PROVIDER = process.env.LLM_PROVIDER || "anthropic";
+
+function getRerankerModel() {
+  if (LLM_PROVIDER === "openai") {
+    return openai("gpt-4o-mini");
+  }
+  return anthropic("claude-haiku-4-5-20251001");
+}
 
 // Spanish stop words — used instead of length-based filtering to preserve
 // important short terms like "IVA", "GMF", "UVT", "DUR"
@@ -62,7 +72,7 @@ export async function llmRerank(
 
   try {
     const { text } = await generateText({
-      model: anthropic("claude-haiku-4-5-20251001"),
+      model: getRerankerModel(),
       maxOutputTokens: 200,
       system:
         "Eres un experto en derecho tributario colombiano con profundo conocimiento del Estatuto Tributario. " +
