@@ -3,13 +3,12 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 import { EnhancedQuery } from "@/types/rag";
 
-const LLM_PROVIDER = process.env.LLM_PROVIDER || "anthropic";
-
 function getEnhancerModel() {
-  if (LLM_PROVIDER === "openai") {
+  const provider = process.env.LLM_PROVIDER || "anthropic";
+  if (provider === "openai") {
     return openai("gpt-4o-mini");
   }
-  return getEnhancerModel();
+  return anthropic("claude-haiku-4-5-20251001");
 }
 import { extractArticleRefs, articleNumberToId } from "@/lib/utils/article-parser";
 import { detectLibro, expandQuery } from "@/lib/utils/legal-terms";

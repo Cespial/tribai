@@ -12,15 +12,12 @@ import { setRequestId, logger } from "@/lib/logging/structured-logger";
 
 export const maxDuration = 60;
 
-const LLM_PROVIDER = process.env.LLM_PROVIDER || "anthropic";
-const CHAT_MODEL = process.env.CHAT_MODEL || "claude-sonnet-4-6";
-const OPENAI_CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || "gpt-4o";
-
 function getChatModel() {
-  if (LLM_PROVIDER === "openai") {
-    return openai(OPENAI_CHAT_MODEL);
+  const provider = process.env.LLM_PROVIDER || "anthropic";
+  if (provider === "openai") {
+    return openai(process.env.OPENAI_CHAT_MODEL || "gpt-4o");
   }
-  return anthropic(CHAT_MODEL);
+  return anthropic(process.env.CHAT_MODEL || "claude-sonnet-4-6");
 }
 
 function getTextFromMessage(message: UIMessage): string {

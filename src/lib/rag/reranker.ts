@@ -5,10 +5,9 @@ import { generateText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 
-const LLM_PROVIDER = process.env.LLM_PROVIDER || "anthropic";
-
 function getRerankerModel() {
-  if (LLM_PROVIDER === "openai") {
+  const provider = process.env.LLM_PROVIDER || "anthropic";
+  if (provider === "openai") {
     return openai("gpt-4o-mini");
   }
   return anthropic("claude-haiku-4-5-20251001");
