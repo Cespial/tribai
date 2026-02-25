@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { MessageBubble } from "./message-bubble";
 import { SourceCitation } from "./source-citation";
 import { CalculatorSuggestions } from "./calculator-suggestions";
@@ -57,13 +57,31 @@ export function MessageList({
   getFeedback,
 }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef(true);
+  const prevMessageCountRef = useRef(messages.length);
+
+  const handleScroll = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+  }, []);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const newMessage = messages.length !== prevMessageCountRef.current;
+    prevMessageCountRef.current = messages.length;
+
+    if (newMessage || isLoading || isNearBottomRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages, isLoading]);
 
   return (
-    <div className="flex-1 space-y-4 overflow-y-auto p-4">
+    <div
+      ref={containerRef}
+      onScroll={handleScroll}
+      className="flex-1 space-y-4 overflow-y-auto p-4"
+    >
       {messages.map((message, index) => {
         const metadata = (message.metadata as MessageMetadata | undefined) || {};
         const suggestedCalculators = metadata.suggestedCalculators || [];
