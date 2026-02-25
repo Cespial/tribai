@@ -1,5 +1,6 @@
 import { streamText, UIMessage } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
+import { openai } from "@ai-sdk/openai";
 import { runRAGPipeline } from "@/lib/rag/pipeline";
 import { LIBROS } from "@/config/categories";
 import { ChatRequestSchema, validateMessageLength } from "@/lib/api/validation";
@@ -11,7 +12,16 @@ import { setRequestId, logger } from "@/lib/logging/structured-logger";
 
 export const maxDuration = 60;
 
+const LLM_PROVIDER = process.env.LLM_PROVIDER || "anthropic";
 const CHAT_MODEL = process.env.CHAT_MODEL || "claude-sonnet-4-6";
+const OPENAI_CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || "gpt-4o";
+
+function getChatModel() {
+  if (LLM_PROVIDER === "openai") {
+    return openai(OPENAI_CHAT_MODEL);
+  }
+  return anthropic(CHAT_MODEL);
+}
 
 function getTextFromMessage(message: UIMessage): string {
   return message.parts
@@ -182,7 +192,7 @@ export async function POST(req: Request) {
   });
 
   const result = streamText({
-    model: anthropic(CHAT_MODEL),
+    model: getChatModel(),
     system,
     messages: [
       { role: "user" as const, content: contextBlock },
