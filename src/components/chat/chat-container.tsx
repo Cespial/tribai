@@ -138,7 +138,7 @@ export function ChatContainer() {
       const ids = sources.map(s => s.idArticulo).filter(Boolean);
       // Avoid updating if the IDs are the same
       if (JSON.stringify(ids) !== JSON.stringify(detectedArticles)) {
-        setDetectedArticles(ids);
+        queueMicrotask(() => setDetectedArticles(ids));
       }
     }
   }, [messages, status, detectedArticles]);
@@ -152,7 +152,7 @@ export function ChatContainer() {
         clearTimeout(t2);
       };
     } else if (status === "ready") {
-      setTypingLabel("Buscando en el Estatuto Tributario...");
+      queueMicrotask(() => setTypingLabel("Buscando en el Estatuto Tributario..."));
     }
   }, [status]);
 

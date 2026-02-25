@@ -96,14 +96,14 @@ function deserializeSelectedOptions(value: string): SelectedOption[] | null {
   }
 }
 
-function StepTimeline({ 
-  guide, 
-  history, 
-  currentNodeId, 
-  selectedOptions 
-}: { 
-  guide: GuiaEducativaEnriched; 
-  history: string[]; 
+function StepTimeline({
+  guide: _guide,
+  history: _history,
+  currentNodeId: _currentNodeId,
+  selectedOptions
+}: {
+  guide: GuiaEducativaEnriched;
+  history: string[];
   currentNodeId: string;
   selectedOptions: SelectedOption[];
 }) {
@@ -388,11 +388,11 @@ function GuideSession({
   return (
     <>
       <div className="mx-auto flex w-full max-w-6xl flex-1 gap-8 px-4 py-8">
-        <StepTimeline 
-          guide={guide} 
-          history={history} 
-          currentNodeId={currentNodeId} 
-          selectedOptions={selectedOptions} 
+        <StepTimeline
+          guide={guide}
+          history={history}
+          currentNodeId={currentNodeId}
+          selectedOptions={selectedOptions}
         />
         
         <div className="flex-1 min-w-0">

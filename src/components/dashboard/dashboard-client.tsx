@@ -58,6 +58,7 @@ interface DashboardTimeSeries {
 interface DashboardClientProps {
   stats: DashboardStats;
   timeseries: DashboardTimeSeries;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   articleIndex: any[];
   lastUpdate?: string;
 }

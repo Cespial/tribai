@@ -149,8 +149,8 @@ export default function GraphExplorer() {
                   <h3 className="text-sm font-semibold text-slate-500 mb-2">Relaciones</h3>
                   <div className="space-y-2">
                     {graphData.edges
-                      .filter((e: any) => e.data.source === selectedNode.id || e.data.target === selectedNode.id)
-                      .map((e: any, i: number) => (
+                      .filter((e: { data: { source: string; target: string; label: string } }) => e.data.source === selectedNode.id || e.data.target === selectedNode.id)
+                      .map((e: { data: { source: string; target: string; label: string } }, i: number) => (
                         <div key={i} className="text-xs flex justify-between items-center border-b border-slate-100 pb-2">
                           <span className="font-medium text-slate-700">{e.data.label}</span>
                           <span className="text-slate-400">
@@ -189,8 +189,8 @@ export default function GraphExplorer() {
               layout={{ 
                 name: "cose", 
                 animate: true,
-                nodeRepulsion: (_node: any) => 400000,
-                idealEdgeLength: (_edge: any) => 100,
+                nodeRepulsion: () => 400000,
+                idealEdgeLength: () => 100,
               }}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               cy={(cy: any) => {

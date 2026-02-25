@@ -5,7 +5,6 @@ import Link from "next/link";
 import { FileText, Gavel, ScrollText, BookOpen } from "lucide-react";
 import { ENRICHED_GLOSARIO } from "@/lib/knowledge/knowledge-index";
 import { TermTooltip } from "@/components/knowledge/TermTooltip";
-import { clsx } from "clsx";
 
 interface InteractiveTaxTextProps {
   text: string;
@@ -109,6 +108,7 @@ export function InteractiveTaxText({ text, className }: InteractiveTaxTextProps)
     let match;
 
     // Reset regex index
+    // eslint-disable-next-line react-hooks/immutability
     COMBINED_REGEX.lastIndex = 0;
 
     while ((match = COMBINED_REGEX.exec(text)) !== null) {
@@ -143,6 +143,7 @@ export function InteractiveTaxText({ text, className }: InteractiveTaxTextProps)
       // 2. Check Article
       const artMatch = part.match(RE_ART);
       if (artMatch) {
+        // eslint-disable-next-line react-hooks/immutability
         RE_ART.lastIndex = 0; // Reset
         const exec = RE_ART.exec(part);
         const artNum = exec ? exec[1] : part.replace(/\D/g, "");
@@ -161,9 +162,10 @@ export function InteractiveTaxText({ text, className }: InteractiveTaxTextProps)
       // 3. Check Ley
       const leyMatch = part.match(RE_LEY);
       if (leyMatch) {
+        // eslint-disable-next-line react-hooks/immutability
         RE_LEY.lastIndex = 0;
         const exec = RE_LEY.exec(part);
-        const leyNum = exec ? exec[1] : "";
+        const _leyNum = exec ? exec[1] : "";
         return (
           <LegalTooltip
             key={`ley-${index}`}
@@ -179,9 +181,10 @@ export function InteractiveTaxText({ text, className }: InteractiveTaxTextProps)
       // 4. Check Decreto
       const decMatch = part.match(RE_DECRETO);
       if (decMatch) {
+        // eslint-disable-next-line react-hooks/immutability
         RE_DECRETO.lastIndex = 0;
         const exec = RE_DECRETO.exec(part);
-        const decNum = exec ? exec[1] : "";
+        const _decNum = exec ? exec[1] : "";
         return (
           <LegalTooltip
             key={`dec-${index}`}
@@ -197,6 +200,7 @@ export function InteractiveTaxText({ text, className }: InteractiveTaxTextProps)
       // 5. Check Concepto DIAN
       const conMatch = part.match(RE_CONCEPTO);
       if (conMatch) {
+        // eslint-disable-next-line react-hooks/immutability
         RE_CONCEPTO.lastIndex = 0;
         const exec = RE_CONCEPTO.exec(part);
         const conNum = exec ? exec[1] : "";

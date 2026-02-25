@@ -11,11 +11,13 @@ interface AssistantGraphViewProps {
 }
 
 export function AssistantGraphView({ articleIds, theme = "light" }: AssistantGraphViewProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [graphData, setGraphData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"context" | "general">("context");
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cyRef = useRef<any>(null);
 
   // Design Tokens

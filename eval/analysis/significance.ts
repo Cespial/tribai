@@ -170,6 +170,7 @@ export function compareExperiments(
 /**
  * Extract per-question metric values from experiment results.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractMetricValues(results: any[]): MetricValues {
   const metrics: MetricValues = {
     "precision@5": [],
@@ -200,6 +201,7 @@ function extractMetricValues(results: any[]): MetricValues {
  * Compute metrics broken down by category.
  */
 export function metricsByCategory(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   results: Array<{ category: string; retrievalMetrics: any; citationAcc: number; sourcePresenceScore: number; containsExpected: number }>
 ): Record<string, { count: number; avgPrecision5: number; avgRecall5: number; avgMRR: number }> {
   const categories: Record<string, { p5: number[]; r5: number[]; mrr: number[] }> = {};

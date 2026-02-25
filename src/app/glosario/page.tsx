@@ -111,12 +111,6 @@ function HighlightText({ text, highlight }: { text: string; highlight: string })
 function FormulaBlock({ term }: { term: GlosarioTermEnriched }) {
   if (!term.formula) return null;
 
-  // Simple LaTeX-like rendering for common tax formulas
-  const renderedFormula = term.formula.expresion
-    .replace(/\s*=\s*/, " \\approx ")
-    .replace(/\s*\*\s*/g, " \\times ")
-    .replace(/\s*\/\s*/g, " \\div ");
-
   return (
     <div className="rounded-lg border border-border/60 bg-muted/40 p-4">
       <div className="mb-2 flex items-center justify-between">

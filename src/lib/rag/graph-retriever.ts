@@ -41,6 +41,7 @@ function loadGraph(): TaxGraph {
     for (const graphPath of paths) {
       try {
         // Use dynamic import-friendly approach that works in both Node and Edge
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const fs = require("fs");
         if (fs.existsSync(graphPath)) {
           const raw = fs.readFileSync(graphPath, "utf-8");
