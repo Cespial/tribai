@@ -1,0 +1,76 @@
+{
+  "sourceLanguage" : "es",
+  "strings" : {
+    "Asistente Tributario Colombia" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asistente Tributario Colombia"
+          }
+        }
+      }
+    },
+    "Escribe tu consulta tributaria..." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribe tu consulta tributaria..."
+          }
+        }
+      }
+    },
+    "Sin conexión a internet" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin conexión a internet"
+          }
+        }
+      }
+    },
+    "Servicio temporalmente no disponible" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servicio temporalmente no disponible"
+          }
+        }
+      }
+    },
+    "Nueva conversación" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nueva conversación"
+          }
+        }
+      }
+    },
+    "Conversaciones" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversaciones"
+          }
+        }
+      }
+    },
+    "Sin conversaciones" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin conversaciones"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
