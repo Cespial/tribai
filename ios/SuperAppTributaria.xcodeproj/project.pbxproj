@@ -67,6 +67,41 @@
 		1C29E3A7DCABEAB32F31248D /* SSEParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0080FB9A4078AE69FC9527B5; };
 		454A5E63F421135308AAF51B /* ChatFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77E43A360AE997D17A1A26C; };
 		B2101848E28C586E33D83C0F /* ConversationManagementUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA18F651093439246619AB4E; };
+		A1B0C1D0E1F0A2B0C2D0E2F0 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1B1C1D1E1F2A2B2C2D2E2F; };
+		A2B1C2D1E2F1A3B1C3D1E3F1 /* DecimalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A2B2C2D2E2F3A3B3C3D3E3F; };
+		A3B2C3D2E3F2A4B2C4D2E4F2 /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3B3C3D3E3F4A4B4C4D4E4F; };
+		A4B3C4D3E4F3A5B3C5D3E5F3 /* FilterChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4B4C4D4E4F5A5B5C5D5E5F; };
+		A5B4C5D4E5F4A6B4C6D4E6F4 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5B5C5D5E5F6A6B6C6D6E6F; };
+		A6B5C6D5E6F5A7B5C7D5E7F5 /* EmptySearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A6B6C6D6E6F7A7B7C7D7E7F; };
+		A7B6C7D6E7F6A8B6C8D6E8F6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A7B7C7D7E7F8A8B8C8D8E8F; };
+		A8B7C8D7E8F7A9B7C9D7E9F7 /* FeatureCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8B8C8D8E8F9A9B9C9D9E9F; };
+		A9B8C9D8E9F8AAB8CAD8EAF8 /* QuickAccessSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9B9C9D9E9FAA0BAB0CAC0D; };
+		AAB9CAD9EAF9ABB9CBD9EBF9 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0C0D0E0F1A1B1C1D1E1F2A; };
+		ABB0ACBDAECFB0C0B1D0B2E0 /* CalculatorListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1D1E1F2A2B3C3D4E4F5A5B; };
+		ACC1ADCEAFDFB1D1B2E1B3F1 /* CalculatorInputViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2E2F3A3B4C4D5E5F6A6B7C; };
+		ADD2AEDFB0E0B2F2C0A0D1B1 /* CalculatorResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3F4A4B5C5D6E6F7A7B8C8D; };
+		AEE3AFE0B1F1B3A3D2B2E1C1 /* RentaCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5A5B6C6D7E7F8A8B9C9DAE; };
+		AFF4B0F1C2A2C4B4E3C3F2D2 /* RetencionCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6B6C7D7E8F8A9B9CACBDBE; };
+		B0A5C1A2D3B3D5C5F4D4A3E3 /* IVACalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7C7D8E8F9A9BABCBDCEDEF; };
+		B1B6D2B3E4C4E6D6A5E5B4F4 /* SIMPLECalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C8D8E9F9AABBCCDDEEFFA0B; };
+		B2C7E3C4F5D5F7E7B6F6C5A5 /* SancionesCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9E9FAABBCCDDEEFF0A1B2C; };
+		B3D8F4D5A6E6A8F8C7A7D6B6 /* LaboralCalculatorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EAFB0BBCCDDEEFF0A1B2C3D; };
+		B4E9A5E6B7F7B9A9D8B8E7C7 /* PatrimonioCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB0C1CCDDEEFF0A1B2C3D4E; };
+		B5FAB6F7C8A8CABAE9C9F8D8 /* OtherCalculatorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C1D2DDEEFF0A1B2C3D4E5F; };
+		B6ABC7A8D9B9DBCBFADAA9E9 /* TaxData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3EEFF0A1B2C3D4E5F6A; };
+		B7BCD8B9EACAECCDFBEBBAFA /* RentaCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E3F4FF0A1B2C3D4E5F6A7B; };
+		B8CDE9CAFBDBFDDEA0FCCB0B /* RetencionCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F4A50A1B2C3D4E5F6A7B8C; };
+		B9DEFADBACECAEEFB1ADDC1C /* IVACalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A5B61B2C3D4E5F6A7B8C9D; };
+		BAEFA0ECBDFDCFF0C2BEED2D /* SIMPLECalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B6C72C3D4E5F6A7B8C9DAE; };
+		BBF0B1FDCEAEDF01D3CFFE3E /* SancionesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C7D83D4E5F6A7B8C9DAEBF; };
+		BCA1C2AEDFBFE012E4DAAF4F /* LaboralCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E94E5F6A7B8C9DAEBFC0; };
+		BDB2D3BFE0C0F123F5EBB050 /* PatrimonioCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E9FA5F6A7B8C9DAEBFC0D1; };
+		BEC3E4C0F1D1A234A6FCC161 /* GMFCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FA0B6A7B8C9DAEBFC0D1E2; };
+		BFD4F5D1A2E2B345B7ADD272 /* GenericCalculators.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0B1C7B8C9DAEBFC0D1E2F3; };
+		C0E5A6E2B3F3C456C8BEE383 /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1C2D8C9DAEBFC0D1E2F3A4; };
+		C1F6B7F3C4A4D567D9CFF494 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2D3E9DAEBFC0D1E2F3A4B5; };
+		C2A7C8A4D5B5E678EADAA5A5 /* CalculatorListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E4FAEBFC0D1E2F3A4B5C6; };
+		C3B8D9B5E6C6F789FBEBB6B6 /* CalculatorDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4F5ABFC0D1E2F3A4B5C6D7; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -151,6 +186,41 @@
 		0080FB9A4078AE69FC9527B5 /* SSEParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SSEParserTests.swift"; sourceTree = "<group>"; };
 		E77E43A360AE997D17A1A26C /* ChatFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatFlowUITests.swift"; sourceTree = "<group>"; };
 		AA18F651093439246619AB4E /* ConversationManagementUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationManagementUITests.swift"; sourceTree = "<group>"; };
+		1A1B1C1D1E1F2A2B2C2D2E2F /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CurrencyFormatter.swift"; sourceTree = "<group>"; };
+		2A2B2C2D2E2F3A3B3C3D3E3F /* DecimalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DecimalExtensions.swift"; sourceTree = "<group>"; };
+		3A3B3C3D3E3F4A4B4C4D4E4F /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchBarView.swift"; sourceTree = "<group>"; };
+		4A4B4C4D4E4F5A5B5C5D5E5F /* FilterChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FilterChipView.swift"; sourceTree = "<group>"; };
+		5A5B5C5D5E5F6A6B6C6D6E6F /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CardView.swift"; sourceTree = "<group>"; };
+		6A6B6C6D6E6F7A7B7C7D7E7F /* EmptySearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EmptySearchView.swift"; sourceTree = "<group>"; };
+		7A7B7C7D7E7F8A8B8C8D8E8F /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeView.swift"; sourceTree = "<group>"; };
+		8A8B8C8D8E8F9A9B9C9D9E9F /* FeatureCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeatureCardView.swift"; sourceTree = "<group>"; };
+		9A9B9C9D9E9FAA0BAB0CAC0D /* QuickAccessSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuickAccessSection.swift"; sourceTree = "<group>"; };
+		0B0C0D0E0F1A1B1C1D1E1F2A /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MoreView.swift"; sourceTree = "<group>"; };
+		1C1D1E1F2A2B3C3D4E4F5A5B /* CalculatorListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CalculatorListView.swift"; sourceTree = "<group>"; };
+		2D2E2F3A3B4C4D5E5F6A6B7C /* CalculatorInputViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CalculatorInputViews.swift"; sourceTree = "<group>"; };
+		3E3F4A4B5C5D6E6F7A7B8C8D /* CalculatorResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CalculatorResultView.swift"; sourceTree = "<group>"; };
+		4F5A5B6C6D7E7F8A8B9C9DAE /* RentaCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RentaCalculatorView.swift"; sourceTree = "<group>"; };
+		5A6B6C7D7E8F8A9B9CACBDBE /* RetencionCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RetencionCalculatorView.swift"; sourceTree = "<group>"; };
+		6B7C7D8E8F9A9BABCBDCEDEF /* IVACalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IVACalculatorView.swift"; sourceTree = "<group>"; };
+		7C8D8E9F9AABBCCDDEEFFA0B /* SIMPLECalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SIMPLECalculatorView.swift"; sourceTree = "<group>"; };
+		8D9E9FAABBCCDDEEFF0A1B2C /* SancionesCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SancionesCalculatorView.swift"; sourceTree = "<group>"; };
+		9EAFB0BBCCDDEEFF0A1B2C3D /* LaboralCalculatorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LaboralCalculatorsView.swift"; sourceTree = "<group>"; };
+		AFB0C1CCDDEEFF0A1B2C3D4E /* PatrimonioCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PatrimonioCalculatorView.swift"; sourceTree = "<group>"; };
+		B0C1D2DDEEFF0A1B2C3D4E5F /* OtherCalculatorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OtherCalculatorsView.swift"; sourceTree = "<group>"; };
+		C1D2E3EEFF0A1B2C3D4E5F6A /* TaxData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TaxData.swift"; sourceTree = "<group>"; };
+		D2E3F4FF0A1B2C3D4E5F6A7B /* RentaCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RentaCalculator.swift"; sourceTree = "<group>"; };
+		E3F4A50A1B2C3D4E5F6A7B8C /* RetencionCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RetencionCalculator.swift"; sourceTree = "<group>"; };
+		F4A5B61B2C3D4E5F6A7B8C9D /* IVACalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IVACalculator.swift"; sourceTree = "<group>"; };
+		A5B6C72C3D4E5F6A7B8C9DAE /* SIMPLECalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SIMPLECalculator.swift"; sourceTree = "<group>"; };
+		B6C7D83D4E5F6A7B8C9DAEBF /* SancionesCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SancionesCalculator.swift"; sourceTree = "<group>"; };
+		C7D8E94E5F6A7B8C9DAEBFC0 /* LaboralCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LaboralCalculator.swift"; sourceTree = "<group>"; };
+		D8E9FA5F6A7B8C9DAEBFC0D1 /* PatrimonioCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PatrimonioCalculator.swift"; sourceTree = "<group>"; };
+		E9FA0B6A7B8C9DAEBFC0D1E2 /* GMFCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GMFCalculator.swift"; sourceTree = "<group>"; };
+		FA0B1C7B8C9DAEBFC0D1E2F3 /* GenericCalculators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GenericCalculators.swift"; sourceTree = "<group>"; };
+		0B1C2D8C9DAEBFC0D1E2F3A4 /* Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calculator.swift"; sourceTree = "<group>"; };
+		1C2D3E9DAEBFC0D1E2F3A4B5 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeViewModel.swift"; sourceTree = "<group>"; };
+		2D3E4FAEBFC0D1E2F3A4B5C6 /* CalculatorListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CalculatorListViewModel.swift"; sourceTree = "<group>"; };
+		3E4F5ABFC0D1E2F3A4B5C6D7 /* CalculatorDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CalculatorDetailViewModel.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -233,12 +303,13 @@
 		1EEBB4683E25B710EAECED07 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
+				0B1C2D8C9DAEBFC0D1E2F3A4 /* Calculator.swift */,
 				17A4C09C49AF632EE2B68583 /* ChatMessage.swift */,
 				BAB8B92862D27361F0B0B7FC /* Conversation.swift */,
+				1A2B3C4D5E6F7A8B9C0D1E2F /* GraphData.swift */,
 				709A193882EAE1B6C7F743C1 /* RAGMetadata.swift */,
 				B57B7E91D6DC13676AF3BA6F /* SourceCitation.swift */,
 				DC36CD1835BDD89EECB7AF86 /* SuggestedCalculator.swift */,
-				1A2B3C4D5E6F7A8B9C0D1E2F /* GraphData.swift */,
 			);
 			path = "Domain";
 			sourceTree = "<group>";
@@ -259,6 +330,7 @@
 				FDF6A9678E78EBC55D2BFFE7 /* Health */,
 				87B888C54CF7ADA4D902764F /* Networking */,
 				74BC70BE206EC29184343460 /* Persistence */,
+				C1D2E3F4A5B6C7D8E9FA0B1C /* TaxEngine */,
 			);
 			path = "Services";
 			sourceTree = "<group>";
@@ -310,6 +382,8 @@
 		D5B7518A6B0F6C1EA9DC05B7 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				1A1B1C1D1E1F2A2B2C2D2E2F /* CurrencyFormatter.swift */,
+				2A2B2C2D2E2F3A3B3C3D3E3F /* DecimalExtensions.swift */,
 				841B02CA9AEFE2475DE9720D /* Haptics.swift */,
 				ED1C75A8F8C0B0E7E563E2F0 /* KeychainManager.swift */,
 			);
@@ -320,9 +394,12 @@
 			isa = PBXGroup;
 			children = (
 				9D0EF4C2DAA921EF9D2DAD7E /* AuthViewModel.swift */,
+				3E4F5ABFC0D1E2F3A4B5C6D7 /* CalculatorDetailViewModel.swift */,
+				2D3E4FAEBFC0D1E2F3A4B5C6 /* CalculatorListViewModel.swift */,
 				28A517DABFD8EA03E062A463 /* ChatViewModel.swift */,
 				2654CF063AEE3976EDFAEC4A /* ConversationListViewModel.swift */,
 				2B3C4D5E6F7A8B9C0D1E2F3A /* GraphViewModel.swift */,
+				1C2D3E9DAEBFC0D1E2F3A4B5 /* HomeViewModel.swift */,
 			);
 			path = "ViewModels";
 			sourceTree = "<group>";
@@ -331,9 +408,12 @@
 			isa = PBXGroup;
 			children = (
 				E77EE1357C31C1D2C794F579 /* Auth */,
+				F1A2B3C4D5E6F7A8B9C0D1E2 /* Calculators */,
 				AE8A2BC1D9AEC5EC2FA46F10 /* Chat */,
-				A1B2C3D4E5F67890ABCDEF01 /* Graph */,
 				749C1E5D2CDC5D12C2419BB6 /* Conversations */,
+				A1B2C3D4E5F67890ABCDEF01 /* Graph */,
+				E1F2A3B4C5D6E7F8A9B0C1D2 /* Home */,
+				D1E2F3A4B5C6D7E8F9A0B1C2 /* More */,
 				0CA5B07ECC38DAD6EF4EC803 /* Root */,
 				38098EA0FD86F1D7DE4851BD /* Shared */,
 			);
@@ -385,6 +465,10 @@
 		38098EA0FD86F1D7DE4851BD /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				5A5B5C5D5E5F6A6B6C6D6E6F /* CardView.swift */,
+				6A6B6C6D6E6F7A7B7C7D7E7F /* EmptySearchView.swift */,
+				4A4B4C4D4E4F5A5B5C5D5E5F /* FilterChipView.swift */,
+				3A3B3C3D3E3F4A4B4C4D4E4F /* SearchBarView.swift */,
 				58A2E5ACEAA07352DF038509 /* StatusBanner.swift */,
 			);
 			path = "Shared";
@@ -428,6 +512,59 @@
 				4D5E6F7A8B9C0D1E2F3A4B5C /* GraphView.swift */,
 			);
 			path = "Graph";
+			sourceTree = "<group>";
+		};
+		E1F2A3B4C5D6E7F8A9B0C1D2 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				8A8B8C8D8E8F9A9B9C9D9E9F /* FeatureCardView.swift */,
+				7A7B7C7D7E7F8A8B8C8D8E8F /* HomeView.swift */,
+				9A9B9C9D9E9FAA0BAB0CAC0D /* QuickAccessSection.swift */,
+			);
+			path = "Home";
+			sourceTree = "<group>";
+		};
+		D1E2F3A4B5C6D7E8F9A0B1C2 /* More */ = {
+			isa = PBXGroup;
+			children = (
+				0B0C0D0E0F1A1B1C1D1E1F2A /* MoreView.swift */,
+			);
+			path = "More";
+			sourceTree = "<group>";
+		};
+		F1A2B3C4D5E6F7A8B9C0D1E2 /* Calculators */ = {
+			isa = PBXGroup;
+			children = (
+				2D2E2F3A3B4C4D5E5F6A6B7C /* CalculatorInputViews.swift */,
+				1C1D1E1F2A2B3C3D4E4F5A5B /* CalculatorListView.swift */,
+				3E3F4A4B5C5D6E6F7A7B8C8D /* CalculatorResultView.swift */,
+				6B7C7D8E8F9A9BABCBDCEDEF /* IVACalculatorView.swift */,
+				9EAFB0BBCCDDEEFF0A1B2C3D /* LaboralCalculatorsView.swift */,
+				B0C1D2DDEEFF0A1B2C3D4E5F /* OtherCalculatorsView.swift */,
+				AFB0C1CCDDEEFF0A1B2C3D4E /* PatrimonioCalculatorView.swift */,
+				4F5A5B6C6D7E7F8A8B9C9DAE /* RentaCalculatorView.swift */,
+				5A6B6C7D7E8F8A9B9CACBDBE /* RetencionCalculatorView.swift */,
+				7C8D8E9F9AABBCCDDEEFFA0B /* SIMPLECalculatorView.swift */,
+				8D9E9FAABBCCDDEEFF0A1B2C /* SancionesCalculatorView.swift */,
+			);
+			path = "Calculators";
+			sourceTree = "<group>";
+		};
+		C1D2E3F4A5B6C7D8E9FA0B1C /* TaxEngine */ = {
+			isa = PBXGroup;
+			children = (
+				E9FA0B6A7B8C9DAEBFC0D1E2 /* GMFCalculator.swift */,
+				FA0B1C7B8C9DAEBFC0D1E2F3 /* GenericCalculators.swift */,
+				F4A5B61B2C3D4E5F6A7B8C9D /* IVACalculator.swift */,
+				C7D8E94E5F6A7B8C9DAEBFC0 /* LaboralCalculator.swift */,
+				D8E9FA5F6A7B8C9DAEBFC0D1 /* PatrimonioCalculator.swift */,
+				D2E3F4FF0A1B2C3D4E5F6A7B /* RentaCalculator.swift */,
+				E3F4A50A1B2C3D4E5F6A7B8C /* RetencionCalculator.swift */,
+				A5B6C72C3D4E5F6A7B8C9DAE /* SIMPLECalculator.swift */,
+				B6C7D83D4E5F6A7B8C9DAEBF /* SancionesCalculator.swift */,
+				C1D2E3EEFF0A1B2C3D4E5F6A /* TaxData.swift */,
+			);
+			path = "TaxEngine";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -585,6 +722,41 @@
 				BB22CC33DD44EE55FF667788 /* GraphViewModel.swift */,
 				CC33DD44EE55FF66778899AA /* GraphCanvasView.swift */,
 				DD44EE55FF66778899AABB00 /* GraphView.swift */,
+				A1B0C1D0E1F0A2B0C2D0E2F0 /* CurrencyFormatter.swift */,
+				A2B1C2D1E2F1A3B1C3D1E3F1 /* DecimalExtensions.swift */,
+				A3B2C3D2E3F2A4B2C4D2E4F2 /* SearchBarView.swift */,
+				A4B3C4D3E4F3A5B3C5D3E5F3 /* FilterChipView.swift */,
+				A5B4C5D4E5F4A6B4C6D4E6F4 /* CardView.swift */,
+				A6B5C6D5E6F5A7B5C7D5E7F5 /* EmptySearchView.swift */,
+				A7B6C7D6E7F6A8B6C8D6E8F6 /* HomeView.swift */,
+				A8B7C8D7E8F7A9B7C9D7E9F7 /* FeatureCardView.swift */,
+				A9B8C9D8E9F8AAB8CAD8EAF8 /* QuickAccessSection.swift */,
+				AAB9CAD9EAF9ABB9CBD9EBF9 /* MoreView.swift */,
+				ABB0ACBDAECFB0C0B1D0B2E0 /* CalculatorListView.swift */,
+				ACC1ADCEAFDFB1D1B2E1B3F1 /* CalculatorInputViews.swift */,
+				ADD2AEDFB0E0B2F2C0A0D1B1 /* CalculatorResultView.swift */,
+				AEE3AFE0B1F1B3A3D2B2E1C1 /* RentaCalculatorView.swift */,
+				AFF4B0F1C2A2C4B4E3C3F2D2 /* RetencionCalculatorView.swift */,
+				B0A5C1A2D3B3D5C5F4D4A3E3 /* IVACalculatorView.swift */,
+				B1B6D2B3E4C4E6D6A5E5B4F4 /* SIMPLECalculatorView.swift */,
+				B2C7E3C4F5D5F7E7B6F6C5A5 /* SancionesCalculatorView.swift */,
+				B3D8F4D5A6E6A8F8C7A7D6B6 /* LaboralCalculatorsView.swift */,
+				B4E9A5E6B7F7B9A9D8B8E7C7 /* PatrimonioCalculatorView.swift */,
+				B5FAB6F7C8A8CABAE9C9F8D8 /* OtherCalculatorsView.swift */,
+				B6ABC7A8D9B9DBCBFADAA9E9 /* TaxData.swift */,
+				B7BCD8B9EACAECCDFBEBBAFA /* RentaCalculator.swift */,
+				B8CDE9CAFBDBFDDEA0FCCB0B /* RetencionCalculator.swift */,
+				B9DEFADBACECAEEFB1ADDC1C /* IVACalculator.swift */,
+				BAEFA0ECBDFDCFF0C2BEED2D /* SIMPLECalculator.swift */,
+				BBF0B1FDCEAEDF01D3CFFE3E /* SancionesCalculator.swift */,
+				BCA1C2AEDFBFE012E4DAAF4F /* LaboralCalculator.swift */,
+				BDB2D3BFE0C0F123F5EBB050 /* PatrimonioCalculator.swift */,
+				BEC3E4C0F1D1A234A6FCC161 /* GMFCalculator.swift */,
+				BFD4F5D1A2E2B345B7ADD272 /* GenericCalculators.swift */,
+				C0E5A6E2B3F3C456C8BEE383 /* Calculator.swift */,
+				C1F6B7F3C4A4D567D9CFF494 /* HomeViewModel.swift */,
+				C2A7C8A4D5B5E678EADAA5A5 /* CalculatorListViewModel.swift */,
+				C3B8D9B5E6C6F789FBEBB6B6 /* CalculatorDetailViewModel.swift */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

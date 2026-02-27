@@ -9,27 +9,69 @@ struct ContentView: View {
     @State private var conversationListVM = ConversationListViewModel()
     @State private var chatVM: ChatViewModel?
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
-    @State private var selectedTab: AppTab = .chat
+    @State private var selectedTab: AppTab = .home
 
     enum AppTab: String {
-        case chat, graph
+        case home, chat, calculators, et, more
     }
 
     var body: some View {
         TabView(selection: $selectedTab) {
+            // Tab 1: Inicio
+            HomeView(
+                onNavigateToCalculators: { selectedTab = .calculators },
+                onNavigateToChat: { selectedTab = .chat },
+                onNavigateToMore: { selectedTab = .more },
+                onNavigateToCalculator: { _ in selectedTab = .calculators }
+            )
+            .tabItem {
+                Label("Inicio", systemImage: "house")
+            }
+            .tag(AppTab.home)
+
+            // Tab 2: Asistente (Chat — unchanged)
             chatTab
                 .tabItem {
-                    Label("Chat", systemImage: "bubble.left.and.text.bubble.right")
+                    Label("Asistente", systemImage: "bubble.left.and.text.bubble.right")
                 }
                 .tag(AppTab.chat)
 
+            // Tab 3: Calculadoras
+            CalculatorListView()
+                .tabItem {
+                    Label("Calculadoras", systemImage: "function")
+                }
+                .tag(AppTab.calculators)
+
+            // Tab 4: ET (placeholder for Fase 2)
             NavigationStack {
-                GraphView()
+                VStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "book")
+                        .font(.system(size: 48))
+                        .foregroundStyle(Color.appMutedForeground)
+                    Text("Estatuto Tributario")
+                        .font(AppTypography.pageHeading)
+                        .foregroundStyle(Color.appForeground)
+                    Text("1,294 articulos navegables — Proximamente")
+                        .font(AppTypography.bodyDefault)
+                        .foregroundStyle(Color.appMutedForeground)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.appBackground)
+                .navigationTitle("Estatuto Tributario")
+                .navigationBarTitleDisplayMode(.large)
             }
             .tabItem {
-                Label("Grafo", systemImage: "point.3.connected.trianglepath.dotted")
+                Label("ET", systemImage: "book")
             }
-            .tag(AppTab.graph)
+            .tag(AppTab.et)
+
+            // Tab 5: Mas
+            MoreView()
+                .tabItem {
+                    Label("Mas", systemImage: "ellipsis.circle")
+                }
+                .tag(AppTab.more)
         }
         .task {
             setupRepository()

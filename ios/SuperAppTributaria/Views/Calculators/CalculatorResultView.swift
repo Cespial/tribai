@@ -1,0 +1,80 @@
+import SwiftUI
+
+struct CalculatorResultView: View {
+    let title: String
+    let mainValue: String
+    let mainLabel: String
+    let rows: [(label: String, value: String)]
+    var disclaimer: String? = nil
+    var onConsultAssistant: (() -> Void)? = nil
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            // Main result
+            VStack(spacing: 4) {
+                Text(mainLabel)
+                    .font(AppTypography.label)
+                    .foregroundStyle(Color.appMutedForeground)
+
+                Text(mainValue)
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.appForeground)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(AppSpacing.sm)
+            .background(Color.appMuted)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+
+            // Breakdown rows
+            if !rows.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                        ResultRow(label: row.label, value: row.value)
+                        if row.label != rows.last?.label {
+                            Divider()
+                        }
+                    }
+                }
+                .padding(AppSpacing.sm)
+                .background(Color.appCard)
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.card)
+                        .stroke(Color.appBorder, lineWidth: 1)
+                )
+            }
+
+            // Disclaimer
+            if let disclaimer {
+                Text(disclaimer)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(Color.appMutedForeground)
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.appMuted.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+            }
+
+            // Consult assistant
+            if let action = onConsultAssistant {
+                Button(action: action) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "bubble.left.and.text.bubble.right")
+                        Text("Consultar al asistente")
+                    }
+                    .font(AppTypography.bodySmall)
+                    .foregroundStyle(Color.appPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.appCard)
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.button)
+                            .stroke(Color.appBorder, lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
