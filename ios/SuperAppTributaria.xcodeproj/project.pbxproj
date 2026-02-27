@@ -102,6 +102,21 @@
 		C1F6B7F3C4A4D567D9CFF494 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2D3E9DAEBFC0D1E2F3A4B5; };
 		C2A7C8A4D5B5E678EADAA5A5 /* CalculatorListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E4FAEBFC0D1E2F3A4B5C6; };
 		C3B8D9B5E6C6F789FBEBB6B6 /* CalculatorDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4F5ABFC0D1E2F3A4B5C6D7; };
+		E1A2B3C4D5E6F7A8B9C0D1E2 /* ArticleIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4D5E6F7A8B9C0D1E2; };
+		E2B3C4D5E6F7A8B9C0D1E2F3 /* ExplorerFacets.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4D5E6F7A8B9C0D1E2F3; };
+		E3C4D5E6F7A8B9C0D1E2F3A4 /* ArticleDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4D5E6F7A8B9C0D1E2F3A4; };
+		E4D5E6F7A8B9C0D1E2F3A4B5 /* ArticleIndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5E6F7A8B9C0D1E2F3A4B5; };
+		E5E6F7A8B9C0D1E2F3A4B5C6 /* ArticleDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E6F7A8B9C0D1E2F3A4B5C6; };
+		E6F7A8B9C0D1E2F3A4B5C6D7 /* ArticleSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F7A8B9C0D1E2F3A4B5C6D7; };
+		E7A8B9C0D1E2F3A4B5C6D7E8 /* ETExplorerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A8B9C0D1E2F3A4B5C6D7E8; };
+		E8B9C0D1E2F3A4B5C6D7E8F9 /* ArticleDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B9C0D1E2F3A4B5C6D7E8F9; };
+		E9C0D1E2F3A4B5C6D7E8F9A0 /* ETExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0D1E2F3A4B5C6D7E8F9A0; };
+		EAD1E2F3A4B5C6D7E8F9A0B1 /* ArticleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD1E2F3A4B5C6D7E8F9A0B1; };
+		EBE2F3A4B5C6D7E8F9A0B1C2 /* ArticleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE2F3A4B5C6D7E8F9A0B1C2; };
+		ECF3A4B5C6D7E8F9A0B1C2D3 /* ETFilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF3A4B5C6D7E8F9A0B1C2D3; };
+		EDA4B5C6D7E8F9A0B1C2D3E4 /* ModificationTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA4B5C6D7E8F9A0B1C2D3E4; };
+		EEB5C6D7E8F9A0B1C2D3E4F5 /* articles-index.enriched.json in Resources */ = {isa = PBXBuildFile; fileRef = DEB5C6D7E8F9A0B1C2D3E4F5; };
+		EFC6D7E8F9A0B1C2D3E4F5A6 /* explorer-facets.json in Resources */ = {isa = PBXBuildFile; fileRef = DFC6D7E8F9A0B1C2D3E4F5A6; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -221,6 +236,21 @@
 		1C2D3E9DAEBFC0D1E2F3A4B5 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeViewModel.swift"; sourceTree = "<group>"; };
 		2D3E4FAEBFC0D1E2F3A4B5C6 /* CalculatorListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CalculatorListViewModel.swift"; sourceTree = "<group>"; };
 		3E4F5ABFC0D1E2F3A4B5C6D7 /* CalculatorDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CalculatorDetailViewModel.swift"; sourceTree = "<group>"; };
+		D1A2B3C4D5E6F7A8B9C0D1E2 /* ArticleIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArticleIndex.swift"; sourceTree = "<group>"; };
+		D2B3C4D5E6F7A8B9C0D1E2F3 /* ExplorerFacets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExplorerFacets.swift"; sourceTree = "<group>"; };
+		D3C4D5E6F7A8B9C0D1E2F3A4 /* ArticleDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArticleDetail.swift"; sourceTree = "<group>"; };
+		D4D5E6F7A8B9C0D1E2F3A4B5 /* ArticleIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArticleIndexService.swift"; sourceTree = "<group>"; };
+		D5E6F7A8B9C0D1E2F3A4B5C6 /* ArticleDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArticleDetailService.swift"; sourceTree = "<group>"; };
+		D6F7A8B9C0D1E2F3A4B5C6D7 /* ArticleSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArticleSearchEngine.swift"; sourceTree = "<group>"; };
+		D7A8B9C0D1E2F3A4B5C6D7E8 /* ETExplorerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ETExplorerViewModel.swift"; sourceTree = "<group>"; };
+		D8B9C0D1E2F3A4B5C6D7E8F9 /* ArticleDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArticleDetailViewModel.swift"; sourceTree = "<group>"; };
+		D9C0D1E2F3A4B5C6D7E8F9A0 /* ETExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ETExplorerView.swift"; sourceTree = "<group>"; };
+		DAD1E2F3A4B5C6D7E8F9A0B1 /* ArticleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArticleRowView.swift"; sourceTree = "<group>"; };
+		DBE2F3A4B5C6D7E8F9A0B1C2 /* ArticleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArticleDetailView.swift"; sourceTree = "<group>"; };
+		DCF3A4B5C6D7E8F9A0B1C2D3 /* ETFilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ETFilterSheet.swift"; sourceTree = "<group>"; };
+		DDA4B5C6D7E8F9A0B1C2D3E4 /* ModificationTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModificationTimelineView.swift"; sourceTree = "<group>"; };
+		DEB5C6D7E8F9A0B1C2D3E4F5 /* articles-index.enriched.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "SuperAppTributaria/Resources/articles-index.enriched.json"; sourceTree = SOURCE_ROOT; };
+		DFC6D7E8F9A0B1C2D3E4F5A6 /* explorer-facets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "SuperAppTributaria/Resources/explorer-facets.json"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -303,9 +333,12 @@
 		1EEBB4683E25B710EAECED07 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
+				D3C4D5E6F7A8B9C0D1E2F3A4 /* ArticleDetail.swift */,
+				D1A2B3C4D5E6F7A8B9C0D1E2 /* ArticleIndex.swift */,
 				0B1C2D8C9DAEBFC0D1E2F3A4 /* Calculator.swift */,
 				17A4C09C49AF632EE2B68583 /* ChatMessage.swift */,
 				BAB8B92862D27361F0B0B7FC /* Conversation.swift */,
+				D2B3C4D5E6F7A8B9C0D1E2F3 /* ExplorerFacets.swift */,
 				1A2B3C4D5E6F7A8B9C0D1E2F /* GraphData.swift */,
 				709A193882EAE1B6C7F743C1 /* RAGMetadata.swift */,
 				B57B7E91D6DC13676AF3BA6F /* SourceCitation.swift */,
@@ -327,6 +360,7 @@
 			children = (
 				94DE0673A7EBF2E2B89606BC /* Auth */,
 				E889BFD1ECA64DCD092042A3 /* Chat */,
+				F1A8B9C0D1E2F3A4B5C6D7E8 /* ET */,
 				FDF6A9678E78EBC55D2BFFE7 /* Health */,
 				87B888C54CF7ADA4D902764F /* Networking */,
 				74BC70BE206EC29184343460 /* Persistence */,
@@ -393,11 +427,13 @@
 		E771FDC1615CAFE0B623485C /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				D8B9C0D1E2F3A4B5C6D7E8F9 /* ArticleDetailViewModel.swift */,
 				9D0EF4C2DAA921EF9D2DAD7E /* AuthViewModel.swift */,
 				3E4F5ABFC0D1E2F3A4B5C6D7 /* CalculatorDetailViewModel.swift */,
 				2D3E4FAEBFC0D1E2F3A4B5C6 /* CalculatorListViewModel.swift */,
 				28A517DABFD8EA03E062A463 /* ChatViewModel.swift */,
 				2654CF063AEE3976EDFAEC4A /* ConversationListViewModel.swift */,
+				D7A8B9C0D1E2F3A4B5C6D7E8 /* ETExplorerViewModel.swift */,
 				2B3C4D5E6F7A8B9C0D1E2F3A /* GraphViewModel.swift */,
 				1C2D3E9DAEBFC0D1E2F3A4B5 /* HomeViewModel.swift */,
 			);
@@ -411,6 +447,7 @@
 				F1A2B3C4D5E6F7A8B9C0D1E2 /* Calculators */,
 				AE8A2BC1D9AEC5EC2FA46F10 /* Chat */,
 				749C1E5D2CDC5D12C2419BB6 /* Conversations */,
+				F2B9C0D1E2F3A4B5C6D7E8F9 /* ET */,
 				A1B2C3D4E5F67890ABCDEF01 /* Graph */,
 				E1F2A3B4C5D6E7F8A9B0C1D2 /* Home */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* More */,
@@ -498,9 +535,11 @@
 		C3D4E5F6A7B8C9D0E1F20314 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DEB5C6D7E8F9A0B1C2D3E4F5 /* articles-index.enriched.json */,
 				F1E2D3C4B5A6978869504132 /* Assets.xcassets */,
-				5F870CDCBDD84846746AA417 /* PrivacyInfo.xcprivacy */,
+				DFC6D7E8F9A0B1C2D3E4F5A6 /* explorer-facets.json */,
 				5E6F7A8B9C0D1E2F3A4B5C6D /* graph-data.json */,
+				5F870CDCBDD84846746AA417 /* PrivacyInfo.xcprivacy */,
 			);
 			path = "Resources";
 			sourceTree = "<group>";
@@ -565,6 +604,28 @@
 				C1D2E3EEFF0A1B2C3D4E5F6A /* TaxData.swift */,
 			);
 			path = "TaxEngine";
+			sourceTree = "<group>";
+		};
+		F1A8B9C0D1E2F3A4B5C6D7E8 /* ET */ = {
+			isa = PBXGroup;
+			children = (
+				D5E6F7A8B9C0D1E2F3A4B5C6 /* ArticleDetailService.swift */,
+				D4D5E6F7A8B9C0D1E2F3A4B5 /* ArticleIndexService.swift */,
+				D6F7A8B9C0D1E2F3A4B5C6D7 /* ArticleSearchEngine.swift */,
+			);
+			path = "ET";
+			sourceTree = "<group>";
+		};
+		F2B9C0D1E2F3A4B5C6D7E8F9 /* ET */ = {
+			isa = PBXGroup;
+			children = (
+				DBE2F3A4B5C6D7E8F9A0B1C2 /* ArticleDetailView.swift */,
+				DAD1E2F3A4B5C6D7E8F9A0B1 /* ArticleRowView.swift */,
+				D9C0D1E2F3A4B5C6D7E8F9A0 /* ETExplorerView.swift */,
+				DCF3A4B5C6D7E8F9A0B1C2D3 /* ETFilterSheet.swift */,
+				DDA4B5C6D7E8F9A0B1C2D3E4 /* ModificationTimelineView.swift */,
+			);
+			path = "ET";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -663,6 +724,8 @@
 				5C6D22A4EF2970CAFA3A828B /* Localizable.xcstrings */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* Assets.xcassets */,
 				EE55FF66778899AABB001122 /* graph-data.json */,
+				EEB5C6D7E8F9A0B1C2D3E4F5 /* articles-index.enriched.json */,
+				EFC6D7E8F9A0B1C2D3E4F5A6 /* explorer-facets.json */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -757,6 +820,19 @@
 				C1F6B7F3C4A4D567D9CFF494 /* HomeViewModel.swift */,
 				C2A7C8A4D5B5E678EADAA5A5 /* CalculatorListViewModel.swift */,
 				C3B8D9B5E6C6F789FBEBB6B6 /* CalculatorDetailViewModel.swift */,
+				E1A2B3C4D5E6F7A8B9C0D1E2 /* ArticleIndex.swift */,
+				E2B3C4D5E6F7A8B9C0D1E2F3 /* ExplorerFacets.swift */,
+				E3C4D5E6F7A8B9C0D1E2F3A4 /* ArticleDetail.swift */,
+				E4D5E6F7A8B9C0D1E2F3A4B5 /* ArticleIndexService.swift */,
+				E5E6F7A8B9C0D1E2F3A4B5C6 /* ArticleDetailService.swift */,
+				E6F7A8B9C0D1E2F3A4B5C6D7 /* ArticleSearchEngine.swift */,
+				E7A8B9C0D1E2F3A4B5C6D7E8 /* ETExplorerViewModel.swift */,
+				E8B9C0D1E2F3A4B5C6D7E8F9 /* ArticleDetailViewModel.swift */,
+				E9C0D1E2F3A4B5C6D7E8F9A0 /* ETExplorerView.swift */,
+				EAD1E2F3A4B5C6D7E8F9A0B1 /* ArticleRowView.swift */,
+				EBE2F3A4B5C6D7E8F9A0B1C2 /* ArticleDetailView.swift */,
+				ECF3A4B5C6D7E8F9A0B1C2D3 /* ETFilterSheet.swift */,
+				EDA4B5C6D7E8F9A0B1C2D3E4 /* ModificationTimelineView.swift */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

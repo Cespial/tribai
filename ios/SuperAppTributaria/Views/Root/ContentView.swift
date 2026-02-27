@@ -43,28 +43,12 @@ struct ContentView: View {
                 }
                 .tag(AppTab.calculators)
 
-            // Tab 4: ET (placeholder for Fase 2)
-            NavigationStack {
-                VStack(spacing: AppSpacing.sm) {
-                    Image(systemName: "book")
-                        .font(.system(size: 48))
-                        .foregroundStyle(Color.appMutedForeground)
-                    Text("Estatuto Tributario")
-                        .font(AppTypography.pageHeading)
-                        .foregroundStyle(Color.appForeground)
-                    Text("1,294 articulos navegables — Proximamente")
-                        .font(AppTypography.bodyDefault)
-                        .foregroundStyle(Color.appMutedForeground)
+            // Tab 4: ET (Estatuto Tributario Explorer)
+            ETExplorerView()
+                .tabItem {
+                    Label("ET", systemImage: "book")
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.appBackground)
-                .navigationTitle("Estatuto Tributario")
-                .navigationBarTitleDisplayMode(.large)
-            }
-            .tabItem {
-                Label("ET", systemImage: "book")
-            }
-            .tag(AppTab.et)
+                .tag(AppTab.et)
 
             // Tab 5: Mas
             MoreView()
