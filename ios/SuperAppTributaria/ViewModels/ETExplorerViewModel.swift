@@ -4,27 +4,19 @@ import Foundation
 final class ETExplorerViewModel {
     // MARK: - State
 
-    var searchText = ""
-    var selectedLibro: String?
-    var selectedEstado: String?
-    var selectedLey: String?
+    var searchText = "" { didSet { recomputeFiltered() } }
+    var selectedLibro: String? { didSet { recomputeFiltered() } }
+    var selectedEstado: String? { didSet { recomputeFiltered() } }
+    var selectedLey: String? { didSet { recomputeFiltered() } }
     var displayedCount = 60
     var showingFilterSheet = false
+    var isLoading = false
 
     private(set) var allArticles: [ArticleIndexItem] = []
     private(set) var facets: ExplorerFacets?
+    private(set) var filteredArticles: [ArticleIndexItem] = []
 
     // MARK: - Computed
-
-    var filteredArticles: [ArticleIndexItem] {
-        let filtered = ArticleSearchEngine.filter(
-            articles: allArticles,
-            libro: selectedLibro,
-            estado: selectedEstado,
-            ley: selectedLey
-        )
-        return ArticleSearchEngine.search(articles: filtered, query: searchText)
-    }
 
     var displayedArticles: [ArticleIndexItem] {
         Array(filteredArticles.prefix(displayedCount))
@@ -48,9 +40,12 @@ final class ETExplorerViewModel {
 
     // MARK: - Actions
 
-    func loadData() {
-        allArticles = ArticleIndexService.loadIndex()
+    func loadData() async {
+        isLoading = true
+        allArticles = await ArticleIndexService.loadIndex()
         facets = ArticleIndexService.loadFacets()
+        recomputeFiltered()
+        isLoading = false
     }
 
     func loadMore() {
@@ -58,6 +53,13 @@ final class ETExplorerViewModel {
     }
 
     func clearFilters() {
+        selectedLibro = nil
+        selectedEstado = nil
+        selectedLey = nil
+        displayedCount = 60
+    }
+
+    func clearAll() {
         selectedLibro = nil
         selectedEstado = nil
         selectedLey = nil
@@ -77,6 +79,19 @@ final class ETExplorerViewModel {
 
     func setLey(_ ley: String?) {
         selectedLey = selectedLey == ley ? nil : ley
+        displayedCount = 60
+    }
+
+    // MARK: - Private
+
+    private func recomputeFiltered() {
+        let filtered = ArticleSearchEngine.filter(
+            articles: allArticles,
+            libro: selectedLibro,
+            estado: selectedEstado,
+            ley: selectedLey
+        )
+        filteredArticles = ArticleSearchEngine.search(articles: filtered, query: searchText)
         displayedCount = 60
     }
 }

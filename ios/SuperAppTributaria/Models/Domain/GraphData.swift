@@ -70,4 +70,12 @@ enum LibroColor {
         ("Libro V - Procedimiento", "Procedim.", Color(hex: 0x7C3AED)),
         ("Libro VI - GMF", "GMF", Color(hex: 0x0E7490)),
     ]
+
+    static func shortName(for libro: String) -> String {
+        for item in allLibros where libro == item.name {
+            return item.shortName
+        }
+        if libro.contains("Preliminar") { return "Prelim." }
+        return libro
+    }
 }

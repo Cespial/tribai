@@ -41,7 +41,9 @@ struct ArticleDetailView: View {
         .navigationTitle(viewModel.article?.idArticulo ?? "Art. \(slug)")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await viewModel.loadArticle(slug: slug)
+            if viewModel.article == nil {
+                await viewModel.loadArticle(slug: slug)
+            }
         }
     }
 
@@ -271,7 +273,7 @@ struct ArticleDetailView: View {
                                     .foregroundStyle(Color.appMutedForeground)
                             }
                             if !item.tema.isEmpty {
-                                Text(item.tema)
+                                Text(item.tema.decodingHTMLEntities)
                                     .font(AppTypography.caption)
                                     .foregroundStyle(Color.appMutedForeground)
                                     .lineLimit(3)
@@ -329,7 +331,7 @@ struct ArticleDetailView: View {
     private func estadoBadge(_ estado: String) -> some View {
         Text(estado.capitalized)
             .font(.system(size: 10, weight: .medium))
-            .foregroundStyle(.white)
+            .foregroundStyle(estado == "modificado" ? Color(hex: 0x0F0E0D) : .white)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(estadoColor(estado))

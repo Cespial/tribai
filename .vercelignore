@@ -11,3 +11,6 @@ scripts/
 
 # Eval framework
 eval/
+
+# iOS native app (not needed at runtime)
+ios/

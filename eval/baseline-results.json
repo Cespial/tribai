@@ -280,9 +280,9 @@
       "avgMRR": 0
     }
   },
-  "avgLatencyMs": 1094.020588235294,
-  "p95LatencyMs": 1549,
-  "avgTokensUsed": 9352.85,
+  "avgLatencyMs": 4676.997058823529,
+  "p95LatencyMs": 2557,
+  "avgTokensUsed": 9353.508823529412,
   "avgExternalSourcePresence": 0.993421052631579,
   "avgSourceTypeAccuracy": 0.8859649122807018,
   "avgPrecisionAt5Adj": 0.8838235294117643,

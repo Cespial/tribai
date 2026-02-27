@@ -11,11 +11,7 @@ enum ArticleSearchEngine {
         )
 
         return articles.filter { item in
-            let fields = [item.id, item.titulo, item.tituloCorto, item.previewSnippet, item.slug]
-            return fields.contains { field in
-                field.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
-                    .contains(normalized)
-            }
+            item.searchableText.contains(normalized)
         }
     }
 

@@ -19,6 +19,7 @@ struct ArticleRowView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12))
                         .foregroundStyle(Color.appMutedForeground)
+                        .accessibilityHidden(true)
                 }
 
                 // Titulo corto
@@ -71,7 +72,7 @@ struct ArticleRowView: View {
     private var estadoBadge: some View {
         Text(article.estado.capitalized)
             .font(.system(size: 10, weight: .medium))
-            .foregroundStyle(.white)
+            .foregroundStyle(estadoTextColor)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(estadoColor)
@@ -86,9 +87,14 @@ struct ArticleRowView: View {
         }
     }
 
+    private var estadoTextColor: Color {
+        // Yellow background needs dark text for WCAG contrast
+        article.estado == "modificado" ? Color(hex: 0x0F0E0D) : .white
+    }
+
     private var libroPill: some View {
         let color = LibroColor.color(for: article.libro)
-        let shortName = libroShortName(article.libro)
+        let shortName = LibroColor.shortName(for: article.libro)
         return Text(shortName)
             .font(.system(size: 10, weight: .medium))
             .foregroundStyle(color)
@@ -110,13 +116,5 @@ struct ArticleRowView: View {
         .padding(.vertical, 2)
         .background(color.opacity(0.1))
         .clipShape(Capsule())
-    }
-
-    private func libroShortName(_ libro: String) -> String {
-        for item in LibroColor.allLibros where libro == item.name {
-            return item.shortName
-        }
-        if libro.contains("Preliminar") { return "Prelim." }
-        return libro
     }
 }

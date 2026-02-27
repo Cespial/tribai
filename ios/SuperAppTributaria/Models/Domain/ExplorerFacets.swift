@@ -1,6 +1,6 @@
 import Foundation
 
-struct ExplorerFacets: Codable {
+struct ExplorerFacets: Codable, Sendable {
     let totalArticles: Int
     let libros: [FacetItem]
     let estados: [FacetItem]
@@ -20,7 +20,7 @@ struct ExplorerFacets: Codable {
     }
 }
 
-struct FacetItem: Codable, Identifiable {
+struct FacetItem: Codable, Identifiable, Sendable {
     let key: String
     let label: String
     let count: Int
@@ -28,7 +28,7 @@ struct FacetItem: Codable, Identifiable {
     var id: String { key }
 }
 
-struct YearFacet: Codable, Identifiable {
+struct YearFacet: Codable, Identifiable, Sendable {
     let year: Int
     let count: Int
 
