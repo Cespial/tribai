@@ -41,7 +41,7 @@ export function ComparisonSection() {
           id="comparativa-title"
           className="heading-serif text-3xl text-foreground md:text-5xl"
         >
-          Mas practico que trabajar en Excel + busquedas sueltas.
+          Mas practico que el Excel y las busquedas en Google.
         </h2>
 
         <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card">
@@ -75,7 +75,7 @@ export function ComparisonSection() {
           href="/dashboard"
           className="mt-6 inline-flex text-sm font-semibold text-foreground underline underline-offset-4 decoration-border transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          Comparar mi flujo actual
+          Probar la plataforma
         </Link>
       </Reveal>
     </section>

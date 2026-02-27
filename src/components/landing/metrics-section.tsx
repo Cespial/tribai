@@ -67,11 +67,11 @@ export function MetricsSection() {
   return (
     <div ref={ref} className="rounded-2xl border border-border bg-card p-6 md:p-10">
       <h2 id="metrics-title" className="heading-serif text-3xl text-foreground md:text-5xl">
-        Capacidad real de la plataforma.
+        Lo que tiene la plataforma hoy, listo para usar.
       </h2>
       <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-        No es solo lectura: es ejecucion tributaria diaria para consultas,
-        calculos y validacion normativa en Colombia.
+        No es solo lectura: es su herramienta de trabajo diaria para
+        consultas, calculos y validacion normativa.
       </p>
 
       <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-10">

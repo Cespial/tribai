@@ -23,13 +23,13 @@ export function MobileStickyCta() {
           href="/calculadoras/debo-declarar"
           className="inline-flex h-11 flex-1 items-center justify-center rounded-md bg-foreground px-4 text-sm font-semibold text-background active:scale-[0.98] transition-transform"
         >
-          Debo declarar?
+          ¿Debo declarar?
         </Link>
         <Link
           href="#asistente"
           className="inline-flex h-11 flex-1 items-center justify-center rounded-md border border-border bg-card px-4 text-sm font-semibold text-foreground active:scale-[0.98] transition-transform"
         >
-          Abrir IA
+          Consultar IA
         </Link>
       </div>
     </div>

@@ -405,7 +405,7 @@ export function ChatContainer() {
                       <Scale className="h-10 w-10 text-foreground" />
                     </div>
                   </div>
-                  <h2 className="mb-2 heading-serif text-2xl">Asistente Tributario Colombia</h2>
+                  <h2 className="mb-2 heading-serif text-2xl">Su asesor tributario colombiano</h2>
                   <p className="mb-3 flex items-center justify-center gap-1.5 text-muted-foreground">
                     <BookOpen className="h-4 w-4" />
                     Consulta los {UI_COPY.stats.articlesCount} artículos indexados

@@ -78,11 +78,11 @@ const PERSONAS: Persona[] = [
     description:
       "Centralice consulta, calculo y referencia para todo el equipo.",
     points: [
-      "Dashboard unificado",
+      "Panel unificado de consulta",
       "Favoritos para consultas frecuentes",
       "Estandarizacion de criterios",
     ],
-    cta: "Abrir dashboard",
+    cta: "Abrir panel del equipo",
     href: "/dashboard",
   },
 ];

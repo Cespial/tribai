@@ -6,7 +6,7 @@ export const UI_COPY = {
     summaryTitle: "Resumen ejecutivo de cambios",
   },
   favoritos: {
-    title: "Mi Workspace Tributario",
+    title: "Mi Espacio Tributario",
     subtitle:
       "Organice su investigación por cliente, declaración o proyecto.",
     recentsTitle: "Recientes",
@@ -18,7 +18,7 @@ export const UI_COPY = {
   },
   chat: {
     onboarding:
-      "Hola. Soy su asistente tributario para el Estatuto Tributario de Colombia. Puedo explicar artículos, comparar criterios y sugerir calculadoras según su caso.",
+      "Hola. Soy su asesor tributario colombiano. Consulte artículos del Estatuto, compare criterios y use calculadoras según su caso. Estoy para ayudarle.",
     feedback: "Su opinión mejora la calidad de las respuestas.",
   },
   stats: {

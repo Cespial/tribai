@@ -20,7 +20,7 @@ export function FaqSection({ items }: FaqSectionProps) {
     >
       <Reveal className="mx-auto max-w-4xl">
         <h2 id="faq-title" className="heading-serif text-3xl text-foreground md:text-5xl">
-          Preguntas frecuentes antes de empezar.
+          Antes de arrancar, resolvamos dudas.
         </h2>
 
         <div className="mt-10 space-y-4">

@@ -36,9 +36,9 @@ const FOOTER_COLUMNS = [
   {
     title: "Plataforma",
     links: [
-      { label: "Dashboard", href: "/dashboard" },
+      { label: "Panel", href: "/dashboard" },
       { label: "Asistente IA", href: "#asistente" },
-      { label: "FAQ", href: "#faq" },
+      { label: "Preguntas frecuentes", href: "#faq" },
       { label: "Comparativa", href: "#comparativa" },
     ],
   },
@@ -79,7 +79,7 @@ export function FooterLinks() {
           </p>
           <p className="mt-1 text-xs leading-relaxed text-zinc-600">
             Basada en normativa tributaria colombiana y consulta del Estatuto
-            Tributario.
+            Tributario. Hecho en Colombia.
           </p>
         </div>
 

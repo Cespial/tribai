@@ -135,7 +135,7 @@ const FAQ_ENTRIES = [
   {
     question: "Puedo usarla con mi equipo?",
     answer:
-      "Si. Dashboard, favoritos y herramientas compartidas facilitan trabajo estandar.",
+      "Si. Panel de control, favoritos y herramientas compartidas facilitan trabajo estandar.",
   },
 ];
 
@@ -197,13 +197,13 @@ export default function Home() {
               id="hero-title"
               className="heading-serif max-w-3xl text-4xl text-white sm:text-5xl md:text-7xl lg:text-[5.5rem]"
             >
-              Resuelva su tributaria en minutos y reduzca riesgo de sanciones.
+              Toda su tributaria colombiana en un solo lugar. Sin enredos.
             </h1>
 
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/85 sm:text-lg md:text-xl">
               Calcule renta, retencion, IVA y mas. Consulte el Estatuto
               Tributario con IA y valide vencimientos DIAN 2026 desde una sola
-              plataforma gratuita.
+              plataforma gratuita. Hecho en Colombia para profesionales colombianos.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">
@@ -237,7 +237,7 @@ export default function Home() {
             </div>
 
             <p className="mt-3 text-xs font-medium tracking-[0.03em] text-white/70">
-              Sin registro. Sin costo. Respuestas con fuente.
+              Sin registro. Sin costo. Con fuente del Estatuto.
             </p>
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function Home() {
             id="personas-title"
             className="heading-serif max-w-3xl text-3xl text-foreground md:text-5xl"
           >
-            Elija su perfil y empiece por lo que mas le ahorra tiempo hoy.
+            Elija su perfil. Le mostramos por donde empezar.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
             Tributaria Colombia prioriza necesidades reales de contadores,
@@ -275,11 +275,10 @@ export default function Home() {
             id="calculadoras-title"
             className="heading-serif text-3xl text-foreground md:text-5xl"
           >
-            Empiece con las calculadoras mas usadas.
+            Las calculadoras que mas usan los contadores colombianos.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-            Disenadas para consultas reales de contadores, PyME y declarantes
-            en Colombia.
+            Creadas desde cero para la realidad tributaria de Colombia.
           </p>
 
           <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -336,7 +335,7 @@ export default function Home() {
             id="asistente-title"
             className="heading-serif text-center text-3xl text-white md:text-5xl"
           >
-            Pregunte como usted habla. Reciba respuesta con referencia.
+            Pregunte como le preguntaria a un colega. Reciba respuesta con articulo.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-relaxed text-zinc-400 md:text-lg">
             Consulte articulos del ET, sanciones, retencion e interpretacion
@@ -378,11 +377,11 @@ export default function Home() {
             id="cta-final-title"
             className="heading-serif text-4xl text-white md:text-6xl"
           >
-            Haga su primera validacion en menos de 2 minutos.
+            Haga su primera consulta en menos de 2 minutos.
           </h2>
           <p className="mt-5 text-base leading-relaxed text-zinc-400 md:text-lg">
-            Si esta en temporada de vencimientos DIAN 2026, empiece ahora y
-            evite reprocesos.
+            Temporada de vencimientos DIAN 2026. Arranque ahora y evite
+            reprocesos.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
