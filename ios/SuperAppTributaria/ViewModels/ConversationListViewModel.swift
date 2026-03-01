@@ -7,6 +7,7 @@ final class ConversationListViewModel {
     var conversations: [Conversation] = []
     var searchText: String = ""
     var selectedConversationId: String?
+    var loadError: String?
 
     var filteredConversations: [Conversation] {
         if searchText.isEmpty {
@@ -26,10 +27,12 @@ final class ConversationListViewModel {
     @MainActor
     func loadConversations() async {
         guard let repository else { return }
+        loadError = nil
         do {
             conversations = try await repository.fetchAll()
         } catch {
             conversations = []
+            loadError = "No se pudieron cargar las conversaciones."
         }
     }
 
@@ -40,7 +43,7 @@ final class ConversationListViewModel {
             try await repository.save(conversation)
             await loadConversations()
         } catch {
-            // Silently fail — conversation list will refresh on next load
+            loadError = "No se pudo guardar la conversacion."
         }
     }
 

@@ -18,6 +18,9 @@ struct RentaCalculatorView: View {
                         CurrencyInputField(label: "Deducciones (Art. 336)", value: $deducciones)
                         CurrencyInputField(label: "Rentas exentas (Art. 206)", value: $rentasExentas)
                         NumberInputField(label: "Numero de dependientes (max 4)", value: $dependientes)
+                            .onChange(of: dependientes) {
+                                dependientes = min(max(dependientes, 0), 4)
+                            }
                         CurrencyInputField(label: "Aportes voluntarios a pension", value: $aportesVoluntarios)
 
                         CalculateButton(title: "Calcular Renta") {

@@ -8,7 +8,13 @@ struct ConversationListView: View {
 
     var body: some View {
         List {
-            if viewModel.filteredConversations.isEmpty {
+            if let error = viewModel.loadError {
+                ContentUnavailableView(
+                    "Error al cargar",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text(error)
+                )
+            } else if viewModel.filteredConversations.isEmpty {
                 ContentUnavailableView(
                     "Sin conversaciones",
                     systemImage: "bubble.left.and.bubble.right",

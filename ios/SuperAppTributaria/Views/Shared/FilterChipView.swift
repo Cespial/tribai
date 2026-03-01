@@ -23,5 +23,7 @@ struct FilterChipView: View {
                 )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(title), \(isSelected ? "seleccionado" : "no seleccionado")")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

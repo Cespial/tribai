@@ -149,6 +149,7 @@ struct ETExplorerView: View {
                                     }
                                     .buttonStyle(.plain)
                                     .padding(.horizontal, AppSpacing.sm)
+                                    .accessibilityLabel("Cargar mas articulos, \(viewModel.totalFilteredCount - viewModel.displayedArticles.count) restantes")
                                 }
                             }
                             .padding(.vertical, AppSpacing.xs)

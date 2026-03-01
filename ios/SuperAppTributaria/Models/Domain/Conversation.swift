@@ -22,7 +22,7 @@ struct Conversation: Identifiable, Equatable {
     }
 
     static func generateId() -> String {
-        "conv-\(String((0..<11).map { _ in "abcdefghijklmnopqrstuvwxyz0123456789".randomElement()! }))"
+        "conv-\(String((0..<11).compactMap { _ in "abcdefghijklmnopqrstuvwxyz0123456789".randomElement() }))"
     }
 
     mutating func updateTitle() {

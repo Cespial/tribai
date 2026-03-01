@@ -32,6 +32,7 @@ struct SearchBarView: View {
                         .font(.system(size: 16))
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Limpiar busqueda")
             }
         }
         .padding(.horizontal, 12)

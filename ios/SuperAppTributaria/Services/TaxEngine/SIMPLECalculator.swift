@@ -32,7 +32,7 @@ enum SIMPLECalculator {
         // Find applicable bracket
         var tarifaAplicable: Decimal = 0
         for bracket in TaxData.simpleBrackets {
-            if ingresosUVT > bracket.fromUVT && ingresosUVT <= bracket.toUVT {
+            if ingresosUVT >= bracket.fromUVT && ingresosUVT <= bracket.toUVT {
                 tarifaAplicable = bracket.rates[groupIndex]
                 break
             }

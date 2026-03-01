@@ -4,6 +4,7 @@ struct ChatView: View {
     @Bindable var viewModel: ChatViewModel
     @State private var showSourcesPanel = false
     @State private var selectedSource: SourceCitation?
+    @State private var showCopiedFeedback = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,6 +37,19 @@ struct ChatView: View {
             SourceCitationsPanel(sources: [source])
                 .presentationDetents([.medium])
         }
+        .overlay(alignment: .top) {
+            if showCopiedFeedback {
+                Text("Copiado")
+                    .font(AppTypography.label)
+                    .foregroundStyle(Color.appPrimaryForeground)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.appPrimary)
+                    .clipShape(Capsule())
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .padding(.top, AppSpacing.sm)
+            }
+        }
     }
 
     private var messageList: some View {
@@ -46,7 +60,7 @@ struct ChatView: View {
                         MessageBubbleView(
                             message: message,
                             isStreaming: viewModel.isStreaming && message == viewModel.messages.last,
-                            onCopy: {},
+                            onCopy: { showCopiedToast() },
                             onRetry: message == viewModel.messages.last && message.role == .assistant
                                 ? { viewModel.retry() }
                                 : nil,
@@ -69,6 +83,14 @@ struct ChatView: View {
             .onChange(of: viewModel.streamingText) {
                 scrollToBottom(proxy: proxy)
             }
+        }
+    }
+
+    private func showCopiedToast() {
+        withAnimation { showCopiedFeedback = true }
+        Task {
+            try? await Task.sleep(for: .seconds(1.5))
+            withAnimation { showCopiedFeedback = false }
         }
     }
 
