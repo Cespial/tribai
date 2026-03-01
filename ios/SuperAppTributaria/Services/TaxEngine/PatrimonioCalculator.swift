@@ -44,7 +44,7 @@ enum PatrimonioCalculator {
         }
 
         let impuestoCOP = (impuestoUVT * input.uvt).rounded
-        let tarifaEfectiva = patrimonioLiquido > 0 ? impuestoCOP / patrimonioLiquido : 0
+        let tarifaEfectiva = baseGravable > 0 ? impuestoCOP / baseGravable : 0
 
         return Result(
             patrimonioLiquido: patrimonioLiquido,

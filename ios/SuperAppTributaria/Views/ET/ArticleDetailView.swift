@@ -6,15 +6,7 @@ struct ArticleDetailView: View {
 
     var body: some View {
         Group {
-            if viewModel.isLoading {
-                VStack(spacing: AppSpacing.sm) {
-                    ProgressView()
-                    Text("Cargando articulo...")
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(Color.appMutedForeground)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if let error = viewModel.error {
+            if let error = viewModel.error {
                 VStack(spacing: AppSpacing.sm) {
                     Image(systemName: "wifi.exclamationmark")
                         .font(.system(size: 40))
@@ -35,6 +27,14 @@ struct ArticleDetailView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let article = viewModel.article {
                 articleContent(article)
+            } else {
+                VStack(spacing: AppSpacing.sm) {
+                    ProgressView()
+                    Text("Cargando articulo...")
+                        .font(AppTypography.bodySmall)
+                        .foregroundStyle(Color.appMutedForeground)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .background(Color.appBackground)

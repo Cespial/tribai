@@ -31,7 +31,7 @@ struct LaboralCalculatorsView: View {
 
     // Horas extras state
     @State private var salarioHE: Decimal = 0
-    @State private var periodo: LaboralCalculator.Periodo = .h2_2025
+    @State private var periodo: LaboralCalculator.Periodo = .h1_2026
     @State private var horasExtraDiurna: Decimal = 0
     @State private var horasExtraNocturna: Decimal = 0
     @State private var horasRecargoNocturno: Decimal = 0

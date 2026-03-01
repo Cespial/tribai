@@ -308,18 +308,16 @@ enum TaxData {
     static let dividendosNoGravadosRate: Decimal = Decimal(string: "0.35")!
     static let dividendosDescuentoRate: Decimal = Decimal(string: "0.19")!
 
-    // MARK: - Patrimonio — Art. 292-2 ET
+    // MARK: - Patrimonio — Art. 292-3, 295-3 ET (Ley 2277 de 2022)
 
-    static let patrimonioThresholdUVT: Decimal = 40_000
+    static let patrimonioThresholdUVT: Decimal = 72_000
     static let patrimonioViviendaExclusionUVT: Decimal = 12_000
 
     static let patrimonioBrackets: [TaxBracket] = [
-        TaxBracket(fromUVT: 0,       toUVT: 40_000,  rate: 0,     baseUVT: 0),
-        TaxBracket(fromUVT: 40_000,  toUVT: 70_000,  rate: Decimal(string: "0.005")!, baseUVT: 0),
-        TaxBracket(fromUVT: 70_000,  toUVT: 120_000, rate: Decimal(string: "0.010")!, baseUVT: 150),
-        TaxBracket(fromUVT: 120_000, toUVT: 200_000, rate: Decimal(string: "0.015")!, baseUVT: 650),
-        TaxBracket(fromUVT: 200_000, toUVT: 300_000, rate: Decimal(string: "0.025")!, baseUVT: 1_850),
-        TaxBracket(fromUVT: 300_000, toUVT: Decimal.greatestFiniteMagnitude, rate: Decimal(string: "0.050")!, baseUVT: 4_350),
+        TaxBracket(fromUVT: 0,       toUVT: 72_000,  rate: 0,                            baseUVT: 0),
+        TaxBracket(fromUVT: 72_000,  toUVT: 122_000, rate: Decimal(string: "0.005")!,    baseUVT: 0),
+        TaxBracket(fromUVT: 122_000, toUVT: 239_000, rate: Decimal(string: "0.010")!,    baseUVT: 250),
+        TaxBracket(fromUVT: 239_000, toUVT: Decimal.greatestFiniteMagnitude, rate: Decimal(string: "0.015")!, baseUVT: 1_420),
     ]
 
     // MARK: - Laboral

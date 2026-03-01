@@ -12,14 +12,14 @@ final class ArticleDetailViewModel {
     // MARK: - State
 
     var article: ArticleDetail?
-    var isLoading = true
+    var isLoading = false
     var error: String?
     var selectedTab: Tab = .contenido
 
     // MARK: - Actions
 
     func loadArticle(slug: String) async {
-        guard !isLoading || article == nil else { return }
+        guard !isLoading, article == nil else { return }
         isLoading = true
         error = nil
 

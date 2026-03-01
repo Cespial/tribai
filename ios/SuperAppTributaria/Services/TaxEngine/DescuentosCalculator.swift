@@ -52,11 +52,13 @@ enum DescuentosCalculator {
             tarifaEfectiva = 0
         }
 
+        // Prorate individual discounts when total exceeds cap
+        let prorationFactor = totalBruto > 0 ? totalDescuentos / totalBruto : 0
         return Result(
             impuestoNeto: impuestoNeto,
-            descuentoIVA: min(descuentoIVA, impuestoNeto),
-            descuentoDonaciones: min(descuentoDonaciones, impuestoNeto),
-            descuentoExterior: min(descuentoExterior, impuestoNeto),
+            descuentoIVA: (descuentoIVA * prorationFactor).rounded,
+            descuentoDonaciones: (descuentoDonaciones * prorationFactor).rounded,
+            descuentoExterior: (descuentoExterior * prorationFactor).rounded,
             totalDescuentos: totalDescuentos,
             impuestoFinal: impuestoFinal,
             tarifaEfectiva: tarifaEfectiva
