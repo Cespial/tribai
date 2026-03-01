@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MoreView: View {
+    var onNavigateToCalculators: () -> Void = {}
 
     var body: some View {
         NavigationStack {
@@ -39,7 +40,9 @@ struct MoreView: View {
                     }
 
                     NavigationLink {
-                        GuiasListView()
+                        GuiasListView(
+                            onNavigateToCalculators: onNavigateToCalculators
+                        )
                     } label: {
                         moreRow(icon: "list.bullet.clipboard", title: "Guias Interactivas", subtitle: "Paso a paso tributarios")
                     }
@@ -80,7 +83,7 @@ struct MoreView: View {
                             Text("SuperApp Tributaria Colombia")
                                 .font(AppTypography.caption)
                                 .foregroundStyle(Color.appMutedForeground)
-                            Text("UVT 2026: $52.374 | SMLMV: $1.750.905")
+                            Text("UVT \(TaxData.currentUVTYear): \(CurrencyFormatter.cop(TaxData.uvt2026)) | SMLMV: \(CurrencyFormatter.cop(TaxData.smlmv2026))")
                                 .font(AppTypography.caption)
                                 .foregroundStyle(Color.appMutedForeground)
                         }

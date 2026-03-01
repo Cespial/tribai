@@ -67,6 +67,8 @@ struct IndicadoresView: View {
         .navigationDestination(for: String.self) { indicadorId in
             if let indicador = IndicadoresData.items.first(where: { $0.id == indicadorId }) {
                 IndicadorDetailView(indicador: indicador)
+            } else {
+                ContentUnavailableView("Indicador no encontrado", systemImage: "exclamationmark.triangle")
             }
         }
     }

@@ -13,6 +13,25 @@ struct DashboardView: View {
         Group {
             if let stats = viewModel.stats {
                 statsContent(stats)
+            } else if let error = viewModel.loadError {
+                VStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 40))
+                        .foregroundStyle(Color.appDestructive)
+                    Text("Error al cargar")
+                        .font(AppTypography.cardHeading)
+                        .foregroundStyle(Color.appForeground)
+                    Text(error)
+                        .font(AppTypography.bodySmall)
+                        .foregroundStyle(Color.appMutedForeground)
+                        .multilineTextAlignment(.center)
+                    Button("Reintentar") {
+                        viewModel.loadStats()
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .padding(AppSpacing.md)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ProgressView("Cargando datos...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

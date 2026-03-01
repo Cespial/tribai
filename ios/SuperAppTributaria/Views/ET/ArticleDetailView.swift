@@ -50,6 +50,9 @@ struct ArticleDetailView: View {
                 }
             }
         }
+        .navigationDestination(for: String.self) { ref in
+            ArticleDetailView(slug: "articulo-\(ref)")
+        }
         .task {
             if viewModel.article == nil {
                 await viewModel.loadArticle(slug: slug)

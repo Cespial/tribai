@@ -2,6 +2,8 @@ import SwiftUI
 
 struct GuiasListView: View {
     private let guias = GuiasData.guias
+    var onNavigateToCalculators: () -> Void = {}
+    var onNavigateToMore: () -> Void = {}
 
     var body: some View {
         ScrollView {
@@ -20,7 +22,13 @@ struct GuiasListView: View {
         .navigationTitle("Guias Interactivas")
         .navigationDestination(for: String.self) { guiaId in
             if let guia = guias.first(where: { $0.id == guiaId }) {
-                GuiaFlowView(guia: guia)
+                GuiaFlowView(
+                    guia: guia,
+                    onNavigateToCalculators: onNavigateToCalculators,
+                    onNavigateToMore: onNavigateToMore
+                )
+            } else {
+                ContentUnavailableView("Guia no encontrada", systemImage: "exclamationmark.triangle")
             }
         }
     }

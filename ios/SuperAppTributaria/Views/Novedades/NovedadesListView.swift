@@ -80,6 +80,8 @@ struct NovedadesListView: View {
         .navigationDestination(for: String.self) { novedadId in
             if let novedad = NovedadesData.items.first(where: { $0.id == novedadId }) {
                 NovedadDetailView(novedad: novedad)
+            } else {
+                ContentUnavailableView("Novedad no encontrada", systemImage: "exclamationmark.triangle")
             }
         }
     }

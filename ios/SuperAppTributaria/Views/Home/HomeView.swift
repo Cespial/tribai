@@ -47,13 +47,13 @@ struct HomeView: View {
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Constantes 2026")
+            Text("Constantes \(TaxData.currentUVTYear)")
                 .font(AppTypography.label)
                 .foregroundStyle(Color.appMutedForeground)
 
             HStack(spacing: AppSpacing.sm) {
-                indicatorPill(label: "UVT", value: "$52.374")
-                indicatorPill(label: "SMLMV", value: "$1.750.905")
+                indicatorPill(label: "UVT", value: CurrencyFormatter.cop(TaxData.uvt2026))
+                indicatorPill(label: "SMLMV", value: CurrencyFormatter.cop(TaxData.smlmv2026))
             }
         }
     }
@@ -82,7 +82,7 @@ struct HomeView: View {
 
     private var indicatorsSection: some View {
         HStack(spacing: AppSpacing.xs) {
-            indicatorCard(title: "Auxilio Transporte", value: "$249.095")
+            indicatorCard(title: "Auxilio Transporte", value: CurrencyFormatter.cop(TaxData.auxilioTransporte2026))
             indicatorCard(title: "Sancion Minima", value: CurrencyFormatter.cop(TaxData.sancionMinimaUVT * TaxData.uvt2026))
         }
     }

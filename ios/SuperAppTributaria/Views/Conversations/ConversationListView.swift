@@ -4,6 +4,7 @@ struct ConversationListView: View {
     @Bindable var viewModel: ConversationListViewModel
     let onSelect: (Conversation) -> Void
     let onNewConversation: () -> Void
+    @State private var conversationToDelete: Conversation?
 
     var body: some View {
         List {
@@ -25,14 +26,33 @@ struct ConversationListView: View {
                     }
                 }
                 .onDelete { indexSet in
-                    for index in indexSet {
-                        let conversation = viewModel.filteredConversations[index]
-                        Task {
-                            await viewModel.deleteConversation(id: conversation.id)
-                        }
+                    if let index = indexSet.first {
+                        conversationToDelete = viewModel.filteredConversations[index]
                     }
                 }
             }
+        }
+        .confirmationDialog(
+            "Eliminar conversacion",
+            isPresented: Binding(
+                get: { conversationToDelete != nil },
+                set: { if !$0 { conversationToDelete = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Eliminar", role: .destructive) {
+                if let conversation = conversationToDelete {
+                    Task {
+                        await viewModel.deleteConversation(id: conversation.id)
+                    }
+                }
+                conversationToDelete = nil
+            }
+            Button("Cancelar", role: .cancel) {
+                conversationToDelete = nil
+            }
+        } message: {
+            Text("Esta accion no se puede deshacer. Se eliminara toda la conversacion.")
         }
         .listStyle(.insetGrouped)
         .searchable(text: $viewModel.searchText, prompt: "Buscar conversaciones")

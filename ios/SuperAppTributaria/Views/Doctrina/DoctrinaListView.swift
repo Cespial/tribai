@@ -81,6 +81,8 @@ struct DoctrinaListView: View {
         .navigationDestination(for: String.self) { docId in
             if let doctrina = DoctrinaCuradaData.items.first(where: { $0.id == docId }) {
                 DoctrinaDetailView(doctrina: doctrina)
+            } else {
+                ContentUnavailableView("Documento no encontrado", systemImage: "exclamationmark.triangle")
             }
         }
     }

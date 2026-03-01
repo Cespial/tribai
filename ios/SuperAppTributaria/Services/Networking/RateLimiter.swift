@@ -34,7 +34,7 @@ actor RateLimiter {
 
         // Calculate wait time based on oldest timestamp in window
         guard let oldest = timestamps.first else { return .allowed }
-        let waitTime = windowSeconds - now.timeIntervalSince(oldest) + 0.1
+        let waitTime = windowSeconds - now.timeIntervalSince(oldest)
         return .waitRequired(seconds: max(0, waitTime))
     }
 

@@ -52,7 +52,7 @@ struct ContentView: View {
                 .tag(AppTab.et)
 
             // Tab 5: Mas
-            MoreView()
+            MoreView(onNavigateToCalculators: { selectedTab = .calculators })
                 .tabItem {
                     Label("Mas", systemImage: "ellipsis.circle")
                 }
