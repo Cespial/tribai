@@ -162,10 +162,6 @@ export function InteractiveTaxText({ text, className }: InteractiveTaxTextProps)
       // 3. Check Ley
       const leyMatch = part.match(RE_LEY);
       if (leyMatch) {
-        // eslint-disable-next-line react-hooks/immutability
-        RE_LEY.lastIndex = 0;
-        const exec = RE_LEY.exec(part);
-        const _leyNum = exec ? exec[1] : "";
         return (
           <LegalTooltip
             key={`ley-${index}`}
@@ -181,10 +177,6 @@ export function InteractiveTaxText({ text, className }: InteractiveTaxTextProps)
       // 4. Check Decreto
       const decMatch = part.match(RE_DECRETO);
       if (decMatch) {
-        // eslint-disable-next-line react-hooks/immutability
-        RE_DECRETO.lastIndex = 0;
-        const exec = RE_DECRETO.exec(part);
-        const _decNum = exec ? exec[1] : "";
         return (
           <LegalTooltip
             key={`dec-${index}`}

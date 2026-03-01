@@ -97,9 +97,6 @@ function deserializeSelectedOptions(value: string): SelectedOption[] | null {
 }
 
 function StepTimeline({
-  guide: _guide,
-  history: _history,
-  currentNodeId: _currentNodeId,
   selectedOptions
 }: {
   guide: GuiaEducativaEnriched;
