@@ -86,6 +86,9 @@ struct GraphView: View {
         }
         .navigationTitle("Grafo de Relaciones")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(for: String.self) { slug in
+            ArticleDetailView(slug: slug)
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -186,6 +189,20 @@ struct GraphNodeDetailView: View {
                 }
                 .font(AppTypography.caption)
                 .foregroundStyle(Color.appMutedForeground)
+            }
+
+            NavigationLink(value: "articulo-\(node.id)") {
+                HStack(spacing: 6) {
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 13))
+                    Text("Ver articulo")
+                        .font(AppTypography.label)
+                }
+                .foregroundStyle(Color.appPrimary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.appMuted)
+                .clipShape(Capsule())
             }
         }
         .padding(16)

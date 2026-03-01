@@ -6,36 +6,70 @@ struct MoreView: View {
         NavigationStack {
             List {
                 Section("Herramientas") {
-                    moreRow(icon: "calendar", title: "Calendario Fiscal 2026", subtitle: "Fechas y plazos tributarios")
-                    moreRow(icon: "chart.bar", title: "Indicadores Economicos", subtitle: "UVT, SMLMV, tasas de interes")
-                    moreRow(icon: "character.book.closed", title: "Glosario Tributario", subtitle: "Terminos y definiciones")
+                    NavigationLink {
+                        CalendarioView()
+                    } label: {
+                        moreRow(icon: "calendar", title: "Calendario Fiscal 2026", subtitle: "Fechas y plazos tributarios")
+                    }
+
+                    NavigationLink {
+                        IndicadoresView()
+                    } label: {
+                        moreRow(icon: "chart.bar", title: "Indicadores Economicos", subtitle: "UVT, SMLMV, tasas de interes")
+                    }
+
+                    NavigationLink {
+                        GlosarioView()
+                    } label: {
+                        moreRow(icon: "character.book.closed", title: "Glosario Tributario", subtitle: "Terminos y definiciones")
+                    }
+
+                    NavigationLink {
+                        RetencionTablaView()
+                    } label: {
+                        moreRow(icon: "tablecells", title: "Tabla de Retencion", subtitle: "Conceptos y tarifas 2026")
+                    }
                 }
 
                 Section("Contenido") {
-                    moreRow(icon: "doc.text.magnifyingglass", title: "Doctrina DIAN", subtitle: "Conceptos y oficios oficiales")
-                    moreRow(icon: "list.bullet.clipboard", title: "Guias Interactivas", subtitle: "Paso a paso tributarios")
-                    moreRow(icon: "newspaper", title: "Novedades Normativas", subtitle: "Reformas y cambios recientes")
+                    NavigationLink {
+                        DoctrinaListView()
+                    } label: {
+                        moreRow(icon: "doc.text.magnifyingglass", title: "Doctrina DIAN", subtitle: "Conceptos y oficios oficiales")
+                    }
+
+                    NavigationLink {
+                        GuiasListView()
+                    } label: {
+                        moreRow(icon: "list.bullet.clipboard", title: "Guias Interactivas", subtitle: "Paso a paso tributarios")
+                    }
+
+                    NavigationLink {
+                        NovedadesListView()
+                    } label: {
+                        moreRow(icon: "newspaper", title: "Novedades Normativas", subtitle: "Reformas y cambios recientes")
+                    }
+                }
+
+                Section("Personal") {
+                    NavigationLink {
+                        FavoritosView()
+                    } label: {
+                        moreRow(icon: "bookmark", title: "Favoritos", subtitle: "Articulos y calculadoras guardados")
+                    }
                 }
 
                 Section("Herramientas avanzadas") {
-                    moreRow(icon: "chart.xyaxis.line", title: "Dashboard Analitico", subtitle: "Estadisticas del Estatuto Tributario")
+                    NavigationLink {
+                        DashboardView()
+                    } label: {
+                        moreRow(icon: "chart.xyaxis.line", title: "Dashboard Analitico", subtitle: "Estadisticas del Estatuto Tributario")
+                    }
 
                     NavigationLink {
                         GraphView()
                     } label: {
-                        Label {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Grafo de Relaciones")
-                                    .font(AppTypography.bodyDefault)
-                                    .foregroundStyle(Color.appForeground)
-                                Text("Mapa visual de conexiones del ET")
-                                    .font(AppTypography.caption)
-                                    .foregroundStyle(Color.appMutedForeground)
-                            }
-                        } icon: {
-                            Image(systemName: "point.3.connected.trianglepath.dotted")
-                                .foregroundStyle(Color.appForeground)
-                        }
+                        moreRow(icon: "point.3.connected.trianglepath.dotted", title: "Grafo de Relaciones", subtitle: "Mapa visual de conexiones del ET")
                     }
                 }
 

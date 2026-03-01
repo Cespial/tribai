@@ -34,13 +34,13 @@ struct OtherCalculatorsView: View {
                 case "renta-juridicas", "zonas-francas":
                     RentaJuridicasSection()
                 case "descuentos-tributarios":
-                    descuentosPlaceholder
+                    DescuentosSection()
                 case "dividendos-juridicas":
-                    dividendosJuridicasPlaceholder
+                    DividendosPJSection()
                 case "comparador":
-                    comparadorPlaceholder
+                    ComparadorSection()
                 case "ica":
-                    icaPlaceholder
+                    ICASection()
                 default:
                     genericPlaceholder
                 }
@@ -51,36 +51,6 @@ struct OtherCalculatorsView: View {
         .background(Color.appBackground)
         .navigationTitle(CalculatorCatalog.item(byId: calculatorId)?.title ?? "Calculadora")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    // MARK: - Placeholder views for less common calculators
-
-    private var descuentosPlaceholder: some View {
-        placeholderCard(
-            title: "Descuentos Tributarios",
-            description: "IVA sobre activos productivos (Art. 258-1), donaciones (Art. 257), e impuestos pagados en el exterior (Art. 254). Aplican contra el impuesto de renta con limite del 30-50% del impuesto neto."
-        )
-    }
-
-    private var dividendosJuridicasPlaceholder: some View {
-        placeholderCard(
-            title: "Dividendos PJ",
-            description: "Nacionales: tarifa 0% (ya tributo a nivel societario). Extranjeros: retencion 20% (Art. 245). No gravados a nivel societario: 35% + tarifa Art. 242-1."
-        )
-    }
-
-    private var comparadorPlaceholder: some View {
-        placeholderCard(
-            title: "Comparador de Contratacion",
-            description: "Compara costo total de contratar via: (1) Contrato laboral, (2) Salario integral, (3) Prestacion de servicios. Incluye seguridad social, parafiscales y prestaciones."
-        )
-    }
-
-    private var icaPlaceholder: some View {
-        placeholderCard(
-            title: "Impuesto ICA",
-            description: "Impuesto de industria y comercio municipal. Tarifas varian por actividad y municipio (tipicamente 2-14 por mil). Incluye sobretasas: avisos y tableros, bomberil, seguridad."
-        )
     }
 
     private var genericPlaceholder: some View {
@@ -690,6 +660,265 @@ private struct RentaJuridicasSection: View {
                     ("Sobretasa financiero", CurrencyFormatter.cop(r.sobretasa)),
                 ],
                 disclaimer: "Art. 240 ET. Sobretasa financiero: 15% adicional sobre renta > 120,000 UVT (Dto 1474/2025)."
+            )
+        }
+    }
+}
+
+// MARK: - Descuentos Tributarios
+
+private struct DescuentosSection: View {
+    @State private var impuestoNeto: Decimal = 0
+    @State private var ivaActivos: Decimal = 0
+    @State private var donaciones: Decimal = 0
+    @State private var impuestoExterior: Decimal = 0
+    @State private var result: DescuentosCalculator.Result?
+
+    var body: some View {
+        CardView {
+            VStack(spacing: AppSpacing.sm) {
+                CurrencyInputField(label: "Impuesto neto de renta", value: $impuestoNeto)
+                CurrencyInputField(label: "IVA activos productivos (Art. 258-1)", value: $ivaActivos)
+                CurrencyInputField(label: "Donaciones realizadas (Art. 257)", value: $donaciones)
+                CurrencyInputField(label: "Impuestos pagados exterior (Art. 254)", value: $impuestoExterior)
+
+                CalculateButton(title: "Calcular Descuentos") {
+                    result = DescuentosCalculator.calculate(input: DescuentosCalculator.Input(
+                        impuestoNeto: impuestoNeto,
+                        ivaActivosProductivos: ivaActivos,
+                        donaciones: donaciones,
+                        impuestoExterior: impuestoExterior
+                    ))
+                }
+            }
+        }
+
+        if let r = result {
+            CalculatorResultView(
+                title: "Descuentos Tributarios",
+                mainValue: CurrencyFormatter.cop(r.totalDescuentos),
+                mainLabel: "Total descuentos aplicables",
+                rows: [
+                    ("Impuesto neto", CurrencyFormatter.cop(r.impuestoNeto)),
+                    ("Descuento IVA activos", CurrencyFormatter.cop(r.descuentoIVA)),
+                    ("Descuento donaciones (25%)", CurrencyFormatter.cop(r.descuentoDonaciones)),
+                    ("Descuento impuesto exterior", CurrencyFormatter.cop(r.descuentoExterior)),
+                    ("Impuesto final", CurrencyFormatter.cop(r.impuestoFinal)),
+                ],
+                disclaimer: "Art. 254, 257, 258-1 ET. Descuentos limitados al impuesto neto de renta."
+            )
+        }
+    }
+}
+
+// MARK: - Dividendos PJ
+
+private struct DividendosPJSection: View {
+    @State private var dividendos: Decimal = 0
+    @State private var esNacional: Bool = true
+    @State private var gravados: Bool = true
+    @State private var result: DividendosPJCalculator.Result?
+
+    var body: some View {
+        CardView {
+            VStack(spacing: AppSpacing.sm) {
+                CurrencyInputField(label: "Dividendos recibidos", value: $dividendos)
+                Toggle("PJ Nacional (domiciliada en Colombia)", isOn: $esNacional)
+                    .font(AppTypography.bodySmall)
+                    .tint(Color.appPrimary)
+                Toggle("Gravados a nivel societario", isOn: $gravados)
+                    .font(AppTypography.bodySmall)
+                    .tint(Color.appPrimary)
+
+                CalculateButton(title: "Calcular") {
+                    result = DividendosPJCalculator.calculate(input: DividendosPJCalculator.Input(
+                        dividendos: dividendos,
+                        esNacional: esNacional,
+                        gravadosSocietario: gravados
+                    ))
+                }
+            }
+        }
+
+        if let r = result {
+            CalculatorResultView(
+                title: "Dividendos PJ",
+                mainValue: CurrencyFormatter.cop(r.impuesto),
+                mainLabel: "Impuesto sobre dividendos",
+                rows: [
+                    ("Dividendos", CurrencyFormatter.cop(r.dividendos)),
+                    ("Tipo PJ", r.esNacional ? "Nacional" : "Extranjera"),
+                    ("Gravados societario", r.gravadosSocietario ? "Si" : "No"),
+                    ("Tarifa efectiva", CurrencyFormatter.percent(r.tarifaEfectiva)),
+                    ("Neto despues impuesto", CurrencyFormatter.cop(r.neto)),
+                ],
+                disclaimer: r.explicacion
+            )
+        }
+    }
+}
+
+// MARK: - Comparador de Contratacion
+
+private struct ComparadorSection: View {
+    @State private var salario: Decimal = 0
+    @State private var result: ComparadorContratacionCalculator.Result?
+
+    var body: some View {
+        CardView {
+            VStack(spacing: AppSpacing.sm) {
+                CurrencyInputField(label: "Salario mensual base", value: $salario)
+
+                CalculateButton(title: "Comparar Escenarios") {
+                    result = ComparadorContratacionCalculator.calculate(
+                        input: ComparadorContratacionCalculator.Input(salarioBase: salario)
+                    )
+                }
+            }
+        }
+
+        if let r = result {
+            comparadorResultCard("Contrato Laboral", escenario: r.laboral)
+            comparadorResultCard("Salario Integral", escenario: r.integral)
+            comparadorResultCard("Prestacion de Servicios", escenario: r.servicios)
+
+            // Resumen comparativo
+            CardView {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text("Resumen Comparativo")
+                        .font(AppTypography.cardHeading)
+                        .foregroundStyle(Color.appForeground)
+
+                    Divider()
+
+                    comparadorRow("Costo empleador", values: [
+                        CurrencyFormatter.cop(r.laboral.costoTotalEmpleador),
+                        CurrencyFormatter.cop(r.integral.costoTotalEmpleador),
+                        CurrencyFormatter.cop(r.servicios.costoTotalEmpleador),
+                    ])
+
+                    comparadorRow("Neto trabajador", values: [
+                        CurrencyFormatter.cop(r.laboral.netoTrabajador),
+                        CurrencyFormatter.cop(r.integral.netoTrabajador),
+                        CurrencyFormatter.cop(r.servicios.netoTrabajador),
+                    ])
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func comparadorResultCard(_ title: String, escenario: ComparadorContratacionCalculator.Escenario) -> some View {
+        CalculatorResultView(
+            title: title,
+            mainValue: CurrencyFormatter.cop(escenario.costoTotalEmpleador),
+            mainLabel: "Costo total empleador",
+            rows: [
+                ("Salario bruto", CurrencyFormatter.cop(escenario.salarioBruto)),
+                ("Salud empleador", CurrencyFormatter.cop(escenario.aportesSaludEmpleador)),
+                ("Pension empleador", CurrencyFormatter.cop(escenario.aportesPensionEmpleador)),
+                ("ARL", CurrencyFormatter.cop(escenario.arl)),
+                ("Parafiscales", CurrencyFormatter.cop(escenario.parafiscales)),
+                ("Prestaciones", CurrencyFormatter.cop(escenario.prestaciones)),
+                ("Deducciones trabajador", CurrencyFormatter.cop(escenario.deduccionesTrabajador)),
+                ("Neto trabajador", CurrencyFormatter.cop(escenario.netoTrabajador)),
+            ],
+            disclaimer: nil
+        )
+    }
+
+    @ViewBuilder
+    private func comparadorRow(_ label: String, values: [String]) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(AppTypography.caption)
+                .foregroundStyle(Color.appMutedForeground)
+
+            HStack(spacing: 0) {
+                ForEach(Array(["Laboral", "Integral", "Servicios"].enumerated()), id: \.offset) { index, tipo in
+                    VStack(spacing: 2) {
+                        Text(tipo)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(Color.appMutedForeground)
+                        Text(values[index])
+                            .font(AppTypography.label)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Color.appForeground)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - ICA Municipal
+
+private struct ICASection: View {
+    @State private var ingresos: Decimal = 0
+    @State private var actividad: ICACalculator.Actividad = .comercial
+    @State private var usarTarifaPersonalizada: Bool = false
+    @State private var tarifaPersonalizada: Decimal = 0
+    @State private var result: ICACalculator.Result?
+
+    var body: some View {
+        CardView {
+            VStack(spacing: AppSpacing.sm) {
+                CurrencyInputField(label: "Ingresos brutos en el municipio", value: $ingresos)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Actividad economica")
+                        .font(AppTypography.label)
+                        .foregroundStyle(Color.appMutedForeground)
+                    Picker("Actividad", selection: $actividad) {
+                        ForEach(ICACalculator.Actividad.allCases) { act in
+                            Text(act.label).tag(act)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(Color.appForeground)
+
+                    Text("Rango tipico: \(actividad.rangoTarifa)")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(Color.appMutedForeground)
+                }
+
+                Toggle("Usar tarifa personalizada", isOn: $usarTarifaPersonalizada)
+                    .font(AppTypography.bodySmall)
+                    .tint(Color.appPrimary)
+
+                if usarTarifaPersonalizada {
+                    DecimalInputField(label: "Tarifa (por mil)", value: $tarifaPersonalizada, suffix: "‰")
+                }
+
+                CalculateButton(title: "Calcular ICA") {
+                    result = ICACalculator.calculate(input: ICACalculator.Input(
+                        ingresosBrutos: ingresos,
+                        actividad: actividad,
+                        tarifaPersonalizada: usarTarifaPersonalizada ? tarifaPersonalizada : nil
+                    ))
+                }
+            }
+        }
+
+        if let r = result {
+            CalculatorResultView(
+                title: "ICA Municipal",
+                mainValue: CurrencyFormatter.cop(r.totalICA),
+                mainLabel: "Total ICA + sobretasas",
+                rows: [
+                    ("Ingresos brutos", CurrencyFormatter.cop(r.ingresosBrutos)),
+                    ("Actividad", r.actividad),
+                    ("Tarifa", "\(r.tarifaPorMil) por mil"),
+                    ("ICA base", CurrencyFormatter.cop(r.ica)),
+                    ("Avisos y tableros (15%)", CurrencyFormatter.cop(r.avisosTableros)),
+                    ("Sobretasa bomberil (3%)", CurrencyFormatter.cop(r.sobretasaBomberil)),
+                    ("Tarifa efectiva", CurrencyFormatter.percent(r.tarifaEfectiva)),
+                ],
+                disclaimer: "ICA varia por municipio. Tarifas usadas son promedios nacionales. Consulte el acuerdo municipal de su jurisdiccion."
             )
         }
     }

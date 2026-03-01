@@ -1,0 +1,704 @@
+{
+  "total_articles": 1294,
+  "stats_cards": {
+    "total": 1294,
+    "modificados": 840,
+    "modificados_pct": 64.9,
+    "con_derogado": 302,
+    "con_derogado_pct": 23.3,
+    "con_normas": 198,
+    "con_normas_pct": 15.3,
+    "con_cross_refs": 335,
+    "con_cross_refs_pct": 25.9
+  },
+  "estado_distribution": {
+    "vigente": 438,
+    "modificado": 856
+  },
+  "libro_distribution": [
+    {
+      "name": "Libro I - Renta",
+      "value": 518
+    },
+    {
+      "name": "Libro V - Procedimiento",
+      "value": 440
+    },
+    {
+      "name": "Libro III - IVA",
+      "value": 153
+    },
+    {
+      "name": "Libro II - Retención",
+      "value": 68
+    },
+    {
+      "name": "Libro VI - GMF",
+      "value": 64
+    },
+    {
+      "name": "Libro IV - Timbre",
+      "value": 45
+    },
+    {
+      "name": "Título Preliminar",
+      "value": 6
+    }
+  ],
+  "reform_timeline": [
+    {
+      "year": 1988,
+      "total": 1,
+      "laws": [
+        {
+          "name": "Ley 488 de 1988",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 1990,
+      "total": 28,
+      "laws": [
+        {
+          "name": "Ley 49 de 1990",
+          "count": 27
+        },
+        {
+          "name": "Ley 10 de 1990",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 1991,
+      "total": 29,
+      "laws": [
+        {
+          "name": "Decreto 1643 de 1991",
+          "count": 21
+        },
+        {
+          "name": "Decreto 1744 de 1991",
+          "count": 4
+        },
+        {
+          "name": "Decreto 1655 de 1991",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "year": 1992,
+      "total": 117,
+      "laws": [
+        {
+          "name": "Ley 6 de 1992",
+          "count": 116
+        },
+        {
+          "name": "ley 6 de 1992",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 1993,
+      "total": 1,
+      "laws": [
+        {
+          "name": "Ley 98 de 1993",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 1994,
+      "total": 5,
+      "laws": [
+        {
+          "name": "Ley 174 de 1994",
+          "count": 4
+        },
+        {
+          "name": "Ley 223 de 1994",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 1995,
+      "total": 138,
+      "laws": [
+        {
+          "name": "Ley 223 de 1995",
+          "count": 137
+        },
+        {
+          "name": "Ley 181 de 1995",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 1997,
+      "total": 24,
+      "laws": [
+        {
+          "name": "Ley 383 de 1997",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "year": 1998,
+      "total": 40,
+      "laws": [
+        {
+          "name": "Ley 488 de 1998",
+          "count": 40
+        }
+      ]
+    },
+    {
+      "year": 2000,
+      "total": 51,
+      "laws": [
+        {
+          "name": "Ley 633 de 2000",
+          "count": 50
+        },
+        {
+          "name": "ley 633 de 2000",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2001,
+      "total": 4,
+      "laws": [
+        {
+          "name": "Ley 716 de 2001",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "year": 2002,
+      "total": 64,
+      "laws": [
+        {
+          "name": "Ley 788 de 2002",
+          "count": 62
+        },
+        {
+          "name": "Ley 88 de 2002",
+          "count": 1
+        },
+        {
+          "name": "Ley 863 de 2002",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2003,
+      "total": 52,
+      "laws": [
+        {
+          "name": "Ley 863 de 2003",
+          "count": 51
+        },
+        {
+          "name": "ley 863 de 2003",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2005,
+      "total": 8,
+      "laws": [
+        {
+          "name": "Ley 1004 de 2005",
+          "count": 5
+        },
+        {
+          "name": "Ley 962 de 2005",
+          "count": 2
+        },
+        {
+          "name": "Ley 964 de 2005",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2006,
+      "total": 95,
+      "laws": [
+        {
+          "name": "Ley 1111 de 2006",
+          "count": 85
+        },
+        {
+          "name": "Ley 1066 de 2006",
+          "count": 7
+        },
+        {
+          "name": "ley 1066 de 2006",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2009,
+      "total": 12,
+      "laws": [
+        {
+          "name": "Ley 1370 de 2009",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "year": 2010,
+      "total": 34,
+      "laws": [
+        {
+          "name": "Ley 1430 de 2010",
+          "count": 32
+        },
+        {
+          "name": "Ley 2010 de 2010",
+          "count": 1
+        },
+        {
+          "name": "Ley 1393 de 2010",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2011,
+      "total": 2,
+      "laws": [
+        {
+          "name": "Ley 1450 de 2011",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "year": 2012,
+      "total": 161,
+      "laws": [
+        {
+          "name": "Ley 1607 de 2012",
+          "count": 151
+        },
+        {
+          "name": "Decreto 19 de 2012",
+          "count": 3
+        },
+        {
+          "name": "ley 1607 de 2012",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "year": 2013,
+      "total": 2,
+      "laws": [
+        {
+          "name": "Decreto 1070 de 2013",
+          "count": 1
+        },
+        {
+          "name": "Ley 1694 de 2013",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2014,
+      "total": 24,
+      "laws": [
+        {
+          "name": "Ley 1739 de 2014",
+          "count": 22
+        },
+        {
+          "name": "Ley 1731 de 2014",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "total": 341,
+      "laws": [
+        {
+          "name": "Ley 1819 de 2016",
+          "count": 341
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "total": 167,
+      "laws": [
+        {
+          "name": "Ley 1943 de 2018",
+          "count": 167
+        }
+      ]
+    },
+    {
+      "year": 2019,
+      "total": 144,
+      "laws": [
+        {
+          "name": "Ley 2010 de 2019",
+          "count": 129
+        },
+        {
+          "name": "Decreto Ley 2106 de 2019",
+          "count": 8
+        },
+        {
+          "name": "Ley 1955 de 2019",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "total": 10,
+      "laws": [
+        {
+          "name": "Ley 2069 de 2020",
+          "count": 3
+        },
+        {
+          "name": "Ley 2068 de 2020",
+          "count": 2
+        },
+        {
+          "name": "Decreto Legislativo 575 de 2020",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "total": 15,
+      "laws": [
+        {
+          "name": "Ley 2155 de 2021",
+          "count": 11
+        },
+        {
+          "name": "Ley 2152 de 2021",
+          "count": 2
+        },
+        {
+          "name": "Ley 2130 de 2021",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "total": 60,
+      "laws": [
+        {
+          "name": "Ley 2277 de 2022",
+          "count": 59
+        },
+        {
+          "name": "Ley 277 de 2022",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "total": 2,
+      "laws": [
+        {
+          "name": "Ley 2294 de 2023",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "total": 3,
+      "laws": [
+        {
+          "name": "Ley 2380 de 2024",
+          "count": 2
+        },
+        {
+          "name": "Ley 2411 de 2024",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "top_modified": [
+    {
+      "id": "Art. 879",
+      "slug": "879",
+      "titulo": "Exenciones del GMF.",
+      "total_mods": 17,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 206",
+      "slug": "206",
+      "titulo": "Rentas de trabajo exentas.",
+      "total_mods": 13,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 855",
+      "slug": "855",
+      "titulo": "Termino para efectuar la devolución.",
+      "total_mods": 10,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 905",
+      "slug": "905",
+      "titulo": "Sujetos pasivos",
+      "total_mods": 10,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 25",
+      "slug": "25",
+      "titulo": "Ingresos que no se consideran de fuente nacional.",
+      "total_mods": 9,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 428",
+      "slug": "428",
+      "titulo": "Importaciones que no causan impuesto.",
+      "total_mods": 9,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 530",
+      "slug": "530",
+      "titulo": "Se encuentran exentos del impuesto de timbre.",
+      "total_mods": 9,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 850",
+      "slug": "850",
+      "titulo": "Devolución de saldos a favor.",
+      "total_mods": 9,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 36-1",
+      "slug": "36-1",
+      "titulo": "Utilidad en la enajenación de acciones.",
+      "total_mods": 8,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 408",
+      "slug": "408",
+      "titulo": "Tarifas para rentas de capital y de trabajo.",
+      "total_mods": 7,
+      "estado": "modificado"
+    }
+  ],
+  "top_referenced": [
+    {
+      "id": "Art. 19",
+      "slug": "19",
+      "titulo": "Contribuyentes del régimen tributario especial.",
+      "total_refs": 12,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 49",
+      "slug": "49",
+      "titulo": "Determinación de los dividendos y participaciones no gravados.",
+      "total_refs": 12,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 260-1",
+      "slug": "260-1",
+      "titulo": "Criterios de vinculación.",
+      "total_refs": 11,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 651",
+      "slug": "651",
+      "titulo": "Sanción por no enviar información.",
+      "total_refs": 8,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 206",
+      "slug": "206",
+      "titulo": "Rentas de trabajo exentas.",
+      "total_refs": 7,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 240",
+      "slug": "240",
+      "titulo": "Tarifa general para para personas juridicas.",
+      "total_refs": 7,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 476",
+      "slug": "476",
+      "titulo": "Servicios excluidos del impuesto sobre las ventas.",
+      "total_refs": 7,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 477",
+      "slug": "477",
+      "titulo": "Bienes que se encuentran exentos del impuesto.",
+      "total_refs": 7,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 485",
+      "slug": "485",
+      "titulo": "Impuestos descontables.",
+      "total_refs": 7,
+      "estado": "modificado"
+    },
+    {
+      "id": "Art. 257",
+      "slug": "257",
+      "titulo": "Descuento por donaciones a entidades sin ánimo de lucro pertenecientes al régimen especial.",
+      "total_refs": 6,
+      "estado": "modificado"
+    }
+  ],
+  "top_laws": [
+    {
+      "name": "Ley 1819 de 2016",
+      "count": 299
+    },
+    {
+      "name": "Ley 1943 de 2018",
+      "count": 129
+    },
+    {
+      "name": "Ley 223 de 1995",
+      "count": 125
+    },
+    {
+      "name": "Ley 1607 de 2012",
+      "count": 122
+    },
+    {
+      "name": "Ley 2010 de 2019",
+      "count": 115
+    },
+    {
+      "name": "Ley 6 de 1992",
+      "count": 113
+    },
+    {
+      "name": "Ley 1111 de 2006",
+      "count": 80
+    },
+    {
+      "name": "Ley 2277 de 2022",
+      "count": 55
+    },
+    {
+      "name": "Ley 788 de 2002",
+      "count": 51
+    },
+    {
+      "name": "Ley 863 de 2003",
+      "count": 45
+    },
+    {
+      "name": "Ley 633 de 2000",
+      "count": 41
+    },
+    {
+      "name": "Ley 488 de 1998",
+      "count": 37
+    },
+    {
+      "name": "Ley 1430 de 2010",
+      "count": 26
+    },
+    {
+      "name": "Ley 49 de 1990",
+      "count": 25
+    },
+    {
+      "name": "Ley 383 de 1997",
+      "count": 22
+    }
+  ],
+  "complexity_distribution": [
+    {
+      "score": 0,
+      "count": 237
+    },
+    {
+      "score": 1,
+      "count": 324
+    },
+    {
+      "score": 2,
+      "count": 301
+    },
+    {
+      "score": 3,
+      "count": 188
+    },
+    {
+      "score": 4,
+      "count": 99
+    },
+    {
+      "score": 5,
+      "count": 58
+    },
+    {
+      "score": 6,
+      "count": 44
+    },
+    {
+      "score": 7,
+      "count": 32
+    },
+    {
+      "score": 8,
+      "count": 10
+    },
+    {
+      "score": 9,
+      "count": 1
+    },
+    {
+      "score": 10,
+      "count": 0
+    }
+  ]
+}

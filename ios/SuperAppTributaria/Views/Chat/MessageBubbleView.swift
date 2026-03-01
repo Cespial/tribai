@@ -46,6 +46,17 @@ struct MessageBubbleView: View {
                     ConfidenceBadgeView(metadata: metadata)
                 }
 
+                // Suggested calculators (assistant only)
+                if message.role == .assistant && !message.suggestedCalculators.isEmpty && !isStreaming {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(message.suggestedCalculators) { calc in
+                                SuggestedCalculatorChip(calculator: calc)
+                            }
+                        }
+                    }
+                }
+
                 // Actions (assistant only, not during streaming)
                 if message.role == .assistant && !isStreaming {
                     MessageActionsView(
@@ -130,6 +141,35 @@ extension MarkdownUI.Theme {
         .strong {
             FontWeight(.semibold)
         }
+}
+
+// MARK: - Suggested Calculator Chip
+
+private struct SuggestedCalculatorChip: View {
+    let calculator: SuggestedCalculator
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: catalogItem?.sfSymbol ?? "function")
+                .font(.system(size: 11))
+            Text(calculator.title ?? catalogItem?.title ?? calculator.slug)
+                .font(AppTypography.caption)
+                .lineLimit(1)
+        }
+        .foregroundStyle(Color.appForeground)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Color.appMuted)
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .stroke(Color.appBorder, lineWidth: 1)
+        )
+    }
+
+    private var catalogItem: CalculatorCatalogItem? {
+        CalculatorCatalog.item(byId: calculator.slug)
+    }
 }
 
 #Preview {
