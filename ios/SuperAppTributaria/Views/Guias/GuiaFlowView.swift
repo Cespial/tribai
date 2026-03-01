@@ -3,7 +3,10 @@ import SwiftUI
 struct GuiaFlowView: View {
     let guia: GuiaEducativa
     @State private var viewModel = GuiasViewModel()
+    @State private var articleSlug: String?
     @Environment(\.openURL) private var openURL
+    var onNavigateToCalculators: () -> Void = {}
+    var onNavigateToMore: () -> Void = {}
 
     var body: some View {
         VStack(spacing: 0) {
@@ -42,6 +45,9 @@ struct GuiaFlowView: View {
                         .foregroundStyle(Color.appMutedForeground)
                 }
             }
+        }
+        .navigationDestination(item: $articleSlug) { slug in
+            ArticleDetailView(slug: slug)
         }
         .onAppear {
             viewModel.startGuia(guia)
@@ -188,8 +194,7 @@ struct GuiaFlowView: View {
                 VStack(spacing: 10) {
                     ForEach(Array(node.enlaces.enumerated()), id: \.offset) { _, enlace in
                         Button {
-                            // In-app navigation would be handled by a coordinator;
-                            // for now treat href as a deep-link path.
+                            handleEnlace(enlace.href)
                         } label: {
                             HStack {
                                 Image(systemName: "arrow.up.right.square")
@@ -254,6 +259,24 @@ struct GuiaFlowView: View {
                 }
                 .buttonStyle(.plain)
             }
+        }
+    }
+
+    // MARK: - Enlace Navigation
+
+    private func handleEnlace(_ href: String) {
+        if href.contains("/explorador") || href.contains("art=") {
+            // Parse article slug from href like /explorador?art=240
+            if let range = href.range(of: "art=") {
+                let artNumber = String(href[range.upperBound...])
+                    .trimmingCharacters(in: .whitespaces)
+                    .components(separatedBy: "&").first ?? ""
+                articleSlug = "articulo-\(artNumber)"
+            }
+        } else if href.contains("/calculadoras") {
+            onNavigateToCalculators()
+        } else if href.contains("/calendario") {
+            onNavigateToMore()
         }
     }
 }

@@ -5,6 +5,7 @@ struct HomeView: View {
     var onNavigateToCalculators: () -> Void = {}
     var onNavigateToChat: () -> Void = {}
     var onNavigateToMore: () -> Void = {}
+    var onNavigateToET: () -> Void = {}
     var onNavigateToCalculator: ((CalculatorCatalogItem) -> Void)?
 
     var body: some View {
@@ -131,6 +132,8 @@ struct HomeView: View {
             switch tab {
             case .chat:
                 onNavigateToChat()
+            case .et:
+                onNavigateToET()
             case .more:
                 onNavigateToMore()
             default:

@@ -75,7 +75,6 @@ struct NovedadesListView: View {
             .padding(AppSpacing.sm)
         }
         .background(Color.appBackground)
-        .refreshable { }
         .navigationTitle("Novedades Normativas")
         .navigationBarTitleDisplayMode(.large)
         .navigationDestination(for: String.self) { novedadId in

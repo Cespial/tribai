@@ -4,14 +4,13 @@ import Charts
 struct IndicadorChartView: View {
     let history: [IndicadorHistoryPoint]
 
-    private var minValue: Double {
-        let minVal = history.map(\.valor).min() ?? 0
-        return max(0, minVal * 0.9)
-    }
-
-    private var maxValue: Double {
-        let maxVal = history.map(\.valor).max() ?? 0
-        return maxVal * 1.1
+    private var chartDomain: ClosedRange<Double> {
+        let minVal = max(0, (history.map(\.valor).min() ?? 0) * 0.9)
+        let maxVal = (history.map(\.valor).max() ?? 0) * 1.1
+        guard maxVal > minVal else {
+            return (minVal - 1)...(maxVal + 1)
+        }
+        return minVal...maxVal
     }
 
     var body: some View {
@@ -49,7 +48,7 @@ struct IndicadorChartView: View {
                 .symbolSize(20)
             }
         }
-        .chartYScale(domain: minValue...maxValue)
+        .chartYScale(domain: chartDomain)
         .chartXAxis {
             AxisMarks(values: .automatic) { _ in
                 AxisGridLine()

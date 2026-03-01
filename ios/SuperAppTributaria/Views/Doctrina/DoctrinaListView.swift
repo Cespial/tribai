@@ -77,7 +77,6 @@ struct DoctrinaListView: View {
             .padding(.vertical, AppSpacing.sm)
         }
         .background(Color.appBackground)
-        .refreshable { }
         .navigationTitle("Doctrina DIAN")
         .navigationDestination(for: String.self) { docId in
             if let doctrina = DoctrinaCuradaData.items.first(where: { $0.id == docId }) {

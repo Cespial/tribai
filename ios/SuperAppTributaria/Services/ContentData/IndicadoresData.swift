@@ -14,8 +14,8 @@ enum IndicadoresData {
         IndicadorItem(
             id: "uvt",
             nombre: "UVT 2026",
-            valor: "$49,799",
-            valorNumerico: 49799,
+            valor: "$52,374",
+            valorNumerico: 52374,
             unidad: "cop",
             fechaCorte: "2026-01-01",
             paraQueSirve: "Sirve para convertir topes, sanciones, deducciones y umbrales del Estatuto Tributario a pesos colombianos.",
@@ -33,14 +33,14 @@ enum IndicadoresData {
                 IndicadorHistoryPoint(periodo: "2023", valor: 42412),
                 IndicadorHistoryPoint(periodo: "2024", valor: 47065),
                 IndicadorHistoryPoint(periodo: "2025", valor: 49799),
-                IndicadorHistoryPoint(periodo: "2026", valor: 49799),
+                IndicadorHistoryPoint(periodo: "2026", valor: 52374),
             ]
         ),
         IndicadorItem(
             id: "smlmv",
             nombre: "SMLMV 2026",
-            valor: "$1,423,500",
-            valorNumerico: 1423500,
+            valor: "$1,750,905",
+            valorNumerico: 1750905,
             unidad: "cop",
             fechaCorte: "2026-01-01",
             paraQueSirve: "Impacta bases de seguridad social, retencion laboral, costos de nomina y beneficios asociados al salario minimo.",
@@ -58,7 +58,7 @@ enum IndicadoresData {
                 IndicadorHistoryPoint(periodo: "2023", valor: 1160000),
                 IndicadorHistoryPoint(periodo: "2024", valor: 1300000),
                 IndicadorHistoryPoint(periodo: "2025", valor: 1380000),
-                IndicadorHistoryPoint(periodo: "2026", valor: 1423500),
+                IndicadorHistoryPoint(periodo: "2026", valor: 1750905),
             ]
         ),
         IndicadorItem(
@@ -114,8 +114,8 @@ enum IndicadoresData {
         IndicadorItem(
             id: "auxilio-transporte",
             nombre: "Auxilio de transporte",
-            valor: "$200,000",
-            valorNumerico: 200000,
+            valor: "$249,095",
+            valorNumerico: 249095,
             unidad: "cop",
             fechaCorte: "2026-01-01",
             paraQueSirve: "Complementa el ingreso de trabajadores con salario hasta dos minimos y afecta costos laborales mensuales.",
@@ -128,7 +128,7 @@ enum IndicadoresData {
                 IndicadorHistoryPoint(periodo: "2023", valor: 140606),
                 IndicadorHistoryPoint(periodo: "2024", valor: 162000),
                 IndicadorHistoryPoint(periodo: "2025", valor: 190000),
-                IndicadorHistoryPoint(periodo: "2026", valor: 200000),
+                IndicadorHistoryPoint(periodo: "2026", valor: 249095),
             ]
         ),
         IndicadorItem(
@@ -182,8 +182,8 @@ enum IndicadoresData {
         IndicadorItem(
             id: "sancion-minima",
             nombre: "Sancion minima",
-            valor: "10 UVT ($497,990)",
-            valorNumerico: 497990,
+            valor: "10 UVT ($523,740)",
+            valorNumerico: 523740,
             unidad: "cop",
             fechaCorte: "2026-01-01",
             paraQueSirve: "Marca el minimo de sancion tributaria aplicable en procesos de fiscalizacion y cumplimiento.",
@@ -196,14 +196,14 @@ enum IndicadoresData {
                 IndicadorHistoryPoint(periodo: "2023", valor: 424120),
                 IndicadorHistoryPoint(periodo: "2024", valor: 470650),
                 IndicadorHistoryPoint(periodo: "2025", valor: 497990),
-                IndicadorHistoryPoint(periodo: "2026", valor: 497990),
+                IndicadorHistoryPoint(periodo: "2026", valor: 523740),
             ]
         ),
         IndicadorItem(
             id: "gmf-exento",
             nombre: "GMF exento mensual",
-            valor: "350 UVT ($17,429,650)",
-            valorNumerico: 17429650,
+            valor: "350 UVT ($18,330,900)",
+            valorNumerico: 18330900,
             unidad: "cop",
             fechaCorte: "2026-01-01",
             paraQueSirve: "Permite estimar el limite de movimientos exentos del 4x1000 en cuentas marcadas.",
@@ -216,7 +216,7 @@ enum IndicadoresData {
                 IndicadorHistoryPoint(periodo: "2023", valor: 14844200),
                 IndicadorHistoryPoint(periodo: "2024", valor: 16472750),
                 IndicadorHistoryPoint(periodo: "2025", valor: 17429650),
-                IndicadorHistoryPoint(periodo: "2026", valor: 17429650),
+                IndicadorHistoryPoint(periodo: "2026", valor: 18330900),
             ]
         ),
     ]

@@ -37,19 +37,31 @@ struct IndicadoresView: View {
                 SectionHeaderView(title: "\(viewModel.count) indicadores")
 
                 // Grid
-                LazyVGrid(columns: columns, spacing: AppSpacing.sm) {
-                    ForEach(viewModel.filteredIndicadores) { indicador in
-                        NavigationLink(value: indicador.id) {
-                            indicadorCell(indicador)
+                if viewModel.filteredIndicadores.isEmpty {
+                    VStack(spacing: AppSpacing.xs) {
+                        Image(systemName: "chart.bar.xaxis")
+                            .font(.system(size: 32))
+                            .foregroundStyle(Color.appMutedForeground)
+                        Text("No hay indicadores en esta categoria")
+                            .font(AppTypography.bodySmall)
+                            .foregroundStyle(Color.appMutedForeground)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, AppSpacing.md)
+                } else {
+                    LazyVGrid(columns: columns, spacing: AppSpacing.sm) {
+                        ForEach(viewModel.filteredIndicadores) { indicador in
+                            NavigationLink(value: indicador.id) {
+                                indicadorCell(indicador)
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
             .padding(AppSpacing.sm)
         }
         .background(Color.appBackground)
-        .refreshable { }
         .navigationTitle("Indicadores Economicos")
         .navigationBarTitleDisplayMode(.large)
         .navigationDestination(for: String.self) { indicadorId in

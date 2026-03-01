@@ -59,7 +59,6 @@ struct RetencionTablaView: View {
             .padding(.bottom, AppSpacing.md)
         }
         .background(Color.appBackground)
-        .refreshable { }
         .navigationTitle("Tabla de Retencion")
         .navigationBarTitleDisplayMode(.large)
     }

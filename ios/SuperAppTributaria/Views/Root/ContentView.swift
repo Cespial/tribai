@@ -22,6 +22,7 @@ struct ContentView: View {
                 onNavigateToCalculators: { selectedTab = .calculators },
                 onNavigateToChat: { selectedTab = .chat },
                 onNavigateToMore: { selectedTab = .more },
+                onNavigateToET: { selectedTab = .et },
                 onNavigateToCalculator: { _ in selectedTab = .calculators }
             )
             .tabItem {

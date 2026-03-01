@@ -40,6 +40,16 @@ struct ArticleDetailView: View {
         .background(Color.appBackground)
         .navigationTitle(viewModel.article?.idArticulo ?? "Art. \(slug)")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    BookmarkService.shared.toggleArticleBookmark(slug)
+                } label: {
+                    Image(systemName: BookmarkService.shared.isArticleBookmarked(slug) ? "bookmark.fill" : "bookmark")
+                        .foregroundStyle(Color.appForeground)
+                }
+            }
+        }
         .task {
             if viewModel.article == nil {
                 await viewModel.loadArticle(slug: slug)
