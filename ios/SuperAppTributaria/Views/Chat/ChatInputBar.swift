@@ -21,7 +21,10 @@ struct ChatInputBar: View {
                     .disabled(isStreaming)
                     .submitLabel(.send)
                     .onSubmit {
-                        if canSend { onSend() }
+                        if canSend {
+                            isFocused = false
+                            onSend()
+                        }
                     }
                     .accessibilityLabel("Campo de mensaje")
                     .accessibilityHint("Escribe tu consulta tributaria aquí")
@@ -34,7 +37,10 @@ struct ChatInputBar: View {
                     }
                     .accessibilityLabel("Cancelar respuesta")
                 } else {
-                    Button(action: onSend) {
+                    Button(action: {
+                        isFocused = false
+                        onSend()
+                    }) {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title2)
                             .foregroundStyle(canSend ? Color.appPrimary : Color.appMutedForeground)

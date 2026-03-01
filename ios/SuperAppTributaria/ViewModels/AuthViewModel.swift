@@ -20,7 +20,8 @@ final class AuthViewModel {
     @MainActor
     func signInWithApple(credential: ASAuthorizationAppleIDCredential) {
         isLoading = true
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
             do {
                 try await authService.signInWithApple(credential: credential)
                 currentUser = authService.currentUser
@@ -37,7 +38,8 @@ final class AuthViewModel {
     @MainActor
     func signInWithGoogle(presenting: Any) {
         isLoading = true
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
             do {
                 try await authService.signInWithGoogle(presenting: presenting)
                 currentUser = authService.currentUser

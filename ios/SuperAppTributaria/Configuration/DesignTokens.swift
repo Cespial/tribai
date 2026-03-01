@@ -76,6 +76,7 @@ enum AppTypography {
     static let bodySmall = Font.system(size: 14)
     static let label = Font.system(size: 12, weight: .medium)
     static let caption = Font.system(size: 11)
+    static let metricValue = Font.system(size: 28, weight: .bold, design: .rounded)
 }
 
 // MARK: - Spacing

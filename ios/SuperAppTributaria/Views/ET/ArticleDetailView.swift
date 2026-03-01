@@ -344,7 +344,7 @@ struct ArticleDetailView: View {
     private func estadoBadge(_ estado: String) -> some View {
         Text(estado.capitalized)
             .font(.system(size: 10, weight: .medium))
-            .foregroundStyle(estado == "modificado" ? Color(hex: 0x0F0E0D) : .white)
+            .foregroundStyle(estado == "modificado" ? Color.appForeground : .white)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(estadoColor(estado))

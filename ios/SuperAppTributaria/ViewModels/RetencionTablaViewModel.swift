@@ -12,7 +12,7 @@ final class RetencionTablaViewModel {
 
     // MARK: - UVT 2026
 
-    private static let uvt2026: Decimal = 52_374
+    private static let uvt2026: Decimal = TaxData.uvt2026
 
     // MARK: - Number Formatters
 

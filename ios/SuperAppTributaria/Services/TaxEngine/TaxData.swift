@@ -258,7 +258,7 @@ enum TaxData {
 
     static let sancionInexactitud = SancionInexactitud()
 
-    // MARK: - Topes Declarar Renta AG2025
+    // MARK: - Topes Declarar Renta AG2026
 
     struct TopesDeclarar {
         let patrimonioBrutoUVT: Decimal = 4_500
@@ -266,7 +266,7 @@ enum TaxData {
         let consumosTarjetaUVT: Decimal = 1_400
         let comprasTotalesUVT: Decimal = 1_400
         let consignacionesUVT: Decimal = 1_400
-        let uvtAnoGravable: Decimal = 49_799
+        let uvtAnoGravable: Decimal = 52_374
     }
 
     static let topesDeclarar = TopesDeclarar()

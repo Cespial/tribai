@@ -49,7 +49,7 @@ struct GlosarioView: View {
                 } else {
                     LazyVStack(spacing: AppSpacing.xs) {
                         ForEach(viewModel.filteredTerms) { term in
-                            NavigationLink(destination: GlosarioDetailView(term: term)) {
+                            NavigationLink(value: term.id) {
                                 CardView {
                                     VStack(alignment: .leading, spacing: AppSpacing.xs) {
                                         Text(term.termino)
@@ -76,5 +76,13 @@ struct GlosarioView: View {
         .background(Color.appBackground)
         .navigationTitle("Glosario Tributario")
         .navigationBarTitleDisplayMode(.large)
+        .navigationDestination(for: String.self) { termId in
+            if let term = viewModel.filteredTerms.first(where: { $0.id == termId })
+                ?? GlosarioData.terminos.first(where: { $0.id == termId }) {
+                GlosarioDetailView(term: term)
+            } else {
+                ContentUnavailableView("Termino no encontrado", systemImage: "exclamationmark.triangle")
+            }
+        }
     }
 }

@@ -40,6 +40,7 @@ final class GuiasViewModel {
 
     func selectOption(nextNodeId: String) {
         guard let currentId = currentNodeId else { return }
+        guard selectedGuia?.nodo(byId: nextNodeId) != nil else { return }
         history.append(currentId)
         currentNodeId = nextNodeId
     }

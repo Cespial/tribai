@@ -89,7 +89,7 @@ struct ArticleRowView: View {
 
     private var estadoTextColor: Color {
         // Yellow background needs dark text for WCAG contrast
-        article.estado == "modificado" ? Color(hex: 0x0F0E0D) : .white
+        article.estado == "modificado" ? Color.appForeground : .white
     }
 
     private var libroPill: some View {

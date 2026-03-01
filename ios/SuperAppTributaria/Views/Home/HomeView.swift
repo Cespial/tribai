@@ -120,6 +120,7 @@ struct HomeView: View {
                         handleFeatureTap(feature)
                     }
                 )
+                .accessibilityLabel("\(feature.title): \(feature.description)")
             }
         }
     }

@@ -55,6 +55,7 @@ struct IndicadoresView: View {
                                 indicadorCell(indicador)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("\(indicador.nombre), \(indicador.valor)")
                         }
                     }
                 }

@@ -235,7 +235,7 @@ enum LaboralCalculator {
 
     struct HorasExtrasInput {
         var salario: Decimal
-        var periodo: Periodo = .h2_2025
+        var periodo: Periodo = .h1_2026
         var horasExtraDiurna: Decimal = 0
         var horasExtraNocturna: Decimal = 0
         var horasRecargoNocturno: Decimal = 0

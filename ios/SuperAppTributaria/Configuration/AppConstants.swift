@@ -27,7 +27,7 @@ enum AppConstants {
     }
 
     static let suggestedQuestions = [
-        "Debo declarar renta por ingresos de 2025?",
+        "Debo declarar renta por ingresos de 2026?",
         "Cómo calculo retención en la fuente por salarios?",
         "Qué sanción aplica por declarar extemporáneo?",
         "Muéstreme el artículo del ET sobre ganancias ocasionales.",

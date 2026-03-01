@@ -16,7 +16,7 @@ struct DashboardMetricCard: View {
 
                 // Value
                 Text(value)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(AppTypography.metricValue)
                     .foregroundStyle(Color.appForeground)
                     .minimumScaleFactor(0.7)
                     .lineLimit(1)
