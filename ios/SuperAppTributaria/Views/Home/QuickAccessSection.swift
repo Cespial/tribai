@@ -37,6 +37,7 @@ struct QuickAccessSection: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("Abrir calculadora: \(calc.title)")
                     }
                 }
             }

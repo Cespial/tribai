@@ -6,7 +6,7 @@ struct ArticleIndexItem: Codable, Identifiable, Equatable, Sendable {
     let titulo: String
     let libro: String
     let libroFull: String
-    let estado: String
+    let estado: ArticleStatus
     let totalMods: Int
     let totalRefs: Int
     let totalReferencedBy: Int
@@ -55,7 +55,7 @@ struct ArticleIndexItem: Codable, Identifiable, Equatable, Sendable {
         titulo = try container.decode(String.self, forKey: .titulo)
         libro = try container.decode(String.self, forKey: .libro)
         libroFull = try container.decode(String.self, forKey: .libroFull)
-        estado = try container.decode(String.self, forKey: .estado)
+        estado = try container.decode(ArticleStatus.self, forKey: .estado)
         totalMods = try container.decode(Int.self, forKey: .totalMods)
         totalRefs = try container.decode(Int.self, forKey: .totalRefs)
         totalReferencedBy = try container.decode(Int.self, forKey: .totalReferencedBy)

@@ -17,7 +17,7 @@ enum GuiasData {
         GuiaEducativa(
             id: "declarar-renta",
             titulo: "Debo declarar renta?",
-            descripcion: "Verifica si cumples los topes para declarar renta como persona natural en el ano gravable 2025.",
+            descripcion: "Verifica si cumples los topes para declarar renta como persona natural en el ano gravable 2026.",
             categoria: "renta",
             complejidad: "basica",
             nodos: [
@@ -36,7 +36,7 @@ enum GuiasData {
                 DecisionNode(
                     id: "patrimonio",
                     tipo: "pregunta",
-                    texto: "Tu patrimonio bruto al 31 de dic de 2025 fue superior a 4.500 UVT ($224.095.500)?",
+                    texto: "Tu patrimonio bruto al 31 de dic de 2026 fue superior a 4.500 UVT ($235.683.000)?",
                     opciones: [
                         DecisionOption(label: "Si", nextNodeId: "resultado-declara"),
                         DecisionOption(label: "No", nextNodeId: "ingresos"),
@@ -48,7 +48,7 @@ enum GuiasData {
                 DecisionNode(
                     id: "ingresos",
                     tipo: "pregunta",
-                    texto: "Tus ingresos brutos en 2025 fueron superiores a 1.400 UVT ($69.718.600)?",
+                    texto: "Tus ingresos brutos en 2026 fueron superiores a 1.400 UVT ($73.323.600)?",
                     opciones: [
                         DecisionOption(label: "Si", nextNodeId: "resultado-declara"),
                         DecisionOption(label: "No", nextNodeId: "tarjetas"),
@@ -60,7 +60,7 @@ enum GuiasData {
                 DecisionNode(
                     id: "tarjetas",
                     tipo: "pregunta",
-                    texto: "Tus consumos con tarjeta de credito superaron los 1.400 UVT ($69.718.600)?",
+                    texto: "Tus consumos con tarjeta de credito superaron los 1.400 UVT ($73.323.600)?",
                     opciones: [
                         DecisionOption(label: "Si", nextNodeId: "resultado-declara"),
                         DecisionOption(label: "No", nextNodeId: "consignaciones"),
@@ -72,7 +72,7 @@ enum GuiasData {
                 DecisionNode(
                     id: "consignaciones",
                     tipo: "pregunta",
-                    texto: "El valor total de tus consignaciones o inversiones supero los 1.400 UVT ($69.718.600)?",
+                    texto: "El valor total de tus consignaciones o inversiones supero los 1.400 UVT ($73.323.600)?",
                     opciones: [
                         DecisionOption(label: "Si", nextNodeId: "resultado-declara"),
                         DecisionOption(label: "No", nextNodeId: "resultado-no-declara"),
@@ -104,7 +104,7 @@ enum GuiasData {
                     tipo: "resultado",
                     texto: "No estas obligado a declarar",
                     opciones: [],
-                    recomendacion: "No superas ninguno de los topes para el ano gravable 2025. Sin embargo, puedes declarar voluntariamente si te practicaron retenciones.",
+                    recomendacion: "No superas ninguno de los topes para el ano gravable 2026. Sin embargo, puedes declarar voluntariamente si te practicaron retenciones.",
                     enlaces: [],
                     ayudaRapida: nil
                 ),
@@ -242,7 +242,7 @@ enum GuiasData {
                 DecisionNode(
                     id: "ingresos-3500",
                     tipo: "pregunta",
-                    texto: "Tus ingresos brutos por actividades gravadas en 2024 o 2025 superaron los 3.500 UVT ($174.296.500)?",
+                    texto: "Tus ingresos brutos por actividades gravadas en 2024 o 2025 superaron los 3.500 UVT ($183.309.000)?",
                     opciones: [
                         DecisionOption(label: "Si", nextNodeId: "resultado-si-iva"),
                         DecisionOption(label: "No", nextNodeId: "establecimientos"),
@@ -297,7 +297,7 @@ enum GuiasData {
                     ],
                     recomendacion: nil,
                     enlaces: [],
-                    ayudaRapida: "Al igual que en renta, mover mas de $174 millones en tus cuentas te obliga a recaudar IVA."
+                    ayudaRapida: "Al igual que en renta, mover mas de $183 millones en tus cuentas te obliga a recaudar IVA."
                 ),
                 DecisionNode(
                     id: "resultado-si-iva",
@@ -570,7 +570,7 @@ enum GuiasData {
                 DecisionNode(
                     id: "ingresos-iva",
                     tipo: "pregunta",
-                    texto: "Tus ingresos brutos del ano anterior superaron 3.500 UVT ($174.296.500)?",
+                    texto: "Tus ingresos brutos del ano anterior superaron 3.500 UVT ($183.309.000)?",
                     opciones: [
                         DecisionOption(label: "Si, los superaron", nextNodeId: "resultado-responsable-ingresos"),
                         DecisionOption(label: "No, fueron menores", nextNodeId: "varios-locales"),

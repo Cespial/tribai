@@ -70,7 +70,7 @@ struct ArticleRowView: View {
     }
 
     private var estadoBadge: some View {
-        Text(article.estado.capitalized)
+        Text(article.estado.rawValue.capitalized)
             .font(.system(size: 10, weight: .medium))
             .foregroundStyle(estadoTextColor)
             .padding(.horizontal, 6)
@@ -81,15 +81,15 @@ struct ArticleRowView: View {
 
     private var estadoColor: Color {
         switch article.estado {
-        case "vigente": return ColorPalette.vigente
-        case "modificado": return ColorPalette.modificado
-        default: return ColorPalette.derogado
+        case .vigente: return ColorPalette.vigente
+        case .modificado: return ColorPalette.modificado
+        case .derogado: return ColorPalette.derogado
         }
     }
 
     private var estadoTextColor: Color {
         // Yellow background needs dark text for WCAG contrast
-        article.estado == "modificado" ? Color.appForeground : .white
+        article.estado == .modificado ? Color.appForeground : .white
     }
 
     private var libroPill: some View {

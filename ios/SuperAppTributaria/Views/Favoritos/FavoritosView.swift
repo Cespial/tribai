@@ -61,15 +61,27 @@ struct FavoritosView: View {
 
     @ViewBuilder
     private func articleRow(slug: String) -> some View {
+        let articleId = slug.replacingOccurrences(of: "articulo-", with: "Art. ")
         CardView {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(slug.replacingOccurrences(of: "articulo-", with: "Art. "))
+            HStack(spacing: AppSpacing.xs) {
+                Image(systemName: "doc.text")
+                    .font(.system(size: 20))
+                    .foregroundStyle(Color.appForeground)
+                    .frame(width: 32)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(articleId)
                         .font(AppTypography.bodyDefault)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.appForeground)
+                    Text("Estatuto Tributario")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(Color.appMutedForeground)
+                        .lineLimit(1)
                 }
+
                 Spacer()
+
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12))
                     .foregroundStyle(Color.appMutedForeground)

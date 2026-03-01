@@ -25,7 +25,7 @@ enum ArticleSearchEngine {
             if let libro, !libro.isEmpty, item.libro != libro {
                 return false
             }
-            if let estado, !estado.isEmpty, item.estado != estado {
+            if let estado, !estado.isEmpty, item.estado.rawValue != estado {
                 return false
             }
             if let ley, !ley.isEmpty {

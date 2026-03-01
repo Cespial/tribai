@@ -20,12 +20,6 @@ enum AppConstants {
         static let pollingInterval: TimeInterval = 300 // 5 minutes
     }
 
-    enum Tax2026 {
-        static let uvt = "$52,374"
-        static let smlmv = "$1,750,905"
-        static let auxilioTransporte = "$249,095"
-    }
-
     static let suggestedQuestions = [
         "Debo declarar renta por ingresos de 2026?",
         "Cómo calculo retención en la fuente por salarios?",

@@ -8,7 +8,7 @@ struct ArticleDetail: Codable, Identifiable, Sendable {
     let urlOrigen: String
     let libro: String
     let libroFull: String
-    let estado: String
+    let estado: ArticleStatus
     let complexityScore: Int
     let contenidoTexto: String
     let contenidoHtml: String
@@ -68,7 +68,7 @@ struct ArticleDetail: Codable, Identifiable, Sendable {
         urlOrigen = try c.decode(String.self, forKey: .urlOrigen)
         libro = try c.decode(String.self, forKey: .libro)
         libroFull = try c.decode(String.self, forKey: .libroFull)
-        estado = try c.decode(String.self, forKey: .estado)
+        estado = try c.decode(ArticleStatus.self, forKey: .estado)
         complexityScore = try c.decode(Int.self, forKey: .complexityScore)
         contenidoTexto = try c.decode(String.self, forKey: .contenidoTexto)
         contenidoHtml = try c.decode(String.self, forKey: .contenidoHtml)

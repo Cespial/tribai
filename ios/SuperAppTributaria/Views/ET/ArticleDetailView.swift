@@ -341,21 +341,21 @@ struct ArticleDetailView: View {
 
     // MARK: - Helpers
 
-    private func estadoBadge(_ estado: String) -> some View {
-        Text(estado.capitalized)
+    private func estadoBadge(_ estado: ArticleStatus) -> some View {
+        Text(estado.rawValue.capitalized)
             .font(.system(size: 10, weight: .medium))
-            .foregroundStyle(estado == "modificado" ? Color.appForeground : .white)
+            .foregroundStyle(estado == .modificado ? Color.appForeground : .white)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(estadoColor(estado))
             .clipShape(Capsule())
     }
 
-    private func estadoColor(_ estado: String) -> Color {
+    private func estadoColor(_ estado: ArticleStatus) -> Color {
         switch estado {
-        case "vigente": return ColorPalette.vigente
-        case "modificado": return ColorPalette.modificado
-        default: return ColorPalette.derogado
+        case .vigente: return ColorPalette.vigente
+        case .modificado: return ColorPalette.modificado
+        case .derogado: return ColorPalette.derogado
         }
     }
 

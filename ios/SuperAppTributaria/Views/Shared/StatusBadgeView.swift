@@ -24,7 +24,7 @@ extension StatusBadgeView {
         case .vencido:
             StatusBadgeView(text: "Vencido", color: ColorPalette.derogado)
         case .hoy:
-            StatusBadgeView(text: "Hoy", color: Color(hex: 0xEA580C))
+            StatusBadgeView(text: "Hoy", color: Color.orange)
         case .proximo:
             StatusBadgeView(text: "Proximo", color: ColorPalette.modificado)
         case .futuro:

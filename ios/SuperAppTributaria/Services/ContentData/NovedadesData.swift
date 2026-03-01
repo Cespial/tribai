@@ -38,7 +38,7 @@ enum NovedadesData {
             id: "nov-002",
             fecha: "2026-01-10",
             titulo: "Resolucion DIAN fija valor de la UVT para 2026",
-            resumen: "La DIAN fija el valor de la Unidad de Valor Tributario (UVT) en $49.799 para el ano 2026, con base en la variacion del IPC certificada por el DANE. Este valor actualiza umbrales, tarifas, deducciones y sanciones del Estatuto Tributario.",
+            resumen: "La DIAN fija el valor de la Unidad de Valor Tributario (UVT) en $52.374 para el ano 2026, con base en la variacion del IPC certificada por el DANE. Este valor actualiza umbrales, tarifas, deducciones y sanciones del Estatuto Tributario.",
             tipo: .resolucion,
             fuente: "DIAN",
             numero: "000005 de 2026",

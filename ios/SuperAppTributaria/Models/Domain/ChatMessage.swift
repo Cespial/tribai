@@ -28,7 +28,7 @@ struct ChatMessage: Identifiable, Equatable {
     }
 
     static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
-        lhs.id == rhs.id && lhs.text == rhs.text
+        lhs.id == rhs.id && lhs.text == rhs.text && lhs.sources == rhs.sources
     }
 }
 
