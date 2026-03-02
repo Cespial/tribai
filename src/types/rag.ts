@@ -11,6 +11,8 @@ export interface EnhancedQuery {
   degraded?: boolean;
   /** Reason for degradation */
   degradedReason?: string;
+  /** Disambiguation hints for polysemic terms detected in query */
+  disambiguationHint?: string;
 }
 
 export interface RetrievalResult {

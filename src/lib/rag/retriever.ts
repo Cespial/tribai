@@ -73,27 +73,48 @@ export async function retrieve(
 
   const results = await Promise.all(queryPromises);
 
-  // Improved dynamic threshold: use median of top-5 scores across ALL queries
+  // Continuous dynamic threshold: maps median of top-5 scores to a threshold
+  // via linear interpolation, eliminating bucket-boundary artifacts where
+  // articles with score 0.25-0.29 would get lost when the threshold jumped
+  // from 0.22 to 0.30 due to a small change in medianTop5.
   const allScores = results
     .flatMap((r) => (r.matches || []).map((m) => m.score ?? 0))
     .sort((a, b) => b - a);
 
   let dynamicThreshold = similarityThreshold;
+  const tMin = 0.22, tMax = 0.36;
+  const sMin = 0.40, sMax = 0.80;
+
   if (allScores.length >= 5) {
     const medianTop5 = allScores[2]; // median of top-5
-    if (medianTop5 > 0.70) dynamicThreshold = 0.38;
-    else if (medianTop5 > 0.55) dynamicThreshold = 0.30;
-    else dynamicThreshold = 0.22;
+    const t = Math.max(0, Math.min(1, (medianTop5 - sMin) / (sMax - sMin)));
+    dynamicThreshold = tMin + (tMax - tMin) * t;
   } else if (allScores.length > 0) {
     const topScore = allScores[0];
-    if (topScore > 0.75) dynamicThreshold = 0.35;
-    else if (topScore < 0.60) dynamicThreshold = 0.25;
+    // For sparse results, use topScore as signal with same interpolation range
+    const t = Math.max(0, Math.min(1, (topScore - sMin) / (sMax - sMin)));
+    dynamicThreshold = tMin + (tMax - tMin) * t;
   }
 
   // Merge and dedup: keep max score per chunk ID
+  // Tag each result with its sub-query origin index for quota-based merging in reranker
   const chunkMap = new Map<string, ScoredChunk>();
 
-  for (const result of results) {
+  // Map result index → sub-query index:
+  // results[0..embeddings.length-1] are from the main queries (original, rewritten, hyde, subQueries...)
+  // Sub-query indices: the queryTexts array was built as [original, rewritten, hyde, ...subQueries]
+  // We need to identify which results came from sub-queries specifically
+  const numMainQueries = queryTexts.length - (query.subQueries?.length ?? 0);
+  const hasSubQueries = (query.subQueries?.length ?? 0) > 0;
+
+  for (let ri = 0; ri < results.length; ri++) {
+    const result = results[ri];
+    // Determine sub-query index: main queries get undefined, sub-queries get 0, 1, 2...
+    let subQueryIndex: number | undefined;
+    if (hasSubQueries && ri >= numMainQueries && ri < embeddings.length) {
+      subQueryIndex = ri - numMainQueries;
+    }
+
     for (const match of result.matches || []) {
       if (!match.metadata || (match.score ?? 0) < dynamicThreshold) continue;
 
@@ -105,6 +126,7 @@ export async function retrieve(
           id: match.id,
           score,
           metadata: match.metadata as unknown as ChunkMetadata,
+          subQueryIndex,
         });
       }
     }
@@ -211,16 +233,18 @@ async function retrieveMultiNamespace(
             namespace: ns,
           }));
 
-        // Cross-namespace score normalization: min-max scale within each namespace
-        // so that scores from different namespaces are comparable (0.0–1.0 range)
+        // Soft cross-namespace normalization: rescale to [0.15, 1.0] instead of
+        // the old [0.0, 1.0] min-max. This makes scores comparable across namespaces
+        // while preserving absolute quality differences (a 0.35 won't become 1.0).
         if (filtered.length >= 2) {
           const scores = filtered.map((c) => c.score);
           const minS = Math.min(...scores);
           const maxS = Math.max(...scores);
           const range = maxS - minS;
           if (range > 0.01) {
+            const normFloor = 0.15;
             for (const chunk of filtered) {
-              chunk.score = (chunk.score - minS) / range;
+              chunk.score = normFloor + (1 - normFloor) * (chunk.score - minS) / range;
             }
           }
         }

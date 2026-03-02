@@ -63,41 +63,41 @@ export async function llmRerank(
   chunks: RerankedChunk[],
   query: string
 ): Promise<RerankedChunk[]> {
-  if (chunks.length <= 1) return chunks;
+  if (chunks.length <= 2) return chunks;
 
-  // Rerank top 10 candidates for better coverage
-  const candidates = chunks.slice(0, 10);
-  const remaining = chunks.slice(10);
+  // Pairwise preference on top-3: ask LLM "which one best answers the query?"
+  // Output is a single ID (~20 tokens), much cheaper and more reliable than
+  // asking for a full ranking of 10 candidates (~200 tokens, format-prone errors).
+  const top3 = chunks.slice(0, 3);
+  const rest = chunks.slice(3);
 
   try {
     const { text } = await generateText({
       model: getRerankerModel(),
-      maxOutputTokens: 200,
+      maxOutputTokens: 50,
       system:
-        "Eres un experto en derecho tributario colombiano con profundo conocimiento del Estatuto Tributario. " +
-        "Ordena los siguientes fragmentos del MÁS relevante al MENOS relevante para responder la consulta. " +
-        "Prioriza: (1) artículos que responden directamente la pregunta, (2) artículos con tarifas/valores si la pregunta involucra cálculos, " +
-        "(3) parágrafos y excepciones relevantes, (4) artículos relacionados que complementan la respuesta. " +
-        "Responde SOLAMENTE con los IDs separados por comas, sin explicaciones. " +
-        "IDs: " +
-        candidates.map((c) => c.id).join(", "),
-      prompt: `Consulta del usuario: ${query}\n\nFragmentos:\n${candidates
-        .map((c) => `[ID: ${c.id}] ${c.metadata.id_articulo} - ${c.metadata.titulo}: ${c.metadata.text.slice(0, 500)}`)
+        "Eres un experto en derecho tributario colombiano. " +
+        "De los siguientes 3 fragmentos del Estatuto Tributario, ¿cuál responde MEJOR la consulta del usuario? " +
+        "Responde SOLAMENTE con el ID del fragmento ganador (ej: 'chunk_abc123'). Sin explicaciones.",
+      prompt: `Consulta: ${query}\n\n${top3
+        .map((c, i) => `[${i + 1}] ID: ${c.id}\n${c.metadata.id_articulo} - ${c.metadata.titulo}\n${c.metadata.text.slice(0, 400)}`)
         .join("\n\n")}`,
     });
 
-    const orderedIds = text
-      .split(",")
-      .map((id) => id.trim())
-      .filter((id) => candidates.some((c) => c.id === id));
+    const winnerId = text.trim();
+    const winnerIdx = top3.findIndex((c) => c.id === winnerId);
 
-    const rerankedCandidates = orderedIds
-      .map((id) => candidates.find((c) => c.id === id)!)
-      .concat(candidates.filter((c) => !orderedIds.includes(c.id)));
+    if (winnerIdx > 0) {
+      // Move winner to position 0, shift others down
+      const winner = top3[winnerIdx];
+      const reordered = [winner, ...top3.filter((_, i) => i !== winnerIdx)];
+      return [...reordered, ...rest];
+    }
 
-    return [...rerankedCandidates, ...remaining];
+    // Winner was already #1 or ID not recognized — return unchanged
+    return chunks;
   } catch (error) {
-    console.error("[reranker] llmRerank failed:", error);
+    console.error("[reranker] llmRerank pairwise failed:", error);
     return chunks;
   }
 }
@@ -125,108 +125,106 @@ export function heuristicRerank(
   }
 
   const reranked: RerankedChunk[] = chunks.map((chunk) => {
-    let boost = 0;
     const meta = chunk.metadata;
 
-    // Boost by chunk type
-    if (meta.chunk_type === "contenido") boost += BOOST.chunkContenido;
-    else if (meta.chunk_type === "modificaciones") boost += BOOST.chunkModificaciones;
-    else if (meta.chunk_type === "texto_anterior") boost += BOOST.chunkTextoAnterior;
-
-    // v3: Exact article number match (strongest signal)
+    // === GROUP 1: Identity (exactArticle + directMention) — cap 0.40 ===
+    let identityBoost = 0;
     if (queryArticleNumbers.has(meta.id_articulo)) {
-      boost += BOOST.exactArticleNumber;
+      identityBoost += BOOST.exactArticleNumber;
     }
-
-    // Boost if article is directly mentioned in query (via detectedArticles)
     for (const artId of query.detectedArticles) {
       if (meta.id_articulo === artId) {
-        boost += BOOST.directArticleMention;
+        identityBoost += BOOST.directArticleMention;
         break;
       }
     }
+    identityBoost = Math.min(identityBoost, 0.55);
 
-    // Boost if title terms match query
+    // === GROUP 2: Content relevance (titleMatch + legalAnchor + paragrapho + articleText) — cap 0.20 ===
+    let contentBoost = 0;
     const titleWords = meta.titulo.toLowerCase().split(/\s+/);
     const queryWords = queryLower.split(/\s+/).filter((w) => !STOP_WORDS.has(w));
     const titleMatches = queryWords.filter((w) => titleWords.some((tw) => tw.includes(w)));
     if (titleMatches.length > 0) {
-      boost += Math.min(titleMatches.length * BOOST.titleMatchPerWord, BOOST.titleMatchMax);
+      contentBoost += Math.min(titleMatches.length * BOOST.titleMatchPerWord, BOOST.titleMatchMax);
     }
 
-    // Penalize derogated content (unless asking about history)
-    if (meta.chunk_type === "texto_anterior" && !isHistoryQuery) {
-      boost += BOOST.derogatedPenalty;
-    }
-
-    // Boost derogated content for history queries
-    if (isHistoryQuery && meta.chunk_type === "texto_anterior") {
-      boost += BOOST.derogatedHistoryBoost;
-    }
-
-    // Boost vigente articles for non-history queries
-    if (!isHistoryQuery && meta.estado === "vigente") {
-      boost += BOOST.vigenteBoost;
-    }
-
-    // Boost when query mentions a specific ley and article was modified by it
-    if (queryLey && meta.leyes_modificatorias) {
-      const hasLey = meta.leyes_modificatorias.some(
-        (l) => l.includes(`Ley ${queryLey}`)
-      );
-      if (hasLey) {
-        boost += BOOST.leyMatchBoost;
-      }
-    }
-
-    // Minor complexity factor: slightly prefer more complex articles
-    if (meta.complexity_score && meta.complexity_score >= 5) {
-      boost += BOOST.complexityBoost;
-    }
-
-    // PageRank boost: prefer structurally important articles in the tax graph
-    if (meta.pagerank && meta.pagerank > 0.01) {
-      boost += 0.08;
-    }
-
-    // --- v3.1 Hybrid legal signals ---
-
-    // Legal anchor: match specific tax terms between query and chunk text
     const chunkTextLower = (meta.text || "").slice(0, 600).toLowerCase();
     for (const term of LEGAL_ANCHOR_TERMS) {
       if (queryLower.includes(term) && chunkTextLower.includes(term)) {
-        boost += BOOST.legalAnchorMatch;
-        break; // Only one anchor boost per chunk
+        contentBoost += BOOST.legalAnchorMatch;
+        break;
       }
     }
 
-    // Paragrafo match: "paragrafo 3" in query matches "Paragrafo 3" in chunk
     const paragraphoMatch = queryLower.match(/par[aá]grafo\s*(\d+)/i);
     if (paragraphoMatch) {
       const paraNum = paragraphoMatch[1];
       if (chunkTextLower.includes(`paragrafo ${paraNum}`) ||
           chunkTextLower.includes(`parágrafo ${paraNum}`) ||
           chunkTextLower.includes(`par\u00e1grafo ${paraNum}`)) {
-        boost += BOOST.paragraphoMatch;
+        contentBoost += BOOST.paragraphoMatch;
       }
     }
 
-    // Article number confirmation: chunk text explicitly mentions the article number
     if (queryArticleNumbers.size > 0) {
       for (const artNum of queryArticleNumbers) {
         const numOnly = artNum.replace("Art. ", "");
         if (chunkTextLower.includes(`artículo ${numOnly}`) ||
             chunkTextLower.includes(`articulo ${numOnly}`) ||
             chunkTextLower.includes(`art. ${numOnly}`)) {
-          boost += BOOST.articleTextMatch;
+          contentBoost += BOOST.articleTextMatch;
           break;
         }
       }
     }
+    contentBoost = Math.min(contentBoost, 0.25);
 
-    // Multiplicative + additive scoring: preserves relative ranking better
-    const multiplier = 1 + (boost > 0 ? boost * 0.3 : 0);
-    const rerankedScore = chunk.score * multiplier + boost * 0.7;
+    // === GROUP 3: Chunk type (contenido/mods/anterior) — cap 0.15 ===
+    let chunkTypeBoost = 0;
+    if (meta.chunk_type === "contenido") chunkTypeBoost += BOOST.chunkContenido;
+    else if (meta.chunk_type === "modificaciones") chunkTypeBoost += BOOST.chunkModificaciones;
+    else if (meta.chunk_type === "texto_anterior") chunkTypeBoost += BOOST.chunkTextoAnterior;
+    chunkTypeBoost = Math.min(chunkTypeBoost, 0.15);
+
+    // === GROUP 4: Vigencia (vigente + derogado + leyMatch + history) — cap 0.15 ===
+    let vigenciaBoost = 0;
+    if (meta.chunk_type === "texto_anterior" && !isHistoryQuery) {
+      vigenciaBoost += BOOST.derogatedPenalty;
+    }
+    if (isHistoryQuery && meta.chunk_type === "texto_anterior") {
+      vigenciaBoost += BOOST.derogatedHistoryBoost;
+    }
+    if (!isHistoryQuery && meta.estado === "vigente") {
+      vigenciaBoost += BOOST.vigenteBoost;
+    }
+    if (queryLey && meta.leyes_modificatorias) {
+      const hasLey = meta.leyes_modificatorias.some(
+        (l) => l.includes(`Ley ${queryLey}`)
+      );
+      if (hasLey) {
+        vigenciaBoost += BOOST.leyMatchBoost;
+      }
+    }
+    // Allow negative values (derogatedPenalty) but cap positive side
+    vigenciaBoost = Math.min(vigenciaBoost, 0.15);
+
+    // === GROUP 5: Structural (pagerank + complexity) — cap 0.08 ===
+    let structuralBoost = 0;
+    if (meta.complexity_score && meta.complexity_score >= 5) {
+      structuralBoost += BOOST.complexityBoost;
+    }
+    if (meta.pagerank && meta.pagerank > 0.01) {
+      structuralBoost += 0.08;
+    }
+    structuralBoost = Math.min(structuralBoost, 0.08);
+
+    // Grouped caps prevent runaway boosts (max total ~1.18 vs old uncapped ~1.42)
+    // but we keep the original multiplicative+additive formula so high-scoring
+    // chunks still get amplified proportionally to their embedding quality.
+    const totalCappedBoost = identityBoost + contentBoost + chunkTypeBoost + vigenciaBoost + structuralBoost;
+    const multiplier = 1 + (totalCappedBoost > 0 ? totalCappedBoost * 0.3 : 0);
+    const rerankedScore = chunk.score * multiplier + totalCappedBoost * 0.7;
 
     return {
       ...chunk,
@@ -236,6 +234,68 @@ export function heuristicRerank(
 
   // Sort by reranked score
   reranked.sort((a, b) => b.rerankedScore - a.rerankedScore);
+
+  // v3.3: Quota-based merging for decomposed sub-queries
+  // When a query was decomposed into sub-queries, guarantee each sub-query gets
+  // a fair share of slots in the final result via round-robin quota allocation.
+  const hasSubQueries = reranked.some((c) => c.subQueryIndex !== undefined);
+  if (hasSubQueries) {
+    // Group chunks by sub-query origin (undefined = main query)
+    const subQueryGroups = new Map<number | undefined, RerankedChunk[]>();
+    for (const chunk of reranked) {
+      const key = chunk.subQueryIndex;
+      if (!subQueryGroups.has(key)) subQueryGroups.set(key, []);
+      subQueryGroups.get(key)!.push(chunk);
+    }
+
+    const numGroups = subQueryGroups.size;
+    if (numGroups >= 2) {
+      const quotaMerged: RerankedChunk[] = [];
+      const seenIds = new Set<string>();
+
+      // Sort groups: main query first (undefined), then sub-queries by index
+      const sortedKeys = Array.from(subQueryGroups.keys()).sort((a, b) => {
+        if (a === undefined) return -1;
+        if (b === undefined) return 1;
+        return a - b;
+      });
+
+      // Round-robin: take one chunk from each group in rotation until maxResults
+      const groupPointers = new Map<number | undefined, number>();
+      for (const key of sortedKeys) groupPointers.set(key, 0);
+
+      let filled = true;
+      while (quotaMerged.length < maxResults && filled) {
+        filled = false;
+        for (const key of sortedKeys) {
+          if (quotaMerged.length >= maxResults) break;
+          const group = subQueryGroups.get(key)!;
+          let ptr = groupPointers.get(key)!;
+          // Skip already-seen chunks (dedup across groups)
+          while (ptr < group.length && seenIds.has(group[ptr].id)) ptr++;
+          if (ptr < group.length) {
+            quotaMerged.push(group[ptr]);
+            seenIds.add(group[ptr].id);
+            groupPointers.set(key, ptr + 1);
+            filled = true;
+          }
+        }
+      }
+
+      // Fill remaining slots with highest-scored unused chunks
+      if (quotaMerged.length < maxResults) {
+        for (const chunk of reranked) {
+          if (quotaMerged.length >= maxResults) break;
+          if (!seenIds.has(chunk.id)) {
+            quotaMerged.push(chunk);
+            seenIds.add(chunk.id);
+          }
+        }
+      }
+
+      return quotaMerged.slice(0, maxResults);
+    }
+  }
 
   // v3: Comparative round-robin — interleave chunks from different articles
   // to ensure diversity in top-N for side-by-side comparisons

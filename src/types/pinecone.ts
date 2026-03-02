@@ -66,6 +66,8 @@ export interface ScoredChunk {
   id: string;
   score: number;
   metadata: ChunkMetadata;
+  /** Index of the sub-query that produced this chunk (for quota-based merging) */
+  subQueryIndex?: number;
 }
 
 export interface ScoredMultiSourceChunk {

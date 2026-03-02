@@ -126,10 +126,13 @@ export async function runRAGPipeline(
   const rerankStart = performance.now();
   let reranked = heuristicRerank(retrievalResult.chunks, enhancedQuery, routingConfig.maxRerankedResults, retrievalResult.queryType);
 
-  // Conditional LLM rerank: only run when confidence is low (top score < 0.60)
-  // Saves ~500ms for high-confidence queries
-  const shouldLLMRerank = (options.useLLMRerank ?? RAG_CONFIG.useLLMRerank) &&
-    (retrievalResult.dynamicThreshold ?? 1) < 0.35;
+  // Conditional LLM rerank: activate when ranking is uncertain
+  // Two triggers: (1) low overall confidence, or (2) tight gap between top-2 scores
+  const llmRerankEnabled = options.useLLMRerank ?? RAG_CONFIG.useLLMRerank;
+  const hasUncertainRanking = reranked.length >= 2 &&
+    Math.abs(reranked[0].rerankedScore - reranked[1].rerankedScore) < 0.05;
+  const hasLowConfidence = (retrievalResult.dynamicThreshold ?? 1) < 0.35;
+  const shouldLLMRerank = llmRerankEnabled && (hasUncertainRanking || hasLowConfidence);
   if (shouldLLMRerank) {
     reranked = await llmRerank(reranked, query);
   }

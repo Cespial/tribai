@@ -83,10 +83,15 @@ export async function assembleContext(
   };
 }
 
+function getMaxSiblings(totalChunks: number, isTopArticle: boolean): number {
+  if (totalChunks <= 3) return 2;
+  if (isTopArticle) return Math.min(3, totalChunks - 1);
+  return 2;
+}
+
 async function fetchSiblingChunks(
   chunks: RerankedChunk[]
 ): Promise<RerankedChunk[]> {
-  const MAX_SIBLINGS_PER_ARTICLE = 2;
   const index = getIndex();
 
   // Find articles that have multiple chunks (total_chunks > 1)
@@ -150,6 +155,11 @@ async function fetchSiblingChunks(
   const result: RerankedChunk[] = [...chunks];
   const siblingsAdded = new Map<string, number>();
 
+  // Determine top-scored article for dynamic sibling cap
+  const topArticleId = chunks.length > 0
+    ? chunks.reduce((best, c) => c.rerankedScore > best.rerankedScore ? c : best).metadata.id_articulo
+    : "";
+
   // Sort all matches: prioritize contenido chunks, then by chunk_index
   const sorted = [...allMatches].sort((a, b) => {
     const aMeta = a.metadata as unknown as ChunkMetadata;
@@ -167,8 +177,10 @@ async function fetchSiblingChunks(
       const meta = match.metadata as unknown as ChunkMetadata;
       const artId = meta.id_articulo;
       const added = siblingsAdded.get(artId) ?? 0;
+      const isTopArticle = artId === topArticleId;
+      const maxSiblings = getMaxSiblings(meta.total_chunks, isTopArticle);
 
-      if (added >= MAX_SIBLINGS_PER_ARTICLE) continue;
+      if (added >= maxSiblings) continue;
 
       const artScore = articleScores.get(artId) ?? 0;
 

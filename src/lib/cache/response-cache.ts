@@ -7,17 +7,25 @@
  *
  * Cache key: normalized query string hash.
  * TTL: 24 hours (tax law changes infrequently).
+ *
+ * v3.5: Added feedback annotations — entries with 2+ negative feedbacks
+ * are auto-invalidated to force re-retrieval.
  */
 
 import { PipelineResult } from "@/lib/rag/pipeline";
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_CACHE_SIZE = 500;
+/** Number of negative feedbacks before a cache entry is invalidated */
+const NEGATIVE_FEEDBACK_THRESHOLD = 2;
 
 interface CacheEntry {
   result: PipelineResult;
   timestamp: number;
   hitCount: number;
+  /** Feedback tracking: positive and negative counts */
+  feedbackPositive: number;
+  feedbackNegative: number;
 }
 
 const cache = new Map<string, CacheEntry>();
@@ -46,6 +54,12 @@ export function getCachedResult(query: string): PipelineResult | null {
 
   // Check TTL
   if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+
+  // Auto-invalidate entries with too many negative feedbacks
+  if (entry.feedbackNegative >= NEGATIVE_FEEDBACK_THRESHOLD) {
     cache.delete(key);
     return null;
   }
@@ -79,7 +93,31 @@ export function setCachedResult(query: string, result: PipelineResult): void {
     result,
     timestamp: Date.now(),
     hitCount: 0,
+    feedbackPositive: 0,
+    feedbackNegative: 0,
   });
+}
+
+/**
+ * Record user feedback for a cached query.
+ * Returns true if feedback was recorded, false if query not found in cache.
+ */
+export function recordFeedback(
+  query: string,
+  feedback: "positive" | "negative"
+): boolean {
+  const key = normalizeQuery(query);
+  const entry = cache.get(key);
+
+  if (!entry) return false;
+
+  if (feedback === "positive") {
+    entry.feedbackPositive++;
+  } else {
+    entry.feedbackNegative++;
+  }
+
+  return true;
 }
 
 /**

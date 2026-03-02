@@ -54,12 +54,27 @@ export function buildMessages(
 
   const evidenceTag = `<evidence_quality score="${topScore.toFixed(2)}" articles="${uniqueArticles}" quality="${qualityLabel}" confidence="${confidenceLevel}" />`;
 
-  // Low-evidence warning: injected when topScore is below fallback threshold
+  // Abstention logic: mandatory instructions when evidence is truly insufficient.
+  // Trigger on topScore < lowEvidenceFallback (0.45), NOT on confidenceLevel,
+  // because "low" confidence includes scores 0.45-0.55 which often have enough
+  // evidence to answer. The mandatory format prevents the LLM from hallucinating.
   let evidenceWarning = "";
   if (topScore < EVIDENCE_THRESHOLDS.lowEvidenceFallback && topScore > 0) {
-    evidenceWarning = `\n<low_evidence_warning>La evidencia disponible tiene baja relevancia (score máximo: ${topScore.toFixed(2)}). Indica al usuario que la información puede ser limitada y sugiere reformular la pregunta con términos más específicos o consultar directamente el Estatuto Tributario.</low_evidence_warning>`;
+    evidenceWarning = `\n<abstention_required>
+INSTRUCCIONES OBLIGATORIAS — La evidencia disponible es insuficiente (score máximo: ${topScore.toFixed(2)}, confianza: ${qualityLabel}).
+1. DEBES iniciar tu respuesta con: "⚠️ **Nota:** La información disponible en mi contexto actual sobre este tema es limitada."
+2. USA lenguaje condicional: "podría", "según la información disponible", "sería recomendable verificar".
+3. NO cites artículos que NO aparezcan en el <context> — inventa CERO contenido.
+4. SUGIERE al usuario: reformular la pregunta con términos más específicos, consultar directamente el Estatuto Tributario, o consultar a un profesional tributario.
+5. Si no puedes responder con la evidencia disponible, di claramente que no tienes información suficiente.
+</abstention_required>`;
   } else if (topScore === 0) {
-    evidenceWarning = `\n<low_evidence_warning>No se encontraron fuentes relevantes. Responde que no tienes información suficiente para esta consulta y sugiere alternativas.</low_evidence_warning>`;
+    evidenceWarning = `\n<abstention_required>
+INSTRUCCIONES OBLIGATORIAS — No se encontraron fuentes relevantes para esta consulta.
+1. DEBES responder que NO tienes información suficiente en tu contexto actual para esta consulta.
+2. NO inventes contenido ni cites artículos que no estén en el contexto.
+3. SUGIERE alternativas: reformular la pregunta, consultar directamente el Estatuto Tributario en estatuto.co, o consultar a un profesional tributario.
+</abstention_required>`;
   }
 
   // Contradiction warning: injected when evidence checker detects conflicts

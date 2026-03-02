@@ -12,6 +12,8 @@
 
 import { NextResponse } from "next/server";
 import { readFileSync, writeFileSync } from "fs";
+import { recordFeedback } from "@/lib/cache/response-cache";
+import { logFeedback } from "@/lib/logging/feedback-logger";
 
 interface FeedbackEntry {
   conversationId: string;
@@ -90,6 +92,20 @@ export async function POST(req: Request) {
     }
 
     feedbackStore.push(entry);
+
+    // Record feedback in response cache — entries with 2+ negative feedbacks
+    // are auto-invalidated on next cache lookup (forces fresh re-retrieval)
+    if (query) {
+      const cacheFeedback = rating === "up" ? "positive" : "negative";
+      recordFeedback(query, cacheFeedback);
+
+      // Structured logging for offline analysis
+      logFeedback({
+        query,
+        feedback: cacheFeedback,
+        comment,
+      });
+    }
 
     // Write-through: flush to /tmp every FLUSH_INTERVAL writes
     writesSinceFlush++;
