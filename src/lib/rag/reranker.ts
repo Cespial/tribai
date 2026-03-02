@@ -125,106 +125,108 @@ export function heuristicRerank(
   }
 
   const reranked: RerankedChunk[] = chunks.map((chunk) => {
+    let boost = 0;
     const meta = chunk.metadata;
 
-    // === GROUP 1: Identity (exactArticle + directMention) — cap 0.40 ===
-    let identityBoost = 0;
+    // Boost by chunk type
+    if (meta.chunk_type === "contenido") boost += BOOST.chunkContenido;
+    else if (meta.chunk_type === "modificaciones") boost += BOOST.chunkModificaciones;
+    else if (meta.chunk_type === "texto_anterior") boost += BOOST.chunkTextoAnterior;
+
+    // v3: Exact article number match (strongest signal)
     if (queryArticleNumbers.has(meta.id_articulo)) {
-      identityBoost += BOOST.exactArticleNumber;
+      boost += BOOST.exactArticleNumber;
     }
+
+    // Boost if article is directly mentioned in query (via detectedArticles)
     for (const artId of query.detectedArticles) {
       if (meta.id_articulo === artId) {
-        identityBoost += BOOST.directArticleMention;
+        boost += BOOST.directArticleMention;
         break;
       }
     }
-    identityBoost = Math.min(identityBoost, 0.55);
 
-    // === GROUP 2: Content relevance (titleMatch + legalAnchor + paragrapho + articleText) — cap 0.20 ===
-    let contentBoost = 0;
+    // Boost if title terms match query
     const titleWords = meta.titulo.toLowerCase().split(/\s+/);
     const queryWords = queryLower.split(/\s+/).filter((w) => !STOP_WORDS.has(w));
     const titleMatches = queryWords.filter((w) => titleWords.some((tw) => tw.includes(w)));
     if (titleMatches.length > 0) {
-      contentBoost += Math.min(titleMatches.length * BOOST.titleMatchPerWord, BOOST.titleMatchMax);
+      boost += Math.min(titleMatches.length * BOOST.titleMatchPerWord, BOOST.titleMatchMax);
     }
 
-    const chunkTextLower = (meta.text || "").slice(0, 600).toLowerCase();
-    for (const term of LEGAL_ANCHOR_TERMS) {
-      if (queryLower.includes(term) && chunkTextLower.includes(term)) {
-        contentBoost += BOOST.legalAnchorMatch;
-        break;
+    // Penalize derogated content (unless asking about history)
+    if (meta.chunk_type === "texto_anterior" && !isHistoryQuery) {
+      boost += BOOST.derogatedPenalty;
+    }
+
+    // Boost derogated content for history queries
+    if (isHistoryQuery && meta.chunk_type === "texto_anterior") {
+      boost += BOOST.derogatedHistoryBoost;
+    }
+
+    // Boost vigente articles for non-history queries
+    if (!isHistoryQuery && meta.estado === "vigente") {
+      boost += BOOST.vigenteBoost;
+    }
+
+    // Boost when query mentions a specific ley and article was modified by it
+    if (queryLey && meta.leyes_modificatorias) {
+      const hasLey = meta.leyes_modificatorias.some(
+        (l) => l.includes(`Ley ${queryLey}`)
+      );
+      if (hasLey) {
+        boost += BOOST.leyMatchBoost;
       }
     }
 
+    // Minor complexity factor: slightly prefer more complex articles
+    if (meta.complexity_score && meta.complexity_score >= 5) {
+      boost += BOOST.complexityBoost;
+    }
+
+    // PageRank boost: prefer structurally important articles in the tax graph
+    if (meta.pagerank && meta.pagerank > 0.01) {
+      boost += 0.08;
+    }
+
+    // --- v3.1 Hybrid legal signals ---
+
+    // Legal anchor: match specific tax terms between query and chunk text
+    const chunkTextLower = (meta.text || "").slice(0, 600).toLowerCase();
+    for (const term of LEGAL_ANCHOR_TERMS) {
+      if (queryLower.includes(term) && chunkTextLower.includes(term)) {
+        boost += BOOST.legalAnchorMatch;
+        break; // Only one anchor boost per chunk
+      }
+    }
+
+    // Paragrafo match: "paragrafo 3" in query matches "Paragrafo 3" in chunk
     const paragraphoMatch = queryLower.match(/par[aá]grafo\s*(\d+)/i);
     if (paragraphoMatch) {
       const paraNum = paragraphoMatch[1];
       if (chunkTextLower.includes(`paragrafo ${paraNum}`) ||
           chunkTextLower.includes(`parágrafo ${paraNum}`) ||
           chunkTextLower.includes(`par\u00e1grafo ${paraNum}`)) {
-        contentBoost += BOOST.paragraphoMatch;
+        boost += BOOST.paragraphoMatch;
       }
     }
 
+    // Article number confirmation: chunk text explicitly mentions the article number
     if (queryArticleNumbers.size > 0) {
       for (const artNum of queryArticleNumbers) {
         const numOnly = artNum.replace("Art. ", "");
         if (chunkTextLower.includes(`artículo ${numOnly}`) ||
             chunkTextLower.includes(`articulo ${numOnly}`) ||
             chunkTextLower.includes(`art. ${numOnly}`)) {
-          contentBoost += BOOST.articleTextMatch;
+          boost += BOOST.articleTextMatch;
           break;
         }
       }
     }
-    contentBoost = Math.min(contentBoost, 0.25);
 
-    // === GROUP 3: Chunk type (contenido/mods/anterior) — cap 0.15 ===
-    let chunkTypeBoost = 0;
-    if (meta.chunk_type === "contenido") chunkTypeBoost += BOOST.chunkContenido;
-    else if (meta.chunk_type === "modificaciones") chunkTypeBoost += BOOST.chunkModificaciones;
-    else if (meta.chunk_type === "texto_anterior") chunkTypeBoost += BOOST.chunkTextoAnterior;
-    chunkTypeBoost = Math.min(chunkTypeBoost, 0.15);
-
-    // === GROUP 4: Vigencia (vigente + derogado + leyMatch + history) — cap 0.15 ===
-    let vigenciaBoost = 0;
-    if (meta.chunk_type === "texto_anterior" && !isHistoryQuery) {
-      vigenciaBoost += BOOST.derogatedPenalty;
-    }
-    if (isHistoryQuery && meta.chunk_type === "texto_anterior") {
-      vigenciaBoost += BOOST.derogatedHistoryBoost;
-    }
-    if (!isHistoryQuery && meta.estado === "vigente") {
-      vigenciaBoost += BOOST.vigenteBoost;
-    }
-    if (queryLey && meta.leyes_modificatorias) {
-      const hasLey = meta.leyes_modificatorias.some(
-        (l) => l.includes(`Ley ${queryLey}`)
-      );
-      if (hasLey) {
-        vigenciaBoost += BOOST.leyMatchBoost;
-      }
-    }
-    // Allow negative values (derogatedPenalty) but cap positive side
-    vigenciaBoost = Math.min(vigenciaBoost, 0.15);
-
-    // === GROUP 5: Structural (pagerank + complexity) — cap 0.08 ===
-    let structuralBoost = 0;
-    if (meta.complexity_score && meta.complexity_score >= 5) {
-      structuralBoost += BOOST.complexityBoost;
-    }
-    if (meta.pagerank && meta.pagerank > 0.01) {
-      structuralBoost += 0.08;
-    }
-    structuralBoost = Math.min(structuralBoost, 0.08);
-
-    // Grouped caps prevent runaway boosts (max total ~1.18 vs old uncapped ~1.42)
-    // but we keep the original multiplicative+additive formula so high-scoring
-    // chunks still get amplified proportionally to their embedding quality.
-    const totalCappedBoost = identityBoost + contentBoost + chunkTypeBoost + vigenciaBoost + structuralBoost;
-    const multiplier = 1 + (totalCappedBoost > 0 ? totalCappedBoost * 0.3 : 0);
-    const rerankedScore = chunk.score * multiplier + totalCappedBoost * 0.7;
+    // Multiplicative + additive scoring: preserves relative ranking better
+    const multiplier = 1 + (boost > 0 ? boost * 0.3 : 0);
+    const rerankedScore = chunk.score * multiplier + boost * 0.7;
 
     return {
       ...chunk,
@@ -236,11 +238,11 @@ export function heuristicRerank(
   reranked.sort((a, b) => b.rerankedScore - a.rerankedScore);
 
   // v3.3: Quota-based merging for decomposed sub-queries
-  // When a query was decomposed into sub-queries, guarantee each sub-query gets
-  // a fair share of slots in the final result via round-robin quota allocation.
+  // Only apply when sub-query groups have comparable best scores (gap < 0.15).
+  // If one sub-query dominates, pure score ordering is better than forcing
+  // low-quality results into top positions via round-robin.
   const hasSubQueries = reranked.some((c) => c.subQueryIndex !== undefined);
   if (hasSubQueries) {
-    // Group chunks by sub-query origin (undefined = main query)
     const subQueryGroups = new Map<number | undefined, RerankedChunk[]>();
     for (const chunk of reranked) {
       const key = chunk.subQueryIndex;
@@ -250,56 +252,65 @@ export function heuristicRerank(
 
     const numGroups = subQueryGroups.size;
     if (numGroups >= 2) {
-      const quotaMerged: RerankedChunk[] = [];
-      const seenIds = new Set<string>();
+      // Check if groups have comparable quality — only merge when gap is small
+      const groupBestScores = Array.from(subQueryGroups.values())
+        .map((g) => g[0]?.rerankedScore ?? 0);
+      const maxBest = Math.max(...groupBestScores);
+      const minBest = Math.min(...groupBestScores);
+      const scoreGap = maxBest - minBest;
 
-      // Sort groups: main query first (undefined), then sub-queries by index
-      const sortedKeys = Array.from(subQueryGroups.keys()).sort((a, b) => {
-        if (a === undefined) return -1;
-        if (b === undefined) return 1;
-        return a - b;
-      });
+      // Only apply quota merging when groups are comparable (gap < 0.15)
+      // Otherwise, fall through to standard score ordering
+      if (scoreGap < 0.15) {
+        const quotaMerged: RerankedChunk[] = [];
+        const seenIds = new Set<string>();
 
-      // Round-robin: take one chunk from each group in rotation until maxResults
-      const groupPointers = new Map<number | undefined, number>();
-      for (const key of sortedKeys) groupPointers.set(key, 0);
+        const sortedKeys = Array.from(subQueryGroups.keys()).sort((a, b) => {
+          if (a === undefined) return -1;
+          if (b === undefined) return 1;
+          return a - b;
+        });
 
-      let filled = true;
-      while (quotaMerged.length < maxResults && filled) {
-        filled = false;
-        for (const key of sortedKeys) {
-          if (quotaMerged.length >= maxResults) break;
-          const group = subQueryGroups.get(key)!;
-          let ptr = groupPointers.get(key)!;
-          // Skip already-seen chunks (dedup across groups)
-          while (ptr < group.length && seenIds.has(group[ptr].id)) ptr++;
-          if (ptr < group.length) {
-            quotaMerged.push(group[ptr]);
-            seenIds.add(group[ptr].id);
-            groupPointers.set(key, ptr + 1);
-            filled = true;
+        const groupPointers = new Map<number | undefined, number>();
+        for (const key of sortedKeys) groupPointers.set(key, 0);
+
+        let filled = true;
+        while (quotaMerged.length < maxResults && filled) {
+          filled = false;
+          for (const key of sortedKeys) {
+            if (quotaMerged.length >= maxResults) break;
+            const group = subQueryGroups.get(key)!;
+            let ptr = groupPointers.get(key)!;
+            while (ptr < group.length && seenIds.has(group[ptr].id)) ptr++;
+            if (ptr < group.length) {
+              quotaMerged.push(group[ptr]);
+              seenIds.add(group[ptr].id);
+              groupPointers.set(key, ptr + 1);
+              filled = true;
+            }
           }
         }
-      }
 
-      // Fill remaining slots with highest-scored unused chunks
-      if (quotaMerged.length < maxResults) {
-        for (const chunk of reranked) {
-          if (quotaMerged.length >= maxResults) break;
-          if (!seenIds.has(chunk.id)) {
-            quotaMerged.push(chunk);
-            seenIds.add(chunk.id);
+        if (quotaMerged.length < maxResults) {
+          for (const chunk of reranked) {
+            if (quotaMerged.length >= maxResults) break;
+            if (!seenIds.has(chunk.id)) {
+              quotaMerged.push(chunk);
+              seenIds.add(chunk.id);
+            }
           }
         }
-      }
 
-      return quotaMerged.slice(0, maxResults);
+        return quotaMerged.slice(0, maxResults);
+      }
     }
   }
 
   // v3: Comparative round-robin — interleave chunks from different articles
-  // to ensure diversity in top-N for side-by-side comparisons
-  const isComparative = queryType === "comparative" || isHistoryQuery;
+  // to ensure diversity in top-N for side-by-side comparisons.
+  // Only for truly comparative queries — history queries need depth on one article,
+  // not breadth across articles.
+  const isComparative = queryType === "comparative";
 
   if (isComparative && reranked.length > 3) {
     // Group chunks by article, preserving score order within each group

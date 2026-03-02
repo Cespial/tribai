@@ -24,17 +24,17 @@ const AMBIGUOUS_TERMS: Array<{
 }> = [
   {
     term: /\bretenci[oó]n\b/i,
-    disambiguated: /retenci[oó]n\s+(en la fuente|iva|dividendo|salari|laboral|renta|autoretenci|autorretenci)/i,
+    disambiguated: /retenci[oó]n\s+(en la fuente|iva|dividendo|salari|laboral|renta|autoretenci|autorretenci|por\s+(salari|pago|servic|honorar|arrend|compr))/i,
     hint: "El término 'retención' puede referirse a: retención en la fuente sobre salarios (Art. 383), retención por otros pagos (Arts. 392-401), retención de IVA (Art. 437-1), o retención sobre dividendos (Art. 242). Cubre todas las interpretaciones relevantes.",
   },
   {
     term: /\btarifa\b/i,
-    disambiguated: /tarifa\s+(de\s+)?(renta|iva|rete|retencion|patrimonio|ganancias|personas\s+jur[ií]d|personas\s+natural|pj|pn|general\s+del?\s+iva)/i,
+    disambiguated: /tarifa\s+(de\s+)?(renta|iva|rete|retencion|patrimonio|ganancias|personas\s+jur[ií]d|personas\s+natural|pj|pn|general\s+del?\s+iva|impuesto|timbre|consumo|impo\s*consumo)/i,
     hint: "El término 'tarifa' puede referirse a: tarifa de renta PJ (Art. 240), tarifa de renta PN (Art. 241), tarifa general de IVA (Art. 468), o tarifas de retención. Cubre todas las tarifas relevantes.",
   },
   {
     term: /\bsanci[oó]n\b/i,
-    disambiguated: /sanci[oó]n\s+(por\s+)?(extemporanei|inexactitud|no\s+declar|correcci|omisi|mora|clausura|extemporáne)/i,
+    disambiguated: /sanci[oó]n\s+(por\s+)?(extemporanei|inexactitud|no\s+(declar|present)|correcci|omisi|mora|clausura|extemporáne|m[ií]nima)/i,
     hint: "El término 'sanción' puede referirse a: sanción por extemporaneidad (Art. 641), por no declarar (Art. 643), por inexactitud (Art. 647), o por corrección (Art. 644). Cubre los principales tipos.",
   },
   {
@@ -124,7 +124,7 @@ export async function enhanceQuery(
   const [rewritten, hyde, subQueries] = await Promise.all([
     rewriteQuery(expanded),
     shouldUseHyDE(query, detectedArticles, options.useHyDE)
-      ? generateHyDE(query, disambiguationHint)
+      ? generateHyDE(query)
       : Promise.resolve(undefined),
     isComplexQuery(query) ? decomposeQuery(query) : Promise.resolve(undefined),
   ]);

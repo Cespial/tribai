@@ -126,13 +126,14 @@ export async function runRAGPipeline(
   const rerankStart = performance.now();
   let reranked = heuristicRerank(retrievalResult.chunks, enhancedQuery, routingConfig.maxRerankedResults, retrievalResult.queryType);
 
-  // Conditional LLM rerank: activate when ranking is uncertain
-  // Two triggers: (1) low overall confidence, or (2) tight gap between top-2 scores
+  // Conditional LLM rerank: activate ONLY when ranking is truly uncertain
+  // Single trigger: tight gap between top-2 heuristic scores (<0.03)
+  // The low-confidence trigger was too aggressive (fires on 2/3 of queries)
+  // and the LLM can swap correct articles out of top positions
   const llmRerankEnabled = options.useLLMRerank ?? RAG_CONFIG.useLLMRerank;
   const hasUncertainRanking = reranked.length >= 2 &&
-    Math.abs(reranked[0].rerankedScore - reranked[1].rerankedScore) < 0.05;
-  const hasLowConfidence = (retrievalResult.dynamicThreshold ?? 1) < 0.35;
-  const shouldLLMRerank = llmRerankEnabled && (hasUncertainRanking || hasLowConfidence);
+    Math.abs(reranked[0].rerankedScore - reranked[1].rerankedScore) < 0.03;
+  const shouldLLMRerank = llmRerankEnabled && hasUncertainRanking;
   if (shouldLLMRerank) {
     reranked = await llmRerank(reranked, query);
   }

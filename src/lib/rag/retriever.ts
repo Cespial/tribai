@@ -73,27 +73,21 @@ export async function retrieve(
 
   const results = await Promise.all(queryPromises);
 
-  // Continuous dynamic threshold: maps median of top-5 scores to a threshold
-  // via linear interpolation, eliminating bucket-boundary artifacts where
-  // articles with score 0.25-0.29 would get lost when the threshold jumped
-  // from 0.22 to 0.30 due to a small change in medianTop5.
+  // Improved dynamic threshold: use median of top-5 scores across ALL queries
   const allScores = results
     .flatMap((r) => (r.matches || []).map((m) => m.score ?? 0))
     .sort((a, b) => b - a);
 
   let dynamicThreshold = similarityThreshold;
-  const tMin = 0.22, tMax = 0.36;
-  const sMin = 0.40, sMax = 0.80;
-
   if (allScores.length >= 5) {
     const medianTop5 = allScores[2]; // median of top-5
-    const t = Math.max(0, Math.min(1, (medianTop5 - sMin) / (sMax - sMin)));
-    dynamicThreshold = tMin + (tMax - tMin) * t;
+    if (medianTop5 > 0.70) dynamicThreshold = 0.38;
+    else if (medianTop5 > 0.55) dynamicThreshold = 0.30;
+    else dynamicThreshold = 0.22;
   } else if (allScores.length > 0) {
     const topScore = allScores[0];
-    // For sparse results, use topScore as signal with same interpolation range
-    const t = Math.max(0, Math.min(1, (topScore - sMin) / (sMax - sMin)));
-    dynamicThreshold = tMin + (tMax - tMin) * t;
+    if (topScore > 0.75) dynamicThreshold = 0.35;
+    else if (topScore < 0.60) dynamicThreshold = 0.25;
   }
 
   // Merge and dedup: keep max score per chunk ID
@@ -132,10 +126,15 @@ export async function retrieve(
     }
   }
 
-  // Sort by score descending
-  const chunks = Array.from(chunkMap.values()).sort(
-    (a, b) => b.score - a.score
-  );
+  // Sort by score descending and cap to avoid flooding reranker with noise.
+  // With multi-query embeddings (original + rewritten + HyDE + subQueries),
+  // the dedup pool can reach 50-80 chunks. Passing all of them to the reranker
+  // dilutes ranking quality and causes context_truncated errors downstream.
+  // Use topK * 1.5 to allow some diversity while limiting noise.
+  const maxChunksForReranker = Math.ceil(topK * 1.5) + (query.detectedArticles.length > 0 ? 10 : 0);
+  const chunks = Array.from(chunkMap.values())
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxChunksForReranker);
 
   // Multi-namespace retrieval — CONDITIONAL based on routing + intent signals
   let multiSourceChunks: ScoredMultiSourceChunk[] | undefined;
@@ -233,18 +232,18 @@ async function retrieveMultiNamespace(
             namespace: ns,
           }));
 
-        // Soft cross-namespace normalization: rescale to [0.15, 1.0] instead of
-        // the old [0.0, 1.0] min-max. This makes scores comparable across namespaces
-        // while preserving absolute quality differences (a 0.35 won't become 1.0).
+        // Cross-namespace min-max normalization: rescale scores to [0, 1] so external
+        // sources from different namespaces are comparable with each other.
+        // This is the original normalization — alternatives (no norm, soft norm) were
+        // tested and performed worse on Ext Src Ctx.
         if (filtered.length >= 2) {
           const scores = filtered.map((c) => c.score);
           const minS = Math.min(...scores);
           const maxS = Math.max(...scores);
           const range = maxS - minS;
           if (range > 0.01) {
-            const normFloor = 0.15;
             for (const chunk of filtered) {
-              chunk.score = normFloor + (1 - normFloor) * (chunk.score - minS) / range;
+              chunk.score = (chunk.score - minS) / range;
             }
           }
         }
