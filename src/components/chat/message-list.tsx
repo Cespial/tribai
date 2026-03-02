@@ -60,18 +60,33 @@ export function MessageList({
   const containerRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
   const prevMessageCountRef = useRef(messages.length);
+  const userScrolledUpRef = useRef(false);
 
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
-    isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    isNearBottomRef.current = nearBottom;
+
+    // If the user scrolled away from the bottom, respect their intent
+    if (!nearBottom) {
+      userScrolledUpRef.current = true;
+    } else {
+      userScrolledUpRef.current = false;
+    }
   }, []);
 
   useEffect(() => {
-    const newMessage = messages.length !== prevMessageCountRef.current;
+    const isNewMessage = messages.length !== prevMessageCountRef.current;
     prevMessageCountRef.current = messages.length;
 
-    if (newMessage || isLoading || isNearBottomRef.current) {
+    // Auto-scroll only when:
+    // 1. A new message was added (user sent a message) — always scroll
+    // 2. Streaming/loading updates — only if the user hasn't scrolled up
+    if (isNewMessage) {
+      userScrolledUpRef.current = false;
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else if (!userScrolledUpRef.current && isNearBottomRef.current) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isLoading]);
