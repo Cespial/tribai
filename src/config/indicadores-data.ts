@@ -1,4 +1,5 @@
 export type IndicatorCategoryId = "tributarios" | "laborales" | "financieros" | "monetarios";
+export type UpdateFrequency = "daily" | "weekly" | "monthly" | "annual";
 
 export const INDICADORES_LAST_UPDATE = "2026-03-02";
 
@@ -16,10 +17,25 @@ export interface IndicatorItem {
   fechaCorte: string;
   paraQueSirve: string;
   categoria: IndicatorCategoryId;
+  updateFrequency: UpdateFrequency;
   notas?: string;
   articulo?: string;
   calculatorHrefs: string[];
   history: IndicatorHistoryPoint[];
+}
+
+export function isIndicatorStale(indicator: IndicatorItem): boolean {
+  const now = new Date();
+  const fechaCorte = new Date(indicator.fechaCorte);
+  const diffDays = Math.floor((now.getTime() - fechaCorte.getTime()) / (1000 * 60 * 60 * 24));
+
+  switch (indicator.updateFrequency) {
+    case "daily": return diffDays > 3;
+    case "weekly": return diffDays > 14;
+    case "monthly": return diffDays > 45;
+    case "annual": return now.getFullYear() > fechaCorte.getFullYear() && now.getMonth() > 0;
+    default: return false;
+  }
 }
 
 export interface IndicatorCategory {
@@ -36,6 +52,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 52374,
     unidad: "cop",
     fechaCorte: "2026-01-01",
+    updateFrequency: "annual",
     paraQueSirve:
       "Sirve para convertir topes, sanciones, deducciones y umbrales del Estatuto Tributario a pesos colombianos.",
     categoria: "tributarios",
@@ -62,6 +79,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 1750905,
     unidad: "cop",
     fechaCorte: "2026-01-01",
+    updateFrequency: "annual",
     paraQueSirve:
       "Impacta bases de seguridad social, retención laboral, costos de nómina y beneficios asociados al salario mínimo.",
     categoria: "laborales",
@@ -87,6 +105,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 3766,
     unidad: "cop",
     fechaCorte: "2026-03-01",
+    updateFrequency: "daily",
     paraQueSirve:
       "Se usa para convertir obligaciones en moneda extranjera y valorar activos, pasivos y operaciones internacionales.",
     categoria: "financieros",
@@ -112,6 +131,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 25.52,
     unidad: "porcentaje",
     fechaCorte: "2026-03-01",
+    updateFrequency: "monthly",
     paraQueSirve:
       "Define el límite legal para intereses de financiación y sirve de base para calcular intereses moratorios tributarios.",
     categoria: "financieros",
@@ -137,6 +157,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 249095,
     unidad: "cop",
     fechaCorte: "2026-01-01",
+    updateFrequency: "annual",
     paraQueSirve:
       "Complementa el ingreso de trabajadores con salario hasta dos mínimos y afecta costos laborales mensuales.",
     categoria: "laborales",
@@ -157,6 +178,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 5.35,
     unidad: "porcentaje",
     fechaCorte: "2026-01-31",
+    updateFrequency: "monthly",
     paraQueSirve:
       "Se usa para ajustes de valores tributarios, actualizaciones de topes y proyecciones financieras anuales.",
     categoria: "monetarios",
@@ -182,6 +204,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 10.25,
     unidad: "porcentaje",
     fechaCorte: "2026-03-01",
+    updateFrequency: "weekly",
     paraQueSirve:
       "Indicador de referencia para contratos financieros y actualizaciones de costos de financiación empresarial.",
     categoria: "financieros",
@@ -205,6 +228,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 523740,
     unidad: "cop",
     fechaCorte: "2026-01-01",
+    updateFrequency: "annual",
     paraQueSirve:
       "Marca el mínimo de sanción tributaria aplicable en procesos de fiscalización y cumplimiento.",
     categoria: "tributarios",
@@ -225,6 +249,7 @@ export const INDICADORES_ITEMS: IndicatorItem[] = [
     valorNumerico: 18330900,
     unidad: "cop",
     fechaCorte: "2026-01-01",
+    updateFrequency: "annual",
     paraQueSirve:
       "Permite estimar el límite de movimientos exentos del 4x1000 en cuentas marcadas.",
     categoria: "tributarios",

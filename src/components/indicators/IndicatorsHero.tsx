@@ -4,9 +4,11 @@ import Link from "next/link";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Info, ExternalLink } from "lucide-react";
 import type { IndicatorItem } from "@/config/indicadores-data";
+import type { LiveIndicator } from "@/lib/indicadores/live-fetcher";
 
 interface IndicatorsHeroProps {
   indicators: IndicatorItem[];
+  liveOverrides?: Map<string, LiveIndicator>;
 }
 
 function variationLabel(indicator: IndicatorItem): string {
@@ -19,7 +21,7 @@ function variationLabel(indicator: IndicatorItem): string {
   return `${sign}${pct.toFixed(1)}%`;
 }
 
-export function IndicatorsHero({ indicators }: IndicatorsHeroProps) {
+export function IndicatorsHero({ indicators, liveOverrides }: IndicatorsHeroProps) {
   const handleScrollToDetail = (id: string) => {
     const el = document.getElementById(`trend-${id}`);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -27,27 +29,46 @@ export function IndicatorsHero({ indicators }: IndicatorsHeroProps) {
 
   return (
     <section className="grid gap-4 lg:grid-cols-4">
-      {indicators.map((indicator) => (
-        <article 
-          key={indicator.id} 
+      {indicators.map((indicator) => {
+        const live = liveOverrides?.get(indicator.id);
+        const displayValue = live?.valor ?? indicator.valor;
+
+        return (
+        <article
+          key={indicator.id}
           className="group/card relative cursor-pointer rounded-lg border border-border/60 bg-card p-4 shadow-sm transition-all hover:border-foreground/40 hover:shadow-md"
           onClick={() => handleScrollToDetail(indicator.id)}
         >
           <div className="mb-1 flex items-start justify-between gap-2">
-            <h3 className="text-xs font-medium uppercase tracking-[0.05em] text-muted-foreground">
-              {indicator.nombre}
-            </h3>
+            <div className="flex items-center gap-1.5">
+              <h3 className="text-xs font-medium uppercase tracking-[0.05em] text-muted-foreground">
+                {indicator.nombre}
+              </h3>
+              {live && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                  En vivo
+                </span>
+              )}
+            </div>
             <div className="group relative">
               <Info className="h-3.5 w-3.5 text-muted-foreground" />
               <div className="pointer-events-none absolute right-0 top-5 z-20 w-56 rounded-md border border-border bg-card p-2 text-xs text-muted-foreground opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                 {indicator.paraQueSirve}
+                {live && (
+                  <span className="mt-1 block text-emerald-600 dark:text-emerald-400">
+                    Fuente: datos.gov.co — {new Date(live.fetchedAt).toLocaleString("es-CO")}
+                  </span>
+                )}
               </div>
             </div>
           </div>
-          <div className="text-2xl font-semibold tracking-tight text-foreground">{indicator.valor}</div>
+          <div className="text-2xl font-semibold tracking-tight text-foreground">{displayValue}</div>
           <div className="mt-1 flex items-center justify-between">
             <div className="text-xs font-medium text-muted-foreground">
-              Variación: {variationLabel(indicator)}
+              {live
+                ? `Corte: ${live.fechaCorte}`
+                : `Variación: ${variationLabel(indicator)}`}
             </div>
             <div className="text-[10px] font-medium text-foreground opacity-0 transition-opacity group-hover/card:opacity-100">
               Ver detalle &rarr;
@@ -82,7 +103,8 @@ export function IndicatorsHero({ indicators }: IndicatorsHeroProps) {
             </Link>
           )}
         </article>
-      ))}
+        );
+      })}
     </section>
   );
 }

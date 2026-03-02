@@ -19,6 +19,7 @@ import { UvtCopInlineCalculator } from "@/components/indicators/UvtCopInlineCalc
 import { UvtYoyTable } from "@/components/indicators/UvtYoyTable";
 import { IndicatorCard } from "@/components/indicators/IndicatorCard";
 import { Toast } from "@/components/ui/Toast";
+import { useLiveIndicators } from "@/lib/hooks/useLiveIndicators";
 
 function useFilteredCategories(search: string): IndicatorCategory[] {
   return useMemo(() => {
@@ -42,6 +43,7 @@ export default function IndicadoresPage() {
   const [search, setSearch] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const { liveData, lastUpdated } = useLiveIndicators();
 
   const highlightedIndicators = INDICADORES_DESTACADOS_IDS.map((id) => INDICADORES_MAP[id]).filter(
     Boolean
@@ -104,7 +106,7 @@ export default function IndicadoresPage() {
         </button>
       }
     >
-      <IndicatorsHero indicators={highlightedIndicators} />
+      <IndicatorsHero indicators={highlightedIndicators} liveOverrides={liveData ?? undefined} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <UvtCopInlineCalculator uvtValue={uvtValue} />
@@ -130,7 +132,7 @@ export default function IndicadoresPage() {
                 <h2 className="heading-serif mb-3 text-xl text-foreground">{category.categoria}</h2>
                 <div className="space-y-3">
                   {category.items.map((item) => (
-                    <IndicatorCard key={item.id} item={item} onCopy={handleCopy} />
+                    <IndicatorCard key={item.id} item={item} onCopy={handleCopy} liveValue={liveData?.get(item.id)} />
                   ))}
                 </div>
               </section>
@@ -159,8 +161,11 @@ export default function IndicadoresPage() {
         <p className="flex items-center gap-2">
           <Info className="h-4 w-4 shrink-0" />
           <span>
-            <strong>Nota de actualización:</strong> Datos actualizados al {INDICADORES_LAST_UPDATE}. 
-            Esta herramienta es de carácter informativo. Para liquidaciones oficiales y vinculantes, consulte siempre la fuente oficial 
+            <strong>Nota de actualización:</strong> Datos base actualizados al {INDICADORES_LAST_UPDATE}.
+            {lastUpdated && (
+              <> TRM en vivo actualizada: {new Date(lastUpdated).toLocaleString("es-CO")}.</>
+            )}{" "}
+            Esta herramienta es de carácter informativo. Para liquidaciones oficiales y vinculantes, consulte siempre la fuente oficial
             (DIAN, Banco de la República, DANE) y verifique el corte diario si aplica.
           </span>
         </p>
