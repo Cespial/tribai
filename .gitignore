@@ -25,6 +25,9 @@ ios/build/
 .DS_Store
 *.pem
 
+# Xcode user state
+*.xcuserstate
+
 # debug
 npm-debug.log*
 yarn-debug.log*
