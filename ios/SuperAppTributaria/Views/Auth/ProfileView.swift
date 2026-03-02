@@ -38,6 +38,22 @@ struct ProfileView: View {
                     .padding(.vertical, AppSpacing.sm)
                 }
 
+                if BiometricLockService.shared.isBiometricAvailable {
+                    Section {
+                        Toggle(isOn: Binding(
+                            get: { BiometricLockService.shared.isEnabled },
+                            set: { BiometricLockService.shared.isEnabled = $0 }
+                        )) {
+                            Label(
+                                "Bloqueo con \(BiometricLockService.shared.biometricName)",
+                                systemImage: BiometricLockService.shared.biometricIcon
+                            )
+                        }
+                    } header: {
+                        Text("Seguridad")
+                    }
+                }
+
                 Section {
                     Button(role: .destructive) {
                         viewModel.signOut()

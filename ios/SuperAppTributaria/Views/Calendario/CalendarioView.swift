@@ -77,11 +77,33 @@ struct CalendarioView: View {
                 // Deadline list
                 LazyVStack(spacing: 8) {
                     ForEach(viewModel.filteredDeadlines) { deadline in
-                        DeadlineRowView(
-                            deadline: deadline,
-                            status: viewModel.deadlineStatus(for: deadline.fecha),
-                            formattedDate: viewModel.formattedDate(deadline.fecha)
-                        )
+                        HStack(spacing: 8) {
+                            DeadlineRowView(
+                                deadline: deadline,
+                                status: viewModel.deadlineStatus(for: deadline.fecha),
+                                formattedDate: viewModel.formattedDate(deadline.fecha)
+                            )
+                            Button {
+                                Task {
+                                    if let date = deadline.fechaDate {
+                                        await DeadlineNotificationService.shared.toggleReminder(
+                                            obligacion: deadline.obligacion,
+                                            fecha: date,
+                                            deadlineId: deadline.id
+                                        )
+                                    }
+                                }
+                            } label: {
+                                Image(systemName: DeadlineNotificationService.shared.isReminderSet(deadlineId: deadline.id)
+                                    ? "bell.fill" : "bell")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(
+                                        DeadlineNotificationService.shared.isReminderSet(deadlineId: deadline.id)
+                                            ? Color.appPrimary : Color.appMutedForeground
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
                 .padding(.horizontal, AppSpacing.sm)

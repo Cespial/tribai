@@ -10,6 +10,7 @@ struct ContentView: View {
     @State private var chatVM: ChatViewModel?
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
     @State private var selectedTab: AppTab = .home
+    @State private var showingSearch = false
 
     enum AppTab: String {
         case home, chat, calculators, et, more
@@ -61,6 +62,19 @@ struct ContentView: View {
         .task {
             setupRepository()
             await conversationListVM.loadConversations()
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingSearch = true
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(Color.appForeground)
+                }
+            }
+        }
+        .sheet(isPresented: $showingSearch) {
+            GlobalSearchView()
         }
     }
 

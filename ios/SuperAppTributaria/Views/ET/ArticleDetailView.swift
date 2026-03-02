@@ -3,6 +3,7 @@ import SwiftUI
 struct ArticleDetailView: View {
     let slug: String
     @State private var viewModel = ArticleDetailViewModel()
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         Group {
@@ -54,6 +55,7 @@ struct ArticleDetailView: View {
             ArticleDetailView(slug: "articulo-\(ref)")
         }
         .task {
+            viewModel.setCacheService(ArticleCacheService(modelContext: modelContext))
             if viewModel.article == nil {
                 await viewModel.loadArticle(slug: slug)
             }
@@ -118,6 +120,8 @@ struct ArticleDetailView: View {
                         .font(AppTypography.caption)
                         .foregroundStyle(Color.appMutedForeground)
                 }
+
+                OfflineIndicatorView(isFromCache: viewModel.isFromCache)
             }
         }
         .padding(AppSpacing.sm)

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct CalculatorResultView: View {
     let title: String
@@ -7,6 +8,8 @@ struct CalculatorResultView: View {
     let rows: [(label: String, value: String)]
     var disclaimer: String? = nil
     var onConsultAssistant: (() -> Void)? = nil
+
+    @State private var showingShareSheet = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -74,6 +77,44 @@ struct CalculatorResultView: View {
                     )
                 }
                 .buttonStyle(.plain)
+            }
+
+            // Share button
+            Button {
+                showingShareSheet = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "square.and.arrow.up")
+                    Text("Compartir resultado")
+                }
+                .font(AppTypography.bodySmall)
+                .foregroundStyle(Color.appPrimary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.appCard)
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.button)
+                        .stroke(Color.appBorder, lineWidth: 1)
+                )
+            }
+            .buttonStyle(.plain)
+            .sheet(isPresented: $showingShareSheet) {
+                let textSummary = TextSummaryBuilder.buildSummary(
+                    title: title,
+                    mainLabel: mainLabel,
+                    mainValue: mainValue,
+                    rows: rows,
+                    disclaimer: disclaimer
+                )
+                let pdfData = PDFExportService.generatePDF(from: PDFExportService.PDFContent(
+                    title: title,
+                    subtitle: "\(mainLabel): \(mainValue)",
+                    rows: rows,
+                    disclaimer: disclaimer,
+                    date: Date()
+                ))
+                ShareSheetView(items: [textSummary, pdfData])
             }
         }
     }
