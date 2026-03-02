@@ -48,7 +48,7 @@ function TribaiLogo({ className }: { className?: string }) {
       <circle cx="32" cy="14" r="2.5" fill="currentColor" />
       <circle cx="18" cy="44" r="2.5" fill="currentColor" />
       <circle cx="46" cy="44" r="2.5" fill="currentColor" />
-      <circle cx="32" cy="34" r="3" fill="var(--gold, #C4952A)" />
+      <circle cx="32" cy="34" r="3" fill="var(--tribai-gold, #C4952A)" />
       <line x1="32" y1="14" x2="32" y2="31" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <line x1="32" y1="34" x2="18" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <line x1="32" y1="34" x2="46" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -114,7 +114,7 @@ export function Header({ variant = "default" }: HeaderProps) {
           : "border-b border-border/40 bg-background/80 backdrop-blur-md"
       )}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:px-8">
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <TribaiLogo className={clsx("h-7 w-7", textColor)} />

@@ -98,7 +98,7 @@ function MetricItem({
   const count = useCountUp(metric.value, 1500, active);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6">
+    <div className="rounded-xl border border-border border-t-2 border-t-tribai-gold bg-card p-6 hover-lift">
       <p className="font-values text-3xl font-semibold text-tribai-gold md:text-4xl">
         {metric.value === 0 ? metric.display : formatNumber(count, metric)}
       </p>

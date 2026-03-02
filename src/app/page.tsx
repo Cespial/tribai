@@ -11,7 +11,6 @@ import {
   Target,
   FileSearch,
   Bookmark,
-  Zap,
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { HeroVideo } from "@/components/hero/hero-video";
@@ -205,7 +204,7 @@ const faqJsonLd = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background pb-20 md:pb-0">
+    <main id="main-content" className="min-h-screen bg-background pb-20 md:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webApplicationJsonLd) }}
@@ -229,8 +228,8 @@ export default function Home() {
           <Header variant="transparent" />
         </div>
 
-        <div className="relative z-10 mx-auto flex min-h-[92svh] w-full max-w-6xl items-end px-6 pb-20 pt-28 md:px-8 md:pb-28">
-          <div>
+        <div className="relative z-10 mx-auto flex min-h-[92svh] w-full max-w-6xl items-center px-6 pt-28 md:px-8">
+          <div className="hero-stagger w-full max-w-3xl">
             {/* Narrative hook */}
             <p className="mb-4 text-sm font-medium tracking-wide text-white/50 md:text-base">
               ¿Cuántas pestañas abiertas tiene ahora mismo?
@@ -283,9 +282,25 @@ export default function Home() {
               </Link>
             </div>
 
-            <p className="mt-3 text-xs font-medium tracking-wide text-white/40">
-              Sin registro. Sin costo. Con fuente del Estatuto.
-            </p>
+            {/* Social proof */}
+            <div className="mt-6 flex items-center gap-3">
+              <div className="flex -space-x-2" aria-hidden="true">
+                {[
+                  "bg-tribai-blue",
+                  "bg-tribai-gold",
+                  "bg-tribai-light-blue",
+                  "bg-tribai-blue/80",
+                ].map((bg, i) => (
+                  <div
+                    key={i}
+                    className={`h-7 w-7 rounded-full border-2 border-[#0A1628] ${bg}`}
+                  />
+                ))}
+              </div>
+              <p className="text-xs text-white/50">
+                Más de <span className="font-semibold text-white/70">500 contadores</span> lo usan cada semana
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -293,19 +308,17 @@ export default function Home() {
       {/* ═══════════════════════════════════════════
           SECTION 2: TRUST — Quick proof strip
           ═══════════════════════════════════════════ */}
-      <section className="border-b border-border bg-background px-6 py-10 md:px-8 md:py-14">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 md:grid-cols-4">
+      <section className="border-b border-border bg-background px-6 py-8 md:px-8 md:py-10">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-4 md:justify-between">
           {[
-            { icon: BookOpen, text: "1.294 artículos del ET indexados y consultables" },
-            { icon: Scale, text: "841 conceptos DIAN vinculados para sustento técnico" },
-            { icon: Zap, text: "Acceso gratuito y actualizado para 2026" },
-            { icon: Target, text: "Hecho en Colombia para contadores colombianos" },
-          ].map(({ icon: Icon, text }) => (
-            <div key={text} className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-tribai-blue/10">
-                <Icon className="h-4 w-4 text-tribai-blue" aria-hidden="true" />
-              </div>
-              <p className="text-sm leading-snug text-muted-foreground">{text}</p>
+            { value: "1.294", label: "artículos del ET" },
+            { value: "35", label: "calculadoras · 2026" },
+            { value: "841", label: "conceptos DIAN" },
+            { value: "36K", label: "fuentes normativas" },
+          ].map(({ value, label }) => (
+            <div key={label} className="flex items-center gap-2.5">
+              <span className="font-values text-lg font-semibold text-tribai-gold">{value}</span>
+              <span className="text-sm text-muted-foreground">{label}</span>
             </div>
           ))}
         </div>
@@ -330,10 +343,10 @@ export default function Home() {
           </h2>
 
           <div className="mt-14 grid gap-8 md:grid-cols-3">
-            {PILLARS.map((pillar) => (
+            {PILLARS.map((pillar, index) => (
+              <Reveal key={pillar.title} delay={index * 100}>
               <div
-                key={pillar.title}
-                className="group rounded-xl border border-border bg-card p-7 transition hover:border-tribai-blue/30 hover:shadow-sm"
+                className="group rounded-2xl border border-border border-t-2 border-t-tribai-gold/60 bg-card p-8 hover-lift hover:border-tribai-blue/30"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-tribai-blue/10">
@@ -360,6 +373,7 @@ export default function Home() {
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
+              </Reveal>
             ))}
           </div>
         </Reveal>
@@ -416,22 +430,23 @@ export default function Home() {
           </h2>
 
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {TOOLS.map((tool) => (
-              <Link
-                key={tool.href}
-                href={tool.href}
-                className="group rounded-xl border border-border bg-card p-6 transition hover:border-tribai-blue/30 hover:shadow-sm"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-tribai-blue/10">
-                  <tool.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
-                </div>
-                <h3 className="mt-4 text-base font-semibold text-foreground">
-                  {tool.title}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                  {tool.description}
-                </p>
-              </Link>
+            {TOOLS.map((tool, index) => (
+              <Reveal key={tool.href} delay={index * 80}>
+                <Link
+                  href={tool.href}
+                  className="group block rounded-xl border border-border bg-card p-6 hover-lift hover:border-tribai-blue/30"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-tribai-blue/10">
+                    <tool.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
+                  </div>
+                  <h3 className="mt-4 text-base font-semibold text-foreground">
+                    {tool.title}
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    {tool.description}
+                  </p>
+                </Link>
+              </Reveal>
             ))}
           </div>
         </Reveal>

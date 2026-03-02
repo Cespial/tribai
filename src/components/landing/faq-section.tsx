@@ -18,22 +18,22 @@ export function FaqSection({ items }: FaqSectionProps) {
       aria-labelledby="faq-title"
       className="bg-background px-6 py-20 md:px-8 md:py-28"
     >
-      <Reveal className="mx-auto max-w-4xl">
+      <Reveal className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
           Preguntas frecuentes
         </p>
         <h2
           id="faq-title"
-          className="heading-serif mt-3 text-3xl text-foreground md:text-5xl"
+          className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl"
         >
           Las preguntas que el contador realmente tiene.
         </h2>
 
-        <div className="mt-10 space-y-3">
+        <div className="mt-10 max-w-4xl space-y-3">
           {items.map((item, index) => (
             <details
               key={item.question}
-              className="group rounded-xl border border-border bg-card transition-all duration-300 open:border-tribai-blue/30 open:shadow-sm"
+              className="group rounded-xl border border-border bg-card transition-all duration-300 hover-lift open:border-tribai-blue/30 open:shadow-md"
               open={index === 0}
             >
               <summary className="flex cursor-pointer list-none items-center justify-between p-5 text-base font-semibold text-foreground transition-colors hover:text-foreground/80">

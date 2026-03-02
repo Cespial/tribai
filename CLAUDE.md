@@ -1,12 +1,12 @@
-# CLAUDE.md — SuperApp Tributaria Colombia
+# CLAUDE.md — tribai.co
 
 ## Identidad del Proyecto
 
-**SuperApp Tributaria Colombia** es la plataforma tributaria más completa de Colombia. Combina 35 calculadoras fiscales, los 1,294 artículos del Estatuto Tributario (ET) indexados y navegables, un asistente IA con RAG sobre el ET, calendario fiscal 2026, doctrina DIAN, indicadores económicos, glosario tributario, guías interactivas y herramientas de productividad profesional.
+**tribai.co** (trib·ai·.co = tributaria + AI + Colombia) es la plataforma tributaria más completa de Colombia. Combina 35 calculadoras fiscales, los 1,294 artículos del Estatuto Tributario (ET) indexados y navegables, un asistente IA con RAG sobre el ET, calendario fiscal 2026, doctrina DIAN, indicadores económicos, glosario tributario, guías interactivas y herramientas de productividad profesional.
 
 - **URL producción:** https://superapp-tributaria-colombia.vercel.app
 - **Repositorio:** https://github.com/Cespial/superapp-tributaria-colombia
-- **Inspiración de diseño:** Harvey.ai (legal tech premium)
+- **Identidad visual:** Tribai — navy/gold/blue palette, DM Serif Display headings
 
 ---
 
@@ -66,7 +66,7 @@ src/
 │   ├── comparison/               # Diff viewer, version selector
 │   ├── dashboard/                # Stats, charts, tables
 │   ├── explorer/                 # Cards, grid, filters, search, graph
-│   ├── hero/                     # Video carousel (3 escenas, crossfade)
+│   ├── hero/                     # Hero background (CSS constellation, image-ready)
 │   ├── indicators/               # Charts UVT
 │   ├── landing/                  # Footer, metrics, ticker, social proof
 │   ├── layout/                   # Header, ReferencePageLayout
@@ -133,7 +133,6 @@ public/
 │   ├── explorer-facets.json      # Facetas para filtros
 │   ├── featured-articles.json    # Artículos destacados
 │   └── graph-data.json           # Datos del grafo de relaciones (136KB)
-├── hero/                         # 3 videos MP4 (~6MB total)
 scripts/
 ├── build-analytics-datasets.mjs  # Genera dashboard-stats, graph-data, explorer-facets
 ├── verify-data-integrity.mjs     # Verificación de datos
@@ -156,36 +155,51 @@ eval/                             # Framework de evaluación RAG (340 queries, 1
 
 ---
 
-## Sistema de Diseño
+## Sistema de Diseño — Tribai
 
-### Paleta (warm-gray premium, Harvey.ai)
+### Paleta de marca
+
+| Token | Light | Dark | Uso |
+|-------|-------|------|-----|
+| `--tribai-navy` | `#0A1628` | `#0A0F1A` | Hero backgrounds, section-dark |
+| `--tribai-blue` | `#1B4D8F` | `#4B9FE1` | Primary CTA, links, active states |
+| `--tribai-gold` | `#C4952A` | `#D4A83A` | Accents, badges, metric values (large text only — 3:1 AA) |
+| `--tribai-light-blue` | `#3B82B8` | `#6BB5E8` | Secondary blue accent |
+
+### Tokens semánticos
 
 | Token | Light | Dark |
 |-------|-------|------|
-| `--background` | `#fafaf9` (ivory cálido) | `#0f0e0d` (negro cálido) |
-| `--foreground` | `#0f0e0d` | `#fafaf9` |
-| `--card` | `#ffffff` | `#1f1d1a` |
-| `--muted` | `#f2f1f0` | `#1f1d1a` |
-| `--muted-foreground` | `#706d66` | `#8f8b85` |
-| `--border` | `#e5e5e3` | `#33312c` |
-| `--primary` | `#0f0e0d` | `#fafaf9` |
+| `--background` | `#F8F6F3` (ivory cálido) | `#0A0F1A` |
+| `--foreground` | `#1A1A1A` | `#E8E6E3` |
+| `--card` | `#ffffff` | `#131B2E` |
+| `--muted` | `#F0EEEB` | `#1B2540` |
+| `--muted-foreground` | `#6B7280` | `#9CA3AF` |
+| `--border` | `#E5E7EB` | `#1F2937` |
+| `--primary` | `#1B4D8F` (= tribai-blue) | `#4B9FE1` |
 | `--destructive` | `#dc2626` | `#ef4444` |
 | `--success` | `#16a34a` | `#22c55e` |
 
 ### Tipografía
 
-- **Headings serif:** Playfair Display 400, `letter-spacing: -0.0175em`, `line-height: 1.05` → clase `.heading-serif`
-- **Body sans:** Geist (variable de Next.js)
-- **Monospace:** Geist Mono
+- **Headings serif:** DM Serif Display 400, `letter-spacing: -0.02em`, `line-height: 1.1` → clase `.heading-serif`
+- **Body sans:** Inter (via next/font/google)
+- **Financial values:** JetBrains Mono, `tabular-nums` → clase `.font-values`
 
 ### Clases CSS Utilitarias Propias
 
-- `.heading-serif` — Headings con Playfair Display
-- `.surface-card` — Card con bg, border, y hover-lift
-- `.hover-lift` — Eleva card on hover
+- `.heading-serif` — Headings con DM Serif Display
+- `.font-values` — Números financieros con JetBrains Mono
+- `.btn-primary` — CTA principal (bg tribai-blue, texto blanco)
+- `.btn-secondary` — Botón con borde (fondo transparente, borde border)
+- `.btn-ghost` — Botón sin borde (texto tribai-blue, hover bg sutil)
+- `.surface-card` — Card con bg, border, border-radius
+- `.hover-lift` — Eleva card on hover (`translateY(-2px)` + sombra)
+- `.badge-gold` — Badge con fondo gold al 12% y texto gold
+- `.section-navy` — Sección con fondo tribai-navy
+- `.section-dark` — Sección con fondo foreground invertido
+- `.callout-info` — Callout informativo con bg muted
 - `.prose-chat` — Markdown rendering en el chat
-- `.callout-info` — Callout informativo
-- `.section-dark` — Sección con fondo oscuro
 - `.reveal-on-scroll` — Animación de entrada al scroll
 
 ### Patrones de UI
@@ -193,11 +207,12 @@ eval/                             # Framework de evaluación RAG (340 queries, 1
 - Tailwind v4 CSS-first: `@import "tailwindcss"` + `@theme inline` en `globals.css`
 - No hay `tailwind.config.js` — todo en CSS
 - Transiciones globales: `* { transition: color, background-color, border-color, box-shadow, opacity 150ms }`
-- Custom easing curves: `--ease-in`, `--ease-out`, `--ease-in-out`
+- Custom easing curves: `--ease-in`, `--ease-out`, `--ease-in-out`, `--ease-smooth`
 - Scrollbars finos (6px)
 - `prefers-reduced-motion` respetado
-- Scroll-reveal con `IntersectionObserver` (hook `useScrollReveal`)
+- Scroll-reveal con `IntersectionObserver` (componente `<Reveal>`)
 - Print styles para artículos y guías
+- Gold (`--tribai-gold`) solo para texto grande (≥18px) o decorativo (borders, badges). Para texto body usar `text-foreground`
 
 ---
 
@@ -523,7 +538,7 @@ npx tsc --noEmit     # Type check limpio
 ### Performance
 
 - First Contentful Paint < 1.5s
-- Videos del hero: preload="auto" para scene 1, preload="metadata" para 2 y 3
+- Hero: Pure CSS background (no JS, no images — image-ready for Midjourney assets)
 - Artículos: SSG (build-time), 0 JS para lectura
 - Calculadoras: Client-side only, sin API calls
 - Chat: Streaming response, no blocking

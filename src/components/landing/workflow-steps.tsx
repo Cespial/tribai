@@ -49,8 +49,9 @@ export function WorkflowSteps() {
           {/* Connecting line — desktop only */}
           <div className="absolute left-0 right-0 top-[22px] hidden h-px bg-border md:block" aria-hidden="true" />
 
-          {STEPS.map((step) => (
-            <div key={step.number} className="relative">
+          {STEPS.map((step, index) => (
+            <Reveal key={step.number} delay={index * 100}>
+            <div className="relative rounded-xl p-1">
               <div className="flex items-center gap-4">
                 <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-tribai-blue bg-background">
                   <step.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
@@ -66,6 +67,7 @@ export function WorkflowSteps() {
                 {step.description}
               </p>
             </div>
+            </Reveal>
           ))}
         </div>
 

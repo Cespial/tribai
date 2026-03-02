@@ -21,13 +21,13 @@ export function MobileStickyCta() {
       <div className="mx-auto flex max-w-md gap-2">
         <Link
           href="/calculadoras/debo-declarar"
-          className="inline-flex h-11 flex-1 items-center justify-center rounded-md bg-tribai-blue px-4 text-sm font-semibold text-white active:scale-[0.98] transition-transform"
+          className="inline-flex h-12 flex-1 items-center justify-center rounded-md bg-tribai-blue px-4 text-sm font-semibold text-white active:scale-[0.98] transition-transform"
         >
           ¿Debo declarar?
         </Link>
         <Link
           href="/asistente"
-          className="inline-flex h-11 flex-1 items-center justify-center rounded-md border border-border bg-card px-4 text-sm font-semibold text-foreground active:scale-[0.98] transition-transform"
+          className="inline-flex h-12 flex-1 items-center justify-center rounded-md border border-border bg-card px-4 text-sm font-semibold text-foreground active:scale-[0.98] transition-transform"
         >
           Consultar IA
         </Link>

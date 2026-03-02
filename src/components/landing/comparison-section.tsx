@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Clock, BookOpen, DollarSign, GraduationCap, Bot } from "lucide-react";
+import { ArrowRight, Clock, BookOpen, DollarSign, GraduationCap, Bot, Check } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 
 const ROWS = [
@@ -60,7 +60,7 @@ export function ComparisonSection() {
           <div className="grid grid-cols-[1fr_1fr_1fr] bg-muted/50">
             <div className="px-6 py-4 text-sm font-semibold text-foreground">Tarea</div>
             <div className="px-6 py-4 text-sm font-semibold text-muted-foreground">Flujo tradicional</div>
-            <div className="px-6 py-4 text-sm font-semibold text-tribai-blue">Con Tribai</div>
+            <div className="bg-tribai-blue/5 px-6 py-4 text-sm font-semibold text-tribai-blue">Con Tribai</div>
           </div>
           {ROWS.map((row) => (
             <div
@@ -74,7 +74,8 @@ export function ComparisonSection() {
               <div className="flex items-center px-6 py-4 text-sm text-muted-foreground">
                 {row.traditional}
               </div>
-              <div className="flex items-center px-6 py-4 text-sm font-medium text-foreground">
+              <div className="flex items-center gap-2 bg-tribai-blue/5 px-6 py-4 text-sm font-medium text-foreground">
+                <Check className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
                 {row.tribai}
               </div>
             </div>
@@ -94,9 +95,12 @@ export function ComparisonSection() {
                   <p className="text-xs font-medium text-muted-foreground">Antes</p>
                   <p className="text-sm text-muted-foreground">{row.traditional}</p>
                 </div>
-                <div>
+                <div className="rounded-lg bg-tribai-blue/5 p-2.5">
                   <p className="text-xs font-medium text-tribai-blue">Con Tribai</p>
-                  <p className="text-sm font-medium text-foreground">{row.tribai}</p>
+                  <p className="mt-0.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+                    <Check className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden="true" />
+                    {row.tribai}
+                  </p>
                 </div>
               </div>
             </div>

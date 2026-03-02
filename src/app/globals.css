@@ -22,12 +22,9 @@
   --border: #E5E7EB;
   --primary: #1B4D8F;
   --primary-foreground: #ffffff;
-  --accent: #F0EEEB;
-  --accent-foreground: #1A1A1A;
   --ring: #1B4D8F;
   --destructive: #dc2626;
   --success: #16a34a;
-  --gold: #C4952A;
 
   /* Easing curves */
   --ease-in: cubic-bezier(0.7, 0, 1, 0.3);
@@ -46,12 +43,9 @@
   --color-border: var(--border);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
   --color-ring: var(--ring);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
-  --color-gold: var(--gold);
   --color-tribai-navy: var(--tribai-navy);
   --color-tribai-blue: var(--tribai-blue);
   --color-tribai-gold: var(--tribai-gold);
@@ -72,12 +66,9 @@
   --border: #1F2937;
   --primary: #4B9FE1;
   --primary-foreground: #0A0F1A;
-  --accent: #1B2540;
-  --accent-foreground: #E8E6E3;
   --ring: #4B9FE1;
   --destructive: #ef4444;
   --success: #22c55e;
-  --gold: #D4A83A;
   --tribai-navy: #0A0F1A;
   --tribai-blue: #4B9FE1;
   --tribai-gold: #D4A83A;
@@ -178,10 +169,60 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* ── Button variants ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  background: var(--tribai-blue);
+  color: #fff;
+  transition: background 150ms var(--ease-smooth);
+}
+.btn-primary:hover { background: color-mix(in srgb, var(--tribai-blue) 90%, black); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  transition: background 150ms var(--ease-smooth), border-color 150ms var(--ease-smooth);
+}
+.btn-secondary:hover { background: var(--muted); border-color: var(--muted-foreground); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  background: transparent;
+  color: var(--tribai-blue);
+  transition: background 150ms var(--ease-smooth);
+}
+.btn-ghost:hover { background: color-mix(in srgb, var(--tribai-blue) 8%, transparent); }
+
 /* Tribai gold accent badge */
 .badge-gold {
-  background: color-mix(in srgb, var(--gold) 12%, transparent);
-  color: var(--gold);
+  background: color-mix(in srgb, var(--tribai-gold) 12%, transparent);
+  color: var(--tribai-gold);
   font-size: 0.75rem;
   font-weight: 500;
   padding: 0.25rem 0.75rem;
@@ -243,7 +284,7 @@ body {
 .prose-chat a:hover { opacity: 0.8; }
 .prose-chat code { background: var(--muted); padding: 0.15rem 0.3rem; border-radius: 0.25rem; font-size: 0.875rem; }
 .prose-chat pre { background: var(--muted); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.65rem; overflow-x: auto; }
-.prose-chat blockquote { border-left: 3px solid var(--gold); padding-left: 1rem; margin: 0.5rem 0; color: var(--muted-foreground); }
+.prose-chat blockquote { border-left: 3px solid var(--tribai-gold); padding-left: 1rem; margin: 0.5rem 0; color: var(--muted-foreground); }
 .prose-chat table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; }
 .prose-chat th, .prose-chat td { border: 1px solid var(--border); padding: 0.5rem; text-align: left; }
 .prose-chat th { background: var(--muted); font-weight: 600; }
@@ -277,6 +318,23 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .reveal-on-scroll { animation: reveal-up 0.7s var(--ease-out) both; }
+
+/* Hero staggered entrance */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-stagger > * {
+  opacity: 0;
+  animation: hero-fade-up 0.8s var(--ease-out) forwards;
+}
+.hero-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.hero-stagger > *:nth-child(2) { animation-delay: 0.25s; }
+.hero-stagger > *:nth-child(3) { animation-delay: 0.4s; }
+.hero-stagger > *:nth-child(4) { animation-delay: 0.55s; }
+.hero-stagger > *:nth-child(5) { animation-delay: 0.65s; }
+.hero-stagger > *:nth-child(6) { animation-delay: 0.75s; }
+.hero-stagger > *:nth-child(7) { animation-delay: 0.85s; }
 
 @keyframes guide-slide-in-right {
   from { opacity: 0; transform: translateX(18px); }

@@ -18,12 +18,12 @@ const PERSONAS: Persona[] = [
   {
     key: "contador",
     label: "Contador",
-    title: "Contador publico independiente",
+    title: "Contador público independiente",
     description:
-      "Liquide mas casos al dia sin rehacer plantillas ni buscar articulos manualmente.",
+      "Liquide más casos al día sin rehacer plantillas ni buscar artículos manualmente.",
     points: [
-      "Retencion, renta, sanciones e intereses en un solo flujo",
-      "Consulta inmediata de articulos del ET",
+      "Retención, renta, sanciones e intereses en un solo flujo",
+      "Consulta inmediata de artículos del ET",
       "Respuestas del asistente con contexto normativo",
     ],
     cta: "Ir a herramientas para contadores",
@@ -34,10 +34,10 @@ const PERSONAS: Persona[] = [
     label: "PyME",
     title: "Empresario PyME",
     description:
-      "Entienda que debe pagar, cuando y por que, sin lenguaje enredado.",
+      "Entienda qué debe pagar, cuándo y por qué, sin lenguaje enredado.",
     points: [
       "Ruta guiada para obligaciones frecuentes",
-      "Calendario fiscal 2026 por tipo de obligacion",
+      "Calendario fiscal 2026 por tipo de obligación",
       "Calculadoras listas para tomar decisiones",
     ],
     cta: "Ver ruta para PyME",
@@ -48,13 +48,13 @@ const PERSONAS: Persona[] = [
     label: "Abogado",
     title: "Abogado tributarista",
     description:
-      "Acelere validaciones tecnicas con consulta profunda del ET y doctrina.",
+      "Acelere validaciones técnicas con consulta profunda del ET y doctrina.",
     points: [
-      "Explorador por articulo",
-      "Comparador de articulos",
-      "Doctrina y novedades normativas",
+      "Explorador por artículo con historial de reformas",
+      "Comparador de artículos entre versiones",
+      "Doctrina DIAN y novedades normativas",
     ],
-    cta: "Ir al explorador tecnico",
+    cta: "Ir al explorador técnico",
     href: "/explorador",
   },
   {
@@ -62,11 +62,11 @@ const PERSONAS: Persona[] = [
     label: "Persona natural",
     title: "Persona natural declarante",
     description:
-      "Resuelva primero la pregunta clave: debo declarar renta?",
+      "Resuelva primero la pregunta clave: ¿debo declarar renta?",
     points: [
-      "Validacion por topes y condiciones",
-      "Explicacion clara de resultados",
-      "Siguiente paso sugerido",
+      "Validación por topes y condiciones vigentes",
+      "Explicación clara de resultados",
+      "Siguiente paso sugerido con artículo de referencia",
     ],
     cta: "Validar si debo declarar",
     href: "/calculadoras/debo-declarar",
@@ -76,11 +76,11 @@ const PERSONAS: Persona[] = [
     label: "Equipo",
     title: "Departamento contable",
     description:
-      "Centralice consulta, calculo y referencia para todo el equipo.",
+      "Centralice consulta, cálculo y referencia para todo el equipo.",
     points: [
-      "Panel unificado de consulta",
-      "Favoritos para consultas frecuentes",
-      "Estandarizacion de criterios",
+      "Panel unificado de consulta y cálculo",
+      "Favoritos y notas por cliente",
+      "Estandarización de criterios normativos",
     ],
     cta: "Abrir panel del equipo",
     href: "/dashboard",
@@ -112,7 +112,7 @@ export function PersonaSwitcher() {
               aria-controls={`persona-panel-${persona.key}`}
               data-active={isActive}
               onClick={() => setActiveKey(persona.key)}
-              className="whitespace-nowrap rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-300 hover:border-foreground/30 data-[active=true]:border-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+              className="whitespace-nowrap rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-300 hover:border-tribai-blue/30 data-[active=true]:border-tribai-blue data-[active=true]:bg-tribai-blue data-[active=true]:text-white"
             >
               {persona.label}
             </button>
@@ -135,15 +135,18 @@ export function PersonaSwitcher() {
           {activePersona.description}
         </p>
 
-        <ul className="mt-4 space-y-2 text-sm leading-relaxed text-muted-foreground">
+        <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
           {activePersona.points.map((point) => (
-            <li key={point}>- {point}</li>
+            <li key={point} className="flex items-start gap-2.5">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-tribai-blue/40" aria-hidden="true" />
+              {point}
+            </li>
           ))}
         </ul>
 
         <Link
           href={activePersona.href}
-          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground underline underline-offset-4 decoration-border transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tribai-blue/30"
         >
           {activePersona.cta}
           <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
