@@ -1,25 +1,30 @@
+"use client";
+
+import { FileSearch, Calculator, ShieldCheck, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { ArrowRight, Calculator, FileSearch, ShieldCheck } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 
 const STEPS = [
   {
-    title: "1. Identifique su obligacion",
-    description:
-      "Encuentre rapido que aplica para su caso y su perfil tributario.",
+    number: "01",
     icon: FileSearch,
+    title: "Identifique la norma",
+    description:
+      "Busque el artículo en el Estatuto Tributario o pregúntele a la IA. Encuentre la norma aplicable con su texto vigente, historial de reformas y artículos relacionados.",
   },
   {
-    title: "2. Haga el calculo correcto",
-    description:
-      "Use calculadoras listas con variables tributarias colombianas.",
+    number: "02",
     icon: Calculator,
+    title: "Calcule con precisión",
+    description:
+      "Ejecute la calculadora con datos reales. Retención, renta, sanciones, IVA, laboral — cada resultado muestra la tarifa, la base y el artículo que lo respalda.",
   },
   {
-    title: "3. Sustente su criterio",
-    description:
-      "Verifique articulo del ET, doctrina y contexto con asistente IA.",
+    number: "03",
     icon: ShieldCheck,
+    title: "Sustente con fuentes",
+    description:
+      "Cada respuesta viene con citación normativa. Artículo del ET, doctrina DIAN, decreto o jurisprudencia. Su criterio profesional, respaldado por la fuente exacta.",
   },
 ];
 
@@ -27,46 +32,52 @@ export function WorkflowSteps() {
   return (
     <section
       aria-labelledby="workflow-title"
-      className="bg-muted/40 px-6 py-16 md:px-8 md:py-24"
+      className="bg-background px-6 py-20 md:px-8 md:py-28"
     >
       <Reveal className="mx-auto max-w-6xl">
+        <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
+          Cómo funciona
+        </p>
         <h2
           id="workflow-title"
-          className="heading-serif text-3xl text-foreground md:text-5xl"
+          className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl"
         >
-          De la duda a la decision en 3 pasos.
+          De su pregunta a su respuesta. En 3 pasos.
         </h2>
 
-        <div className="relative mt-12 grid gap-6 md:grid-cols-3 md:gap-10">
-          {/* Desktop Connectors */}
-          <div className="absolute left-1/3 top-1/2 hidden h-px w-[10%] -translate-y-1/2 bg-border md:block lg:w-[15%]" />
-          <div className="absolute left-2/3 top-1/2 hidden h-px w-[10%] -translate-y-1/2 bg-border md:block lg:w-[15%]" />
+        <div className="relative mt-14 grid gap-8 md:grid-cols-3">
+          {/* Connecting line — desktop only */}
+          <div className="absolute left-0 right-0 top-[22px] hidden h-px bg-border md:block" aria-hidden="true" />
 
           {STEPS.map((step) => (
-            <article
-              key={step.title}
-              className="group relative z-10 rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:border-foreground/20 hover:shadow-sm"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted transition-colors group-hover:bg-foreground group-hover:text-background">
-                <step.icon aria-hidden="true" className="h-6 w-6" />
+            <div key={step.number} className="relative">
+              <div className="flex items-center gap-4">
+                <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-tribai-blue bg-background">
+                  <step.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
+                </div>
+                <span className="font-values text-sm font-semibold text-tribai-gold">
+                  Paso {step.number}
+                </span>
               </div>
-              <h3 className="mt-6 text-xl font-semibold text-foreground">
+              <h3 className="mt-5 text-lg font-semibold text-foreground">
                 {step.title}
               </h3>
-              <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {step.description}
               </p>
-            </article>
+            </div>
           ))}
         </div>
 
-        <Link
-          href="/calculadoras"
-          className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground underline underline-offset-4 decoration-border transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          Empezar ahora
-          <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
-        </Link>
+        <div className="mt-10">
+          <Link
+            href="/calculadoras"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
+          >
+            Empezar ahora
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+        </div>
       </Reveal>
     </section>
   );

@@ -1,31 +1,39 @@
+"use client";
+
 import Link from "next/link";
+import { ArrowRight, Clock, BookOpen, DollarSign, GraduationCap, Bot } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 
-const COMPARISON_ROWS = [
+const ROWS = [
   {
-    criterion: "Tiempo por consulta",
-    traditional: "Alto y variable",
-    app: "Minutos con ruta clara",
+    icon: Clock,
+    criterion: "Buscar un artículo del ET",
+    traditional: "5–15 min en PDF o Google",
+    tribai: "5 segundos — búsqueda indexada",
   },
   {
-    criterion: "Referencia normativa",
-    traditional: "Dispersa",
-    app: "Centralizada y consultable",
+    icon: BookOpen,
+    criterion: "Calcular retención salarial",
+    traditional: "10–20 min en Excel manual",
+    tribai: "30 seg — calculadora 2026",
   },
   {
+    icon: DollarSign,
     criterion: "Costo de arranque",
-    traditional: "Frecuentemente alto",
-    app: "Gratis para empezar",
+    traditional: "Suscripción mensual o paywall",
+    tribai: "Gratuito. Sin registro.",
   },
   {
-    criterion: "Curva de aprendizaje",
-    traditional: "Media / alta",
-    app: "Baja",
+    icon: GraduationCap,
+    criterion: "Verificar doctrina DIAN",
+    traditional: "20–40 min en DIAN.gov.co",
+    tribai: "10 seg — 841 conceptos indexados",
   },
   {
-    criterion: "Soporte IA con contexto ET",
-    traditional: "Limitado o nulo",
-    app: "Incluido",
+    icon: Bot,
+    criterion: "Sustento normativo con IA",
+    traditional: "ChatGPT genérico — sin fuentes reales",
+    tribai: "IA con citación exacta del artículo",
   },
 ];
 
@@ -34,49 +42,76 @@ export function ComparisonSection() {
     <section
       id="comparativa"
       aria-labelledby="comparativa-title"
-      className="bg-background px-6 py-16 md:px-8 md:py-24"
+      className="bg-muted/40 px-6 py-20 md:px-8 md:py-28"
     >
-      <Reveal className="mx-auto max-w-5xl">
+      <Reveal className="mx-auto max-w-6xl">
+        <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
+          Por qué confiar en Tribai
+        </p>
         <h2
           id="comparativa-title"
-          className="heading-serif text-3xl text-foreground md:text-5xl"
+          className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl"
         >
-          Mas practico que el Excel y las busquedas en Google.
+          El flujo de siempre vs. el flujo con Tribai.
         </h2>
 
-        <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="hidden md:grid grid-cols-3 border-b border-border bg-muted/50 px-6 py-3 text-xs font-semibold uppercase tracking-[0.05em] text-foreground/75">
-            <p>Criterio</p>
-            <p>Flujo tradicional</p>
-            <p>Tributaria Colombia</p>
+        {/* Desktop table */}
+        <div className="mt-12 hidden overflow-hidden rounded-xl border border-border md:block">
+          <div className="grid grid-cols-[1fr_1fr_1fr] bg-muted/50">
+            <div className="px-6 py-4 text-sm font-semibold text-foreground">Tarea</div>
+            <div className="px-6 py-4 text-sm font-semibold text-muted-foreground">Flujo tradicional</div>
+            <div className="px-6 py-4 text-sm font-semibold text-tribai-blue">Con Tribai</div>
           </div>
-
-          {COMPARISON_ROWS.map((row) => (
+          {ROWS.map((row) => (
             <div
               key={row.criterion}
-              className="grid grid-cols-1 md:grid-cols-3 border-b border-border px-6 py-5 text-sm text-foreground last:border-b-0 gap-y-3 md:gap-y-0"
+              className="grid grid-cols-[1fr_1fr_1fr] border-t border-border transition-colors hover:bg-muted/20"
             >
-              <p className="font-semibold md:font-medium text-base md:text-sm pr-3">{row.criterion}</p>
-              
-              <div className="flex md:block justify-between items-baseline gap-4">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 md:hidden shrink-0">Tradicional:</span>
-                <p className="text-muted-foreground md:pr-3 text-right md:text-left">{row.traditional}</p>
+              <div className="flex items-center gap-3 px-6 py-4">
+                <row.icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                <span className="text-sm font-medium text-foreground">{row.criterion}</span>
               </div>
-
-              <div className="flex md:block justify-between items-baseline gap-4 border-t border-border/40 pt-3 md:border-t-0 md:pt-0">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 md:hidden shrink-0">SuperApp:</span>
-                <p className="font-semibold md:font-medium text-foreground text-right md:text-left">{row.app}</p>
+              <div className="flex items-center px-6 py-4 text-sm text-muted-foreground">
+                {row.traditional}
+              </div>
+              <div className="flex items-center px-6 py-4 text-sm font-medium text-foreground">
+                {row.tribai}
               </div>
             </div>
           ))}
         </div>
 
-        <Link
-          href="/dashboard"
-          className="mt-6 inline-flex text-sm font-semibold text-foreground underline underline-offset-4 decoration-border transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          Probar la plataforma
-        </Link>
+        {/* Mobile stacked */}
+        <div className="mt-10 space-y-4 md:hidden">
+          {ROWS.map((row) => (
+            <div key={row.criterion} className="rounded-xl border border-border bg-card p-5">
+              <div className="flex items-center gap-2">
+                <row.icon className="h-4 w-4 text-tribai-blue" aria-hidden="true" />
+                <h3 className="text-sm font-semibold text-foreground">{row.criterion}</h3>
+              </div>
+              <div className="mt-3 space-y-2">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">Antes</p>
+                  <p className="text-sm text-muted-foreground">{row.traditional}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-tribai-blue">Con Tribai</p>
+                  <p className="text-sm font-medium text-foreground">{row.tribai}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8">
+          <Link
+            href="/calculadoras"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
+          >
+            Probar la plataforma
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+        </div>
       </Reveal>
     </section>
   );

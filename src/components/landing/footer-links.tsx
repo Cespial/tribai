@@ -1,66 +1,90 @@
 import Link from "next/link";
-import { Github, Linkedin, Twitter } from "lucide-react";
+import { Linkedin } from "lucide-react";
 
 const FOOTER_COLUMNS = [
   {
-    title: "Calculadoras",
-    links: [
-      { label: "Debo declarar renta", href: "/calculadoras/debo-declarar" },
-      { label: "Renta personas naturales", href: "/calculadoras/renta" },
-      { label: "Retencion en la fuente", href: "/calculadoras/retencion" },
-      { label: "IVA", href: "/calculadoras/iva" },
-      { label: "Regimen SIMPLE", href: "/calculadoras/simple" },
-      { label: "Ver las 35", href: "/calculadoras" },
-    ],
-  },
-  {
-    title: "Referencia",
-    links: [
-      { label: "Estatuto Tributario", href: "/explorador" },
-      { label: "Calendario fiscal", href: "/calendario" },
-      { label: "Indicadores", href: "/indicadores" },
-      { label: "Glosario", href: "/glosario" },
-      { label: "Tablas de retencion", href: "/tablas/retencion" },
-    ],
-  },
-  {
     title: "Herramientas",
     links: [
-      { label: "Comparador de articulos", href: "/comparar" },
-      { label: "Novedades normativas", href: "/novedades" },
+      { label: "Calculadoras", href: "/calculadoras" },
+      { label: "Explorador del ET", href: "/explorador" },
+      { label: "Asistente IA", href: "/asistente" },
+      { label: "Calendario DIAN 2026", href: "/calendario" },
       { label: "Doctrina DIAN", href: "/doctrina" },
-      { label: "Guias interactivas", href: "/guias" },
-      { label: "Favoritos", href: "/favoritos" },
     ],
   },
   {
-    title: "Plataforma",
+    title: "Recursos",
     links: [
-      { label: "Panel", href: "/dashboard" },
-      { label: "Asistente IA", href: "#asistente" },
+      { label: "Glosario tributario", href: "/glosario" },
+      { label: "Indicadores económicos", href: "/indicadores" },
+      { label: "Novedades normativas", href: "/novedades" },
+      { label: "Guías interactivas", href: "/guias" },
+      { label: "Tablas de retención", href: "/tablas/retencion" },
+    ],
+  },
+  {
+    title: "Más",
+    links: [
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Comparador de artículos", href: "/comparar" },
+      { label: "Favoritos", href: "/favoritos" },
       { label: "Preguntas frecuentes", href: "#faq" },
-      { label: "Comparativa", href: "#comparativa" },
     ],
   },
 ] as const;
+
+/* Tribai Isotipo inline for footer */
+function TribaiLogoSmall() {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6"
+      aria-hidden="true"
+    >
+      <path d="M32 6L58 54H6L32 6Z" stroke="#4B9FE1" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
+      <circle cx="32" cy="14" r="2.5" fill="#4B9FE1"/>
+      <circle cx="18" cy="44" r="2.5" fill="#4B9FE1"/>
+      <circle cx="46" cy="44" r="2.5" fill="#4B9FE1"/>
+      <circle cx="32" cy="34" r="3" fill="#D4A83A"/>
+      <line x1="32" y1="14" x2="32" y2="31" stroke="#4B9FE1" strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="32" y1="34" x2="18" y2="44" stroke="#4B9FE1" strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="32" y1="34" x2="46" y2="44" stroke="#4B9FE1" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
 
 export function FooterLinks() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer>
-      <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
+      {/* Logo + tagline */}
+      <div className="mb-10 flex items-center gap-3">
+        <TribaiLogoSmall />
+        <div>
+          <p className="heading-serif text-lg text-white">
+            trib<span className="text-tribai-gold">ai</span>
+            <span className="text-white/40 text-sm">.co</span>
+          </p>
+          <p className="text-xs text-white/40">Inteligencia tributaria colombiana.</p>
+        </div>
+      </div>
+
+      {/* Columns */}
+      <div className="grid grid-cols-2 gap-8 md:grid-cols-3 md:gap-12">
         {FOOTER_COLUMNS.map((column) => (
           <div key={column.title}>
-            <h3 className="mb-4 text-xs font-medium uppercase tracking-[0.05em] text-white/40">
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/30">
               {column.title}
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {column.links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="text-sm text-white/50 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
                   >
                     {link.label}
                   </Link>
@@ -71,45 +95,28 @@ export function FooterLinks() {
         ))}
       </div>
 
-      <div className="mt-16 flex flex-col justify-between gap-8 border-t border-white/5 pt-8 md:flex-row md:items-center">
-        <div className="max-w-2xl">
-          <p className="text-xs leading-relaxed text-zinc-500">
-            &copy; {currentYear} SuperApp Tributaria Colombia. Herramienta informativa de apoyo
-            tributario. No constituye asesoria legal o contable personalizada.
+      {/* Bottom bar */}
+      <div className="mt-14 flex flex-col justify-between gap-6 border-t border-white/5 pt-8 md:flex-row md:items-center">
+        <div className="max-w-2xl space-y-1">
+          <p className="text-xs leading-relaxed text-white/30">
+            Herramienta informativa de apoyo tributario. No constituye asesoría
+            legal o contable personalizada. El criterio profesional siempre
+            prevalece.
           </p>
-          <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-            Basada en normativa tributaria colombiana y consulta del Estatuto
-            Tributario. Hecho en Colombia.
+          <p className="text-xs text-white/20">
+            &copy; {currentYear} tribai.co — Hecho en Colombia para Colombia.
           </p>
         </div>
 
-        <div className="flex items-center gap-5">
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-500 transition-colors hover:text-white"
-            aria-label="Twitter"
-          >
-            <Twitter className="h-5 w-5" />
-          </a>
+        <div className="flex items-center gap-4">
           <a
             href="https://linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-500 transition-colors hover:text-white"
+            className="text-white/30 transition-colors hover:text-white"
             aria-label="LinkedIn"
           >
             <Linkedin className="h-5 w-5" />
-          </a>
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-500 transition-colors hover:text-white"
-            aria-label="GitHub"
-          >
-            <Github className="h-5 w-5" />
           </a>
         </div>
       </div>

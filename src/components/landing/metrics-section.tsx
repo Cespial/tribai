@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 
 const METRICS = [
-  { value: 35, display: "35", label: "Calculadoras listas" },
-  { value: 1294, display: "1.294", label: "Articulos ET" },
-  { value: 841, display: "841", label: "Doctrinas DIAN" },
-  { value: 0, display: "24/7", label: "Asistente IA" },
+  { value: 35, display: "35", label: "Calculadoras de precisión", sublabel: "Renta, retención, IVA, sanciones, laboral y más" },
+  { value: 1294, display: "1.294", label: "Artículos del Estatuto Tributario", sublabel: "Indexados con historial de reformas" },
+  { value: 841, display: "841", label: "Conceptos DIAN", sublabel: "Doctrina curada y vinculada al ET" },
+  { value: 0, display: "24/7", label: "Asistente IA con fuentes", sublabel: "36K vectores de conocimiento normativo" },
 ] as const;
 
 function formatNumber(n: number, target: (typeof METRICS)[number]): string {
@@ -49,7 +49,6 @@ export function MetricsSection() {
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -59,30 +58,31 @@ export function MetricsSection() {
       },
       { threshold: 0.2 }
     );
-
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
   return (
-    <div ref={ref} className="rounded-2xl border border-border bg-card p-6 md:p-10">
-      <h2 id="metrics-title" className="heading-serif text-3xl text-foreground md:text-5xl">
-        Lo que tiene la plataforma hoy, listo para usar.
+    <div ref={ref}>
+      <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
+        La plataforma hoy
+      </p>
+      <h2 id="metrics-title" className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl">
+        Números que hablan por sí solos.
       </h2>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-        No es solo lectura: es su herramienta de trabajo diaria para
-        consultas, calculos y validacion normativa.
+      <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        No es solo lectura. Cada artículo, cada calculadora y cada respuesta de
+        la IA está diseñada para resolver casos tributarios reales.
       </p>
 
-      <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-10">
+      <div className="mt-12 grid grid-cols-2 gap-6 md:grid-cols-4">
         {METRICS.map((metric) => (
           <MetricItem key={metric.label} metric={metric} active={visible} />
         ))}
       </div>
 
-      <p className="mt-6 rounded-lg border border-border bg-muted/40 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-        Actualizado para temporada fiscal 2026. Herramienta informativa; valide
-        casos complejos con criterio profesional.
+      <p className="mt-6 text-xs text-muted-foreground">
+        Datos del año fiscal 2026 · UVT $52.374 · Resultados orientativos, validar con criterio profesional.
       </p>
     </div>
   );
@@ -98,13 +98,12 @@ function MetricItem({
   const count = useCountUp(metric.value, 1500, active);
 
   return (
-    <div className="text-center">
-      <p className="heading-serif text-5xl text-foreground md:text-6xl lg:text-7xl">
+    <div className="rounded-xl border border-border bg-card p-6">
+      <p className="font-values text-3xl font-semibold text-tribai-gold md:text-4xl">
         {metric.value === 0 ? metric.display : formatNumber(count, metric)}
       </p>
-      <p className="mt-3 text-xs font-medium uppercase tracking-[0.05em] text-muted-foreground md:text-sm">
-        {metric.label}
-      </p>
+      <p className="mt-2 text-sm font-semibold text-foreground">{metric.label}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{metric.sublabel}</p>
     </div>
   );
 }

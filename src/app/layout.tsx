@@ -6,7 +6,7 @@ import { QuickAddFab } from "@/components/workspace/quick-add-fab";
 import "./globals.css";
 
 export const viewport: Viewport = {
-  themeColor: "#0f0e0d",
+  themeColor: "#0A1628",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -14,35 +14,36 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://superapp-tributaria-colombia.vercel.app"),
-  title: "SuperApp Tributaria Colombia",
+  title: "tribai.co — Inteligencia tributaria colombiana",
   description:
-    "La super app tributaria de Colombia: 35 calculadoras, consulta inteligente con IA de los 1,294 artículos del Estatuto Tributario, calendario, indicadores, glosario y más.",
+    "Resuelva tributaria colombiana con rigor: 35 calculadoras, 1.294 artículos del Estatuto Tributario, asistente IA con citación de fuentes. Sin costo. Sin registro.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Tributaria CO",
+    title: "tribai.co",
   },
   openGraph: {
-    title: "SuperApp Tributaria Colombia",
+    title: "tribai.co — Inteligencia tributaria colombiana",
     description:
-      "35 calculadoras tributarias, consulta con IA del Estatuto Tributario, calendario fiscal, indicadores y glosario.",
+      "35 calculadoras, Estatuto Tributario completo y asistente IA con fuentes normativas. Hecho en Colombia para contadores colombianos.",
     type: "website",
     locale: "es_CO",
-    siteName: "SuperApp Tributaria Colombia",
+    siteName: "tribai.co",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "SuperApp Tributaria Colombia",
+        alt: "tribai.co — Inteligencia tributaria colombiana",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SuperApp Tributaria Colombia",
-    description: "La plataforma tributaria mas completa de Colombia.",
+    title: "tribai.co — Inteligencia tributaria colombiana",
+    description:
+      "El Estatuto, la calculadora y el criterio. Todo en uno. Sin costo.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -59,11 +60,19 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
         <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
       </head>
-      <body
-        className="antialiased"
-      >
+      <body className="antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ArticlePanelProvider>
             {children}
