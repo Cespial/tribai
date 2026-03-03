@@ -127,7 +127,7 @@ export function PersonaSwitcher() {
         key={activePersona.key}
         id={`persona-panel-${activePersona.key}`}
         role="tabpanel"
-        className="persona-panel-enter rounded-2xl border border-border bg-card p-6 md:p-8"
+        className="rounded-2xl border border-border bg-card p-6 md:p-8"
       >
         <h3 className="heading-serif text-2xl text-foreground md:text-4xl">
           {activePersona.title}

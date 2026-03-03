@@ -1,9 +1,5 @@
-"use client";
-
 import { ArrowRight } from "lucide-react";
 import { TribaiIconComparador, TribaiIconCalculator, TribaiIconGuias } from "@/components/icons/tribai-icons";
-import { WorkflowConnector } from "@/components/ui/decorative-svgs";
-import { usePathDraw } from "@/hooks/usePathDraw";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
 
@@ -32,12 +28,10 @@ const STEPS = [
 ];
 
 export function WorkflowSteps() {
-  const connectorRef = usePathDraw();
-
   return (
     <section
       aria-labelledby="workflow-title"
-      className="bg-background px-6 py-20 md:px-8 md:py-28"
+      className="bg-background px-6 py-28 md:px-8 md:py-36"
     >
       <Reveal className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -50,10 +44,7 @@ export function WorkflowSteps() {
           De su pregunta a su respuesta. En 3 pasos.
         </h2>
 
-        <div ref={connectorRef} className="relative mt-14 grid gap-8 md:grid-cols-3">
-          {/* Curved connector path — desktop only */}
-          <WorkflowConnector className="absolute left-0 right-0 top-[10px] hidden h-12 w-full md:block" />
-
+        <div className="mt-16 grid gap-10 md:grid-cols-3">
           {STEPS.map((step, index) => (
             <Reveal key={step.number} delay={index * 100}>
             <div className="relative rounded-xl p-1">
@@ -61,7 +52,7 @@ export function WorkflowSteps() {
                 <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-tribai-blue bg-background">
                   <step.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
                 </div>
-                <span className="font-values text-sm font-semibold text-tribai-gold">
+                <span className="font-values text-sm font-semibold text-muted-foreground">
                   Paso {step.number}
                 </span>
               </div>

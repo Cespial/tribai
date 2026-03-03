@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CornerBracket } from "@/components/ui/decorative-svgs";
 
 const METRICS = [
   { value: 35, display: "35", label: "Calculadoras de precisión", sublabel: "Renta, retención, IVA, sanciones, laboral y más" },
@@ -99,13 +98,11 @@ function MetricItem({
   metric: (typeof METRICS)[number];
   active: boolean;
 }) {
-  const { value: count, done } = useCountUp(metric.value, 1500, active);
+  const { value: count } = useCountUp(metric.value, 1500, active);
 
   return (
-    <div className="relative rounded-xl border border-border border-t-2 border-t-tribai-gold bg-card p-6 card-hover-premium">
-      <CornerBracket position="top-left" className="absolute -left-1 -top-1 h-5 w-5" />
-      <CornerBracket position="bottom-right" className="absolute -bottom-1 -right-1 h-5 w-5" />
-      <p className={`font-values text-3xl font-semibold text-tribai-gold md:text-4xl ${done ? "gold-flash" : ""}`}>
+    <div className="rounded-xl border border-border bg-card p-6 hover-lift">
+      <p className="font-values text-3xl font-semibold text-foreground md:text-4xl">
         {metric.value === 0 ? metric.display : formatNumber(count, metric)}
       </p>
       <p className="mt-2 text-sm font-semibold text-foreground">{metric.label}</p>

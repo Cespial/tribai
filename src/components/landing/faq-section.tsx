@@ -16,7 +16,7 @@ export function FaqSection({ items }: FaqSectionProps) {
     <section
       id="faq"
       aria-labelledby="faq-title"
-      className="bg-background px-6 py-20 md:px-8 md:py-28"
+      className="bg-background px-6 py-28 md:px-8 md:py-36"
     >
       <Reveal className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -33,15 +33,12 @@ export function FaqSection({ items }: FaqSectionProps) {
           {items.map((item, index) => (
             <details
               key={item.question}
-              className="group rounded-xl border border-border bg-card transition-all duration-300 card-hover-premium open:border-tribai-blue/30 open:shadow-md"
+              className="group rounded-xl border border-border bg-card transition-colors open:border-tribai-blue/30 open:shadow-sm"
               open={index === 0}
             >
               <summary className="flex cursor-pointer list-none items-center justify-between p-5 text-base font-semibold text-foreground transition-colors hover:text-foreground/80">
                 {item.question}
-                <span className="relative shrink-0">
-                  <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-300 group-open:rotate-180" />
-                  <span className="faq-chevron-dot absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-tribai-gold" />
-                </span>
+                <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-180" />
               </summary>
               <div className="px-5 pb-5">
                 <p className="text-sm leading-relaxed text-muted-foreground">

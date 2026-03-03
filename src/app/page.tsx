@@ -13,7 +13,6 @@ import {
   TribaiIconWorkspace,
 } from "@/components/icons/tribai-icons";
 import { Header } from "@/components/layout/header";
-import { HeroVideo } from "@/components/hero/hero-video";
 import { PersonaSwitcher } from "@/components/landing/persona-switcher";
 import { WorkflowSteps } from "@/components/landing/workflow-steps";
 import { MetricsSection } from "@/components/landing/metrics-section";
@@ -23,8 +22,6 @@ import { FooterLinks } from "@/components/landing/footer-links";
 import { MobileStickyCta } from "@/components/landing/mobile-sticky-cta";
 import { LazyChatContainer } from "@/components/landing/lazy-chat-container";
 import { Reveal } from "@/components/ui/reveal";
-import { SectionDivider } from "@/components/ui/section-divider";
-import { DecorativeDocLayers, DecorativeTriangleGrid, DecorativeNeuralNet, TrustSeparator, CTAConstellation } from "@/components/ui/decorative-svgs";
 import { ChatQuerySuggestions } from "@/components/landing/chat-query-suggestions";
 
 export const metadata: Metadata = {
@@ -204,9 +201,52 @@ const faqJsonLd = {
   })),
 };
 
+/* ── Hero flow diagram ── */
+function HeroFlowDiagram() {
+  return (
+    <svg
+      viewBox="0 0 400 300"
+      fill="none"
+      className="hidden h-auto w-full max-w-md opacity-80 md:block"
+      aria-hidden="true"
+    >
+      {/* Connection lines */}
+      <line x1="100" y1="80" x2="200" y2="150" stroke="currentColor" strokeWidth="1.5" opacity="0.25" />
+      <line x1="200" y1="150" x2="300" y2="80" stroke="currentColor" strokeWidth="1.5" opacity="0.25" />
+      <line x1="200" y1="150" x2="200" y2="240" stroke="currentColor" strokeWidth="1.5" opacity="0.25" />
+
+      {/* Arrows */}
+      <path d="M185 135l15 15 15-15" stroke="currentColor" strokeWidth="1.2" opacity="0.3" fill="none" />
+      <path d="M195 225l5 15 5-15" stroke="currentColor" strokeWidth="1.2" opacity="0.3" fill="none" />
+
+      {/* Node: Pregunta */}
+      <circle cx="100" cy="80" r="28" stroke="currentColor" strokeWidth="1.2" opacity="0.15" fill="none" />
+      <circle cx="100" cy="80" r="4" fill="var(--tribai-blue)" opacity="0.6" />
+      <text x="100" y="125" textAnchor="middle" fill="currentColor" fontSize="13" fontWeight="500" opacity="0.5">Pregunta</text>
+
+      {/* Node: IA (center, active) */}
+      <circle cx="200" cy="150" r="32" stroke="var(--tribai-blue)" strokeWidth="1.5" opacity="0.3" fill="none" />
+      <circle cx="200" cy="150" r="6" fill="var(--tribai-blue)" />
+      <text x="200" y="195" textAnchor="middle" fill="currentColor" fontSize="13" fontWeight="600" opacity="0.7">Búsqueda IA</text>
+
+      {/* Node: Fuentes */}
+      <circle cx="300" cy="80" r="28" stroke="currentColor" strokeWidth="1.2" opacity="0.15" fill="none" />
+      <circle cx="300" cy="80" r="4" fill="var(--tribai-blue)" opacity="0.6" />
+      <text x="300" y="125" textAnchor="middle" fill="currentColor" fontSize="13" fontWeight="500" opacity="0.5">36K fuentes</text>
+
+      {/* Node: Respuesta */}
+      <circle cx="200" cy="250" r="28" stroke="var(--tribai-blue)" strokeWidth="1.2" opacity="0.2" fill="none" />
+      <circle cx="200" cy="250" r="4" fill="var(--tribai-blue)" opacity="0.6" />
+      <text x="200" y="290" textAnchor="middle" fill="currentColor" fontSize="13" fontWeight="500" opacity="0.5">Respuesta + Art.</text>
+    </svg>
+  );
+}
+
 export default function Home() {
   return (
     <main id="main-content" className="min-h-screen bg-background pb-20 md:pb-0">
+      <Header />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webApplicationJsonLd) }}
@@ -217,34 +257,27 @@ export default function Home() {
       />
 
       {/* ═══════════════════════════════════════════
-          SECTION 1: HERO — Pain recognition + solution
+          SECTION 1: HERO — Split layout light
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="hero-title"
-        className="relative min-h-[92svh] overflow-hidden"
-        style={{ background: "var(--tribai-navy)" }}
+        className="bg-background px-6 pb-28 pt-20 md:px-8 md:pb-36 md:pt-28"
       >
-        <HeroVideo />
-
-        <div className="relative z-20">
-          <Header variant="transparent" />
-        </div>
-
-        <div className="relative z-10 mx-auto flex min-h-[92svh] w-full max-w-6xl items-center px-6 pt-28 md:px-8">
-          <div className="hero-stagger w-full max-w-3xl">
+        <div className="mx-auto flex max-w-6xl items-center gap-16">
+          <div className="hero-stagger w-full max-w-2xl">
             {/* Narrative hook */}
-            <p className="mb-4 text-sm font-medium tracking-wide text-white/50 md:text-base">
+            <p className="mb-4 text-sm font-medium tracking-wide text-muted-foreground md:text-base">
               ¿Cuántas pestañas abiertas tiene ahora mismo?
             </p>
 
             <h1
               id="hero-title"
-              className="heading-serif max-w-4xl text-4xl text-white sm:text-5xl md:text-7xl"
+              className="heading-serif max-w-4xl text-4xl text-foreground sm:text-5xl md:text-7xl"
             >
               Inteligencia tributaria para contadores que no improvisan.
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 md:text-lg">
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
               El Estatuto Tributario completo, 35 calculadoras de precisión y un
               asistente IA que cita sus fuentes. Todo en un solo lugar. Sin
               costo. Hecho en Colombia para contadores colombianos.
@@ -260,7 +293,7 @@ export default function Home() {
               ].map((badge) => (
                 <span
                   key={badge}
-                  className="rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm"
+                  className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs font-medium text-foreground"
                 >
                   {badge}
                 </span>
@@ -271,14 +304,14 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/calculadoras/debo-declarar"
-                className="inline-flex h-12 items-center justify-center rounded-md bg-white px-6 text-sm font-semibold text-tribai-navy transition hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="btn-primary h-12 px-6"
               >
                 Calcule si debe declarar renta
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </Link>
               <Link
                 href="#asistente"
-                className="inline-flex h-12 items-center justify-center rounded-md border border-white/25 bg-white/5 px-6 text-sm font-medium text-white transition hover:border-white/50 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="btn-secondary h-12 px-6"
               >
                 Pregúntele al asistente IA
               </Link>
@@ -289,58 +322,56 @@ export default function Home() {
               <div className="flex -space-x-2" aria-hidden="true">
                 {[
                   "bg-tribai-blue",
-                  "bg-tribai-gold",
+                  "bg-tribai-blue/60",
                   "bg-tribai-light-blue",
-                  "bg-tribai-blue/80",
+                  "bg-tribai-blue/40",
                 ].map((bg, i) => (
                   <div
                     key={i}
-                    className={`h-7 w-7 rounded-full border-2 border-[#0A1628] ${bg}`}
+                    className={`h-7 w-7 rounded-full border-2 border-background ${bg}`}
                   />
                 ))}
               </div>
-              <p className="text-xs text-white/50">
-                Más de <span className="font-semibold text-white/70">500 contadores</span> lo usan cada semana
+              <p className="text-xs text-muted-foreground">
+                Más de <span className="font-semibold text-foreground">500 contadores</span> lo usan cada semana
               </p>
             </div>
+          </div>
+
+          {/* Flow diagram — desktop only */}
+          <div className="hidden flex-1 items-center justify-center md:flex">
+            <HeroFlowDiagram />
           </div>
         </div>
       </section>
 
-      <SectionDivider variant="wave" className="text-background -mt-1" />
-
       {/* ═══════════════════════════════════════════
           SECTION 2: TRUST — Quick proof strip
           ═══════════════════════════════════════════ */}
-      <section className="border-b border-border bg-background px-6 py-8 md:px-8 md:py-10">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-4 md:justify-between">
+      <section className="border-y border-border bg-background px-6 py-12 md:px-8 md:py-16">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-4 md:justify-between">
           {[
             { value: "1.294", label: "artículos del ET" },
             { value: "35", label: "calculadoras · 2026" },
             { value: "841", label: "conceptos DIAN" },
             { value: "36K", label: "fuentes normativas" },
-          ].map(({ value, label }, i) => (
+          ].map(({ value, label }) => (
             <div key={label} className="flex items-center gap-2.5">
-              {i > 0 && <TrustSeparator className="mr-5 hidden h-8 w-px md:block" />}
-              <span className="font-values text-lg font-semibold text-tribai-gold">{value}</span>
+              <span className="font-values text-lg font-semibold text-foreground">{value}</span>
               <span className="text-sm text-muted-foreground">{label}</span>
             </div>
           ))}
         </div>
       </section>
 
-      <SectionDivider variant="node-line" className="py-2" />
-
       {/* ═══════════════════════════════════════════
           SECTION 3: THREE PILLARS — Core value prop
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="pillars-title"
-        className="relative bg-background px-6 py-20 md:px-8 md:py-28"
+        className="bg-background px-6 py-28 md:px-8 md:py-36"
       >
-        {/* Triangle grid background pattern */}
-        <div className="bg-triangle-grid pointer-events-none absolute inset-0 opacity-[0.03]" aria-hidden="true" />
-        <Reveal className="relative mx-auto max-w-6xl">
+        <Reveal className="mx-auto max-w-6xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
             El Estatuto, la calculadora y el criterio
           </p>
@@ -351,44 +382,36 @@ export default function Home() {
             Todo lo que necesita para resolver tributaria colombiana. En un solo lugar.
           </h2>
 
-          <div className="mt-14 grid gap-8 md:grid-cols-3">
+          <div className="mt-16 grid gap-10 md:grid-cols-3">
             {PILLARS.map((pillar, index) => (
               <Reveal key={pillar.title} delay={index * 100}>
               <div
-                className="group relative overflow-hidden rounded-2xl border border-border border-t-2 border-t-tribai-gold/60 bg-card p-8 card-hover-premium"
+                className="group rounded-2xl border border-border bg-card p-8 hover-lift"
               >
-                {/* Decorative background illustration */}
-                <div className="pointer-events-none absolute -bottom-4 -right-4 h-32 w-32 text-tribai-blue opacity-[0.04]">
-                  {index === 0 && <DecorativeDocLayers className="h-full w-full" />}
-                  {index === 1 && <DecorativeTriangleGrid className="h-full w-full" />}
-                  {index === 2 && <DecorativeNeuralNet className="h-full w-full" />}
-                </div>
-                <div className="relative">
-                  <div className="flex items-center justify-between">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-tribai-blue/10">
-                      <pillar.icon className="icon-animate h-5 w-5 text-tribai-blue" />
-                    </div>
-                    <div className="text-right">
-                      <span className="font-values text-2xl font-semibold text-tribai-gold">
-                        {pillar.stat}
-                      </span>
-                      <p className="text-xs text-muted-foreground">{pillar.statLabel}</p>
-                    </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-tribai-blue/10">
+                    <pillar.icon className="h-5 w-5 text-tribai-blue" />
                   </div>
-                  <h3 className="mt-5 text-lg font-semibold text-foreground">
-                    {pillar.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {pillar.description}
-                  </p>
-                  <Link
-                    href={pillar.href}
-                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
-                  >
-                    {pillar.cta}
-                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                  </Link>
+                  <div className="text-right">
+                    <span className="font-values text-2xl font-semibold text-foreground">
+                      {pillar.stat}
+                    </span>
+                    <p className="text-xs text-muted-foreground">{pillar.statLabel}</p>
+                  </div>
                 </div>
+                <h3 className="mt-5 text-lg font-semibold text-foreground">
+                  {pillar.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {pillar.description}
+                </p>
+                <Link
+                  href={pillar.href}
+                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
+                >
+                  {pillar.cta}
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
               </div>
               </Reveal>
             ))}
@@ -396,14 +419,12 @@ export default function Home() {
         </Reveal>
       </section>
 
-      <SectionDivider variant="node-line" className="py-2" />
-
       {/* ═══════════════════════════════════════════
           SECTION 4: PERSONAS — "¿Esto es para mí?"
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="personas-title"
-        className="bg-muted/40 px-6 py-20 md:px-8 md:py-28"
+        className="bg-muted/30 px-6 py-28 md:px-8 md:py-36"
       >
         <Reveal className="mx-auto max-w-6xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -435,7 +456,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="tools-title"
-        className="bg-muted/40 px-6 py-20 md:px-8 md:py-28"
+        className="bg-muted/30 px-6 py-28 md:px-8 md:py-36"
       >
         <Reveal className="mx-auto max-w-6xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -448,15 +469,15 @@ export default function Home() {
             Más que calculadoras. Una plataforma tributaria integral.
           </h2>
 
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {TOOLS.map((tool, index) => (
               <Reveal key={tool.href} delay={index * 80}>
                 <Link
                   href={tool.href}
-                  className="group block rounded-xl border border-border bg-card p-6 card-hover-premium"
+                  className="group block rounded-xl border border-border bg-card p-6 hover-lift"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-tribai-blue/10">
-                    <tool.icon className="icon-animate h-5 w-5 text-tribai-blue" />
+                    <tool.icon className="h-5 w-5 text-tribai-blue" />
                   </div>
                   <h3 className="mt-4 text-base font-semibold text-foreground">
                     {tool.title}
@@ -471,21 +492,17 @@ export default function Home() {
         </Reveal>
       </section>
 
-      <SectionDivider variant="node-line" className="py-2" />
-
       {/* ═══════════════════════════════════════════
           SECTION 7: METRICS — Hard numbers
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="metrics-title"
-        className="bg-background px-6 py-20 md:px-8 md:py-28"
+        className="bg-background px-6 py-28 md:px-8 md:py-36"
       >
         <Reveal className="mx-auto max-w-6xl" delay={50}>
           <MetricsSection />
         </Reveal>
       </section>
-
-      <SectionDivider variant="constellation-break" className="py-4" />
 
       {/* ═══════════════════════════════════════════
           SECTION 8: ASISTENTE IA — Live demo
@@ -493,20 +510,20 @@ export default function Home() {
       <section
         id="asistente"
         aria-labelledby="asistente-title"
-        className="section-navy px-6 py-20 md:px-8 md:py-28"
+        className="bg-muted/30 px-6 py-28 md:px-8 md:py-36"
       >
         <Reveal className="mx-auto max-w-6xl" delay={50}>
           <div className="text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-tribai-gold">
+            <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
               Asistente con inteligencia artificial
             </p>
             <h2
               id="asistente-title"
-              className="heading-serif mx-auto mt-3 max-w-3xl text-3xl text-white md:text-5xl"
+              className="heading-serif mx-auto mt-3 max-w-3xl text-3xl text-foreground md:text-5xl"
             >
               Pregunte como le preguntaría a un colega. Reciba respuesta con artículo.
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
               Consulte artículos del ET, sanciones, retención e interpretación
               práctica. La IA busca en 36.000 fuentes normativas y le muestra
               exactamente de dónde sale cada respuesta.
@@ -522,10 +539,10 @@ export default function Home() {
             ]}
           />
 
-          <div className="mt-10 overflow-hidden rounded-2xl border border-white/10 bg-background shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-            <div className="border-b border-border/50 bg-muted/30 px-5 py-4">
+          <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
+            <div className="border-b border-border bg-muted/30 px-5 py-4">
               <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-tribai-gold" />
+                <div className="h-2 w-2 rounded-full bg-tribai-blue" />
                 <h3 className="text-sm font-semibold text-foreground">
                   Asistente IA — contexto tributario colombiano
                 </h3>
@@ -548,43 +565,39 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <FaqSection items={FAQ_ENTRIES} />
 
-      <SectionDivider variant="constellation-break" className="py-4" />
-
       {/* ═══════════════════════════════════════════
           SECTION 11: FINAL CTA
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="cta-final-title"
-        className="relative overflow-hidden section-navy px-6 py-20 md:px-8 md:py-28"
+        className="bg-muted/30 px-6 py-28 md:px-8 md:py-36"
       >
-        {/* Constellation background */}
-        <CTAConstellation className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" />
-        <Reveal className="relative mx-auto max-w-3xl text-center" delay={50}>
+        <Reveal className="mx-auto max-w-3xl text-center" delay={50}>
           <h2
             id="cta-final-title"
-            className="heading-serif text-3xl text-white md:text-5xl lg:text-6xl"
+            className="heading-serif text-3xl text-foreground md:text-5xl lg:text-6xl"
           >
             Resuelva su primera consulta. Ahora mismo.
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-white/60 md:text-lg">
+          <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
             Sin registro. Sin costo. Con el rigor que su profesión exige.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/calculadoras"
-              className="inline-flex h-12 items-center justify-center rounded-md bg-white px-6 text-sm font-semibold text-tribai-navy transition hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="btn-primary h-12 px-6"
             >
               Explorar calculadoras
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
             </Link>
             <Link
               href="/asistente"
-              className="inline-flex h-12 items-center justify-center rounded-md border border-white/25 bg-white/5 px-6 text-sm font-medium text-white transition hover:border-white/50 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="btn-secondary h-12 px-6"
             >
               Preguntarle a la IA
             </Link>
           </div>
-          <p className="mt-4 text-xs text-white/30">
+          <p className="mt-4 text-xs text-muted-foreground">
             Hecho en Colombia para contadores colombianos.
           </p>
         </Reveal>
@@ -593,7 +606,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════
           FOOTER
           ═══════════════════════════════════════════ */}
-      <section className="section-navy border-t border-white/5 px-6 pb-20 pt-14 md:px-8 md:pt-16">
+      <section className="border-t border-border bg-muted/30 px-6 pb-20 pt-14 md:px-8 md:pt-16">
         <div className="mx-auto max-w-6xl">
           <FooterLinks />
         </div>

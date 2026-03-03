@@ -59,12 +59,7 @@ function TribaiLogo({ className }: { className?: string }) {
   );
 }
 
-interface HeaderProps {
-  variant?: "default" | "transparent";
-}
-
-export function Header({ variant = "default" }: HeaderProps) {
-  const isTransparent = variant === "transparent";
+export function Header() {
   const { theme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -73,19 +68,9 @@ export function Header({ variant = "default" }: HeaderProps) {
   );
   const pathname = usePathname();
 
-  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (variant !== "transparent") return;
-    const handleScroll = () => {
-      setScrolled(window.scrollY > window.innerHeight * 0.85);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [variant]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -99,28 +84,17 @@ export function Header({ variant = "default" }: HeaderProps) {
     return () => document.removeEventListener("click", handleClick);
   }, [moreOpen]);
 
-  const showTransparent = isTransparent && !scrolled;
-
-  const textColor = showTransparent ? "text-white" : "text-foreground";
-  const mutedColor = showTransparent ? "text-white/60 hover:text-white" : "text-muted-foreground hover:text-foreground";
-  const goldColor = "text-tribai-gold";
-
   return (
     <header
-      className={clsx(
-        "sticky top-0 z-50 will-change-transform transition-all duration-300 print:hidden",
-        showTransparent
-          ? "border-b border-transparent bg-transparent"
-          : "border-b border-border/40 bg-background/80 backdrop-blur-md"
-      )}
+      className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md print:hidden"
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:px-8">
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center gap-2">
-          <TribaiLogo className={clsx("h-7 w-7", textColor)} />
-          <span className={clsx("heading-serif text-lg", textColor)}>
-            trib<span className={goldColor}>ai</span>
-            <span className={clsx("text-sm", showTransparent ? "text-white/50" : "text-muted-foreground")}>.co</span>
+          <TribaiLogo className="h-7 w-7 text-foreground" />
+          <span className="heading-serif text-lg text-foreground">
+            trib<span className="text-tribai-gold">ai</span>
+            <span className="text-sm text-muted-foreground">.co</span>
           </span>
         </Link>
 
@@ -135,16 +109,13 @@ export function Header({ variant = "default" }: HeaderProps) {
                 className={clsx(
                   "relative rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors",
                   isActive
-                    ? clsx(textColor, "font-semibold")
-                    : mutedColor
+                    ? "text-foreground font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {label}
                 {isActive && (
-                  <span className={clsx(
-                    "absolute inset-x-3 -bottom-[7px] h-[2px] rounded-full",
-                    showTransparent ? "bg-white" : "bg-tribai-blue"
-                  )} />
+                  <span className="absolute inset-x-3 -bottom-[7px] h-[2px] rounded-full bg-tribai-blue" />
                 )}
               </Link>
             );
@@ -154,10 +125,7 @@ export function Header({ variant = "default" }: HeaderProps) {
           <div ref={moreRef} className="relative">
             <button
               onClick={() => setMoreOpen(!moreOpen)}
-              className={clsx(
-                "flex items-center gap-1 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors",
-                mutedColor
-              )}
+              className="flex items-center gap-1 rounded-md px-3 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
               aria-expanded={moreOpen}
             >
               Más
@@ -191,12 +159,7 @@ export function Header({ variant = "default" }: HeaderProps) {
           {/* CTA — desktop only */}
           <Link
             href="/calculadoras"
-            className={clsx(
-              "hidden rounded-md px-4 py-2 text-[13px] font-semibold transition-colors md:inline-flex",
-              showTransparent
-                ? "bg-white text-tribai-navy hover:bg-white/90"
-                : "bg-tribai-blue text-white hover:bg-tribai-blue/90"
-            )}
+            className="hidden rounded-md bg-tribai-blue px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-tribai-blue/90 md:inline-flex"
           >
             Probar ahora
           </Link>
@@ -205,7 +168,7 @@ export function Header({ variant = "default" }: HeaderProps) {
           {mounted && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className={clsx("rounded-md p-2 transition-colors", mutedColor)}
+              className="rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
               aria-label="Cambiar tema"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -215,7 +178,7 @@ export function Header({ variant = "default" }: HeaderProps) {
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={clsx("rounded-md p-2 transition-colors md:hidden", mutedColor)}
+            className="rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground md:hidden"
             aria-label="Menú de navegación"
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation"

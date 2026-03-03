@@ -43,7 +43,7 @@ export function ComparisonSection() {
     <section
       id="comparativa"
       aria-labelledby="comparativa-title"
-      className="bg-muted/40 px-6 py-20 md:px-8 md:py-28"
+      className="bg-background px-6 py-28 md:px-8 md:py-36"
     >
       <Reveal className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">

@@ -17,7 +17,7 @@ export function ChatQuerySuggestions({ queries }: ChatQuerySuggestionsProps) {
         <button
           key={query}
           onClick={() => handleQueryClick(query)}
-          className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-left text-sm text-white/60 transition hover:border-tribai-gold/30 hover:bg-white/10 hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tribai-gold/30"
+          className="rounded-lg border border-border bg-card px-4 py-3 text-left text-sm text-muted-foreground transition hover:border-tribai-blue/30 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
         >
           {query}
         </button>
