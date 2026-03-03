@@ -16,7 +16,7 @@ export function FaqSection({ items }: FaqSectionProps) {
     <section
       id="faq"
       aria-labelledby="faq-title"
-      className="bg-background px-6 py-28 md:px-8 md:py-36"
+      className="bg-background px-6 py-32 md:px-8 md:py-40"
     >
       <Reveal className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -33,7 +33,7 @@ export function FaqSection({ items }: FaqSectionProps) {
           {items.map((item, index) => (
             <details
               key={item.question}
-              className="group rounded-xl border border-border bg-card transition-colors open:border-tribai-blue/30 open:shadow-sm"
+              className="group rounded-lg border border-border bg-card transition-colors open:border-tribai-blue/30"
               open={index === 0}
             >
               <summary className="flex cursor-pointer list-none items-center justify-between p-5 text-base font-semibold text-foreground transition-colors hover:text-foreground/80">

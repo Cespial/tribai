@@ -10,10 +10,10 @@ export function MobileStickyCta() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 animate-in slide-in-from-bottom border-t border-border bg-background/95 p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-50 animate-in slide-in-from-bottom border-t border-border bg-background p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:hidden">
       <button
         onClick={() => setIsVisible(false)}
-        className="absolute -top-10 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-sm backdrop-blur"
+        className="absolute -top-10 right-3 flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background text-foreground"
         aria-label="Cerrar barra fija"
       >
         <X className="h-4 w-4" />

@@ -261,7 +261,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="hero-title"
-        className="bg-background px-6 pb-28 pt-20 md:px-8 md:pb-36 md:pt-28"
+        className="bg-background px-6 pb-32 pt-24 md:px-8 md:pb-40 md:pt-32"
       >
         <div className="mx-auto flex max-w-6xl items-center gap-16">
           <div className="hero-stagger w-full max-w-2xl">
@@ -293,7 +293,7 @@ export default function Home() {
               ].map((badge) => (
                 <span
                   key={badge}
-                  className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs font-medium text-foreground"
+                  className="rounded-md border border-border bg-background px-3.5 py-1.5 text-xs font-medium text-foreground"
                 >
                   {badge}
                 </span>
@@ -348,7 +348,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════
           SECTION 2: TRUST — Quick proof strip
           ═══════════════════════════════════════════ */}
-      <section className="border-y border-border bg-background px-6 py-12 md:px-8 md:py-16">
+      <section className="border-y border-border bg-background px-6 py-14 md:px-8 md:py-18">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-4 md:justify-between">
           {[
             { value: "1.294", label: "artículos del ET" },
@@ -369,7 +369,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="pillars-title"
-        className="bg-background px-6 py-28 md:px-8 md:py-36"
+        className="bg-background px-6 py-32 md:px-8 md:py-40"
       >
         <Reveal className="mx-auto max-w-6xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -379,17 +379,17 @@ export default function Home() {
             id="pillars-title"
             className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl"
           >
-            Todo lo que necesita para resolver tributaria colombiana. En un solo lugar.
+            Estatuto Tributario, calculadoras fiscales e inteligencia artificial. En una sola plataforma.
           </h2>
 
-          <div className="mt-16 grid gap-10 md:grid-cols-3">
+          <div className="mt-20 overflow-hidden rounded-lg border border-border md:grid md:grid-cols-3 md:divide-x md:divide-border">
             {PILLARS.map((pillar, index) => (
-              <Reveal key={pillar.title} delay={index * 100}>
               <div
-                className="group rounded-2xl border border-border bg-card p-8 hover-lift"
+                key={pillar.title}
+                className={`group p-8 ${index < PILLARS.length - 1 ? "border-b border-border md:border-b-0" : ""}`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-tribai-blue/10">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-md border border-border">
                     <pillar.icon className="h-5 w-5 text-tribai-blue" />
                   </div>
                   <div className="text-right">
@@ -413,7 +413,6 @@ export default function Home() {
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
-              </Reveal>
             ))}
           </div>
         </Reveal>
@@ -424,7 +423,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="personas-title"
-        className="bg-muted/30 px-6 py-28 md:px-8 md:py-36"
+        className="bg-muted/30 px-6 py-32 md:px-8 md:py-40"
       >
         <Reveal className="mx-auto max-w-6xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -456,7 +455,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="tools-title"
-        className="bg-muted/30 px-6 py-28 md:px-8 md:py-36"
+        className="bg-muted/30 px-6 py-32 md:px-8 md:py-40"
       >
         <Reveal className="mx-auto max-w-6xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -469,14 +468,23 @@ export default function Home() {
             Más que calculadoras. Una plataforma tributaria integral.
           </h2>
 
-          <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {TOOLS.map((tool, index) => (
-              <Reveal key={tool.href} delay={index * 80}>
+          <div className="mt-20 overflow-hidden rounded-lg border border-border">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3">
+              {TOOLS.map((tool, index) => (
                 <Link
+                  key={tool.href}
                   href={tool.href}
-                  className="group block rounded-xl border border-border bg-card p-6 hover-lift"
+                  className={`group block p-6 transition-colors hover:bg-muted ${
+                    index < 3 ? "border-b border-border" : ""
+                  } ${
+                    index % 3 !== 2 ? "lg:border-r lg:border-border" : ""
+                  } ${
+                    index % 2 === 0 ? "sm:border-r sm:border-border" : ""
+                  } ${
+                    index < 4 ? "sm:border-b sm:border-border" : ""
+                  } sm:last:border-b-0`}
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-tribai-blue/10">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-md border border-border">
                     <tool.icon className="h-5 w-5 text-tribai-blue" />
                   </div>
                   <h3 className="mt-4 text-base font-semibold text-foreground">
@@ -486,8 +494,8 @@ export default function Home() {
                     {tool.description}
                   </p>
                 </Link>
-              </Reveal>
-            ))}
+              ))}
+            </div>
           </div>
         </Reveal>
       </section>
@@ -497,7 +505,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="metrics-title"
-        className="bg-background px-6 py-28 md:px-8 md:py-36"
+        className="bg-background px-6 py-32 md:px-8 md:py-40"
       >
         <Reveal className="mx-auto max-w-6xl" delay={50}>
           <MetricsSection />
@@ -510,7 +518,7 @@ export default function Home() {
       <section
         id="asistente"
         aria-labelledby="asistente-title"
-        className="bg-muted/30 px-6 py-28 md:px-8 md:py-36"
+        className="bg-muted/30 px-6 py-32 md:px-8 md:py-40"
       >
         <Reveal className="mx-auto max-w-6xl" delay={50}>
           <div className="text-center">
@@ -539,7 +547,7 @@ export default function Home() {
             ]}
           />
 
-          <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
+          <div className="mt-10 overflow-hidden rounded-lg border border-border bg-background">
             <div className="border-b border-border bg-muted/30 px-5 py-4">
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-tribai-blue" />
@@ -570,7 +578,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="cta-final-title"
-        className="bg-muted/30 px-6 py-28 md:px-8 md:py-36"
+        className="bg-muted/30 px-6 py-32 md:px-8 md:py-40"
       >
         <Reveal className="mx-auto max-w-3xl text-center" delay={50}>
           <h2

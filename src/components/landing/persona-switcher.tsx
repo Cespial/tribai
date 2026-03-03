@@ -112,7 +112,7 @@ export function PersonaSwitcher() {
               aria-controls={`persona-panel-${persona.key}`}
               data-active={isActive}
               onClick={() => setActiveKey(persona.key)}
-              className="whitespace-nowrap rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-300 hover:border-tribai-blue/30 data-[active=true]:border-tribai-blue data-[active=true]:bg-tribai-blue data-[active=true]:text-white"
+              className="whitespace-nowrap rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-300 hover:border-tribai-blue/30 data-[active=true]:border-tribai-blue data-[active=true]:bg-tribai-blue data-[active=true]:text-white"
             >
               {persona.label}
             </button>
@@ -127,7 +127,7 @@ export function PersonaSwitcher() {
         key={activePersona.key}
         id={`persona-panel-${activePersona.key}`}
         role="tabpanel"
-        className="rounded-2xl border border-border bg-card p-6 md:p-8"
+        className="rounded-lg border border-border bg-card p-6 md:p-8"
       >
         <h3 className="heading-serif text-2xl text-foreground md:text-4xl">
           {activePersona.title}

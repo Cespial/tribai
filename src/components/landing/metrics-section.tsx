@@ -78,9 +78,9 @@ export function MetricsSection() {
         la IA está diseñada para resolver casos tributarios reales.
       </p>
 
-      <div className="mt-12 grid grid-cols-2 gap-6 md:grid-cols-4">
-        {METRICS.map((metric) => (
-          <MetricItem key={metric.label} metric={metric} active={visible} />
+      <div className="mt-12 overflow-hidden rounded-lg border border-border grid grid-cols-2 divide-x divide-border md:grid-cols-4">
+        {METRICS.map((metric, index) => (
+          <MetricItem key={metric.label} metric={metric} active={visible} index={index} />
         ))}
       </div>
 
@@ -94,14 +94,16 @@ export function MetricsSection() {
 function MetricItem({
   metric,
   active,
+  index,
 }: {
   metric: (typeof METRICS)[number];
   active: boolean;
+  index: number;
 }) {
   const { value: count } = useCountUp(metric.value, 1500, active);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 hover-lift">
+    <div className={`p-6 ${index < 2 ? "border-b border-border md:border-b-0" : ""}`}>
       <p className="font-values text-3xl font-semibold text-foreground md:text-4xl">
         {metric.value === 0 ? metric.display : formatNumber(count, metric)}
       </p>

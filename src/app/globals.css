@@ -2,27 +2,27 @@
 
 /* ─── Light mode: Tribai color system ─── */
 :root {
-  --font-heading: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SFMono-Regular', monospace;
 
   /* Tribai palette */
   --tribai-navy: #0A1628;
-  --tribai-blue: #1B4D8F;
+  --tribai-blue: #0066FF;
   --tribai-gold: #C4952A;
   --tribai-light-blue: #3B82B8;
 
   /* Semantic tokens */
-  --background: #F8F6F3;
+  --background: #FFFFFF;
   --foreground: #1A1A1A;
-  --card: #ffffff;
+  --card: #FFFFFF;
   --card-foreground: #1A1A1A;
-  --muted: #F0EEEB;
+  --muted: #F5F5F5;
   --muted-foreground: #6B7280;
   --border: #E5E7EB;
-  --primary: #1B4D8F;
+  --primary: #0066FF;
   --primary-foreground: #ffffff;
-  --ring: #1B4D8F;
+  --ring: #0066FF;
   --destructive: #dc2626;
   --success: #16a34a;
 
@@ -64,13 +64,13 @@
   --muted: #1B2540;
   --muted-foreground: #9CA3AF;
   --border: #1F2937;
-  --primary: #4B9FE1;
+  --primary: #3B82F6;
   --primary-foreground: #0A0F1A;
-  --ring: #4B9FE1;
+  --ring: #3B82F6;
   --destructive: #ef4444;
   --success: #22c55e;
   --tribai-navy: #0A0F1A;
-  --tribai-blue: #4B9FE1;
+  --tribai-blue: #3B82F6;
   --tribai-gold: #D4A83A;
   --tribai-light-blue: #6BB5E8;
 }
@@ -130,13 +130,12 @@ body {
    TRIBAI TYPOGRAPHY SYSTEM
    ═══════════════════════════════════════════════ */
 
-/* Heading serif — DM Serif Display, editorial authority */
+/* Heading — Inter bold, clean authority */
 .heading-serif {
-  font-family: var(--font-heading, 'DM Serif Display', Georgia, serif);
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-family: var(--font-body), "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   line-height: 1.1;
-  font-feature-settings: "liga" on, "calt" on;
 }
 
 /* Monospace values — JetBrains Mono for financial precision */
@@ -157,16 +156,12 @@ body {
   border-radius: 0.5rem;
 }
 
-/* Hover lift — subtle elevation */
+/* Hover lift — flat background shift */
 .hover-lift {
-  transition: transform 300ms var(--ease-smooth), box-shadow 300ms var(--ease-smooth);
+  transition: background-color 150ms var(--ease-smooth);
 }
 .hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(10, 22, 40, 0.08);
-}
-.dark .hover-lift:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background-color: var(--muted);
 }
 
 /* ── Button variants ── */

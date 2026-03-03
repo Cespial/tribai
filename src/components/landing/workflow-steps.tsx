@@ -31,7 +31,7 @@ export function WorkflowSteps() {
   return (
     <section
       aria-labelledby="workflow-title"
-      className="bg-background px-6 py-28 md:px-8 md:py-36"
+      className="bg-background px-6 py-32 md:px-8 md:py-40"
     >
       <Reveal className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -44,12 +44,14 @@ export function WorkflowSteps() {
           De su pregunta a su respuesta. En 3 pasos.
         </h2>
 
-        <div className="mt-16 grid gap-10 md:grid-cols-3">
+        <div className="mt-20 overflow-hidden rounded-lg border border-border md:grid md:grid-cols-3 md:divide-x md:divide-border">
           {STEPS.map((step, index) => (
-            <Reveal key={step.number} delay={index * 100}>
-            <div className="relative rounded-xl p-1">
+            <div
+              key={step.number}
+              className={`p-8 ${index < STEPS.length - 1 ? "border-b border-border md:border-b-0" : ""}`}
+            >
               <div className="flex items-center gap-4">
-                <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-tribai-blue bg-background">
+                <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-background">
                   <step.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
                 </div>
                 <span className="font-values text-sm font-semibold text-muted-foreground">
@@ -63,7 +65,6 @@ export function WorkflowSteps() {
                 {step.description}
               </p>
             </div>
-            </Reveal>
           ))}
         </div>
 

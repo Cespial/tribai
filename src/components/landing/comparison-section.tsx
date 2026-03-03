@@ -43,7 +43,7 @@ export function ComparisonSection() {
     <section
       id="comparativa"
       aria-labelledby="comparativa-title"
-      className="bg-background px-6 py-28 md:px-8 md:py-36"
+      className="bg-background px-6 py-32 md:px-8 md:py-40"
     >
       <Reveal className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
@@ -57,7 +57,7 @@ export function ComparisonSection() {
         </h2>
 
         {/* Desktop table */}
-        <div className="mt-12 hidden overflow-hidden rounded-xl border border-border md:block">
+        <div className="mt-12 hidden overflow-hidden rounded-lg border border-border md:block">
           <div className="grid grid-cols-[1fr_1fr_1fr] bg-muted/50">
             <div className="px-6 py-4 text-sm font-semibold text-foreground">Tarea</div>
             <div className="px-6 py-4 text-sm font-semibold text-muted-foreground">Flujo tradicional</div>
@@ -86,7 +86,7 @@ export function ComparisonSection() {
         {/* Mobile stacked */}
         <div className="mt-10 space-y-4 md:hidden">
           {ROWS.map((row) => (
-            <div key={row.criterion} className="rounded-xl border border-border bg-card p-5">
+            <div key={row.criterion} className="rounded-lg border border-border bg-card p-5">
               <div className="flex items-center gap-2">
                 <row.icon className="h-4 w-4 text-tribai-blue" aria-hidden="true" />
                 <h3 className="text-sm font-semibold text-foreground">{row.criterion}</h3>

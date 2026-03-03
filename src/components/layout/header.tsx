@@ -86,7 +86,7 @@ export function Header() {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md print:hidden"
+      className="sticky top-0 z-50 border-b border-border bg-background print:hidden"
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:px-8">
         {/* Logo */}
@@ -107,7 +107,7 @@ export function Header() {
                 key={href}
                 href={href}
                 className={clsx(
-                  "relative rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors",
+                  "relative rounded-md px-3 py-1.5 text-[13px] font-normal transition-colors",
                   isActive
                     ? "text-foreground font-semibold"
                     : "text-muted-foreground hover:text-foreground"
@@ -133,7 +133,7 @@ export function Header() {
             </button>
 
             {moreOpen && (
-              <div className="absolute right-0 top-full mt-2 w-52 rounded-lg border border-border bg-card p-1.5 shadow-lg">
+              <div className="absolute right-0 top-full mt-2 w-52 rounded-lg border border-border bg-card p-1.5">
                 {MORE_NAV.map(({ href, label }) => (
                   <Link
                     key={href}
@@ -192,12 +192,12 @@ export function Header() {
       {mobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 top-16 z-40 bg-foreground/20 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 top-16 z-40 bg-foreground/20 md:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
           <nav
             id="mobile-navigation"
-            className="fixed right-0 top-16 z-50 h-[calc(100vh-64px)] w-72 overflow-y-auto border-l border-border/40 bg-background p-5 shadow-lg md:hidden"
+            className="fixed right-0 top-16 z-50 h-[calc(100vh-64px)] w-72 overflow-y-auto border-l border-border bg-background p-5 md:hidden"
           >
             <div className="flex flex-col gap-0.5">
               {ALL_NAV.map(({ href, label }) => {
