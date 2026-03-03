@@ -76,26 +76,45 @@ export function MessageList({
     }
   }, []);
 
+  // Scroll to bottom — uses instant scroll during streaming for smoothness,
+  // and smooth scroll for discrete events like new messages.
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.scrollTop = behavior === "instant" ? el.scrollHeight : el.scrollTop;
+    if (behavior === "smooth") {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // Instant: just jump to bottom without animation
+      el.scrollTop = el.scrollHeight;
+    }
+  }, []);
+
   useEffect(() => {
     const isNewMessage = messages.length !== prevMessageCountRef.current;
     prevMessageCountRef.current = messages.length;
 
-    // Auto-scroll only when:
-    // 1. A new message was added (user sent a message) — always scroll
-    // 2. Streaming/loading updates — only if the user hasn't scrolled up
+    // 1. New message added (user sent) — always scroll, reset flag
     if (isNewMessage) {
       userScrolledUpRef.current = false;
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    } else if (!userScrolledUpRef.current && isNearBottomRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      scrollToBottom("smooth");
+      return;
     }
-  }, [messages, isLoading]);
+
+    // 2. User scrolled up — respect their intent, never auto-scroll
+    if (userScrolledUpRef.current) return;
+
+    // 3. Streaming updates — only scroll if still near bottom
+    if (isLoading && isNearBottomRef.current) {
+      scrollToBottom("instant");
+    }
+  }, [messages, isLoading, scrollToBottom]);
 
   return (
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="flex-1 space-y-4 overflow-y-auto p-4"
+      className="h-full space-y-4 overflow-y-auto p-4"
     >
       {messages.map((message, index) => {
         const metadata = (message.metadata as MessageMetadata | undefined) || {};

@@ -319,7 +319,7 @@ export function ChatContainer() {
   return (
     <div className={clsx(
       "flex overflow-hidden transition-all duration-300",
-      isLanding ? "h-[360px] rounded-xl border border-border bg-card/50 shadow-sm" : "h-[calc(100vh-3.5rem)]"
+      isLanding ? "h-full rounded-xl border border-border bg-card/50 shadow-sm" : "h-[calc(100vh-3.5rem)]"
     )}>
       {!isLanding && (
         <ConversationSidebar
