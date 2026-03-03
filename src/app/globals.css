@@ -355,6 +355,130 @@ body {
   50% { opacity: 0.6; }
 }
 
+/* ═══════════════════════════════════════════════
+   TRIBAI CONSTELLATION + BACKGROUND PATTERNS
+   ═══════════════════════════════════════════════ */
+
+/* Hero constellation drift — gentle float */
+@keyframes constellation-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-10px, 5px); }
+}
+.constellation-drift {
+  animation: constellation-drift 30s ease-in-out infinite;
+}
+
+/* Gold node pulse — individual nodes */
+@keyframes node-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+.animate-node-pulse {
+  animation: node-pulse 4s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+/* Grain overlay — noise texture */
+.grain-overlay {
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* Triangle grid background — for Pillars section */
+.bg-triangle-grid {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 8L52 48H8z' fill='none' stroke='%231B4D8F' stroke-width='0.5' opacity='0.12'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+/* Constellation background — for CTA section */
+.bg-constellation {
+  background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='80' cy='60' r='2' fill='%234B9FE1' opacity='0.3'/%3E%3Ccircle cx='200' cy='120' r='2.5' fill='%23D4A83A' opacity='0.3'/%3E%3Ccircle cx='320' cy='80' r='2' fill='%234B9FE1' opacity='0.3'/%3E%3Ccircle cx='140' cy='240' r='2' fill='%234B9FE1' opacity='0.25'/%3E%3Ccircle cx='280' cy='280' r='2' fill='%234B9FE1' opacity='0.25'/%3E%3Ccircle cx='360' cy='340' r='2.5' fill='%23D4A83A' opacity='0.25'/%3E%3Cline x1='80' y1='60' x2='200' y2='120' stroke='%234B9FE1' stroke-width='0.5' opacity='0.15'/%3E%3Cline x1='200' y1='120' x2='320' y2='80' stroke='%234B9FE1' stroke-width='0.5' opacity='0.15'/%3E%3Cline x1='200' y1='120' x2='140' y2='240' stroke='%234B9FE1' stroke-width='0.5' opacity='0.1'/%3E%3Cline x1='280' y1='280' x2='360' y2='340' stroke='%234B9FE1' stroke-width='0.5' opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 400px 400px;
+}
+
+/* ═══════════════════════════════════════════════
+   MICRO-INTERACTIONS — Phase 4
+   ═══════════════════════════════════════════════ */
+
+/* SVG path draw-in animation */
+@keyframes path-draw {
+  from { stroke-dashoffset: var(--path-length, 1200); }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Gold flash on count-up complete */
+@keyframes gold-flash {
+  0% { text-shadow: 0 0 0 transparent; }
+  50% { text-shadow: 0 0 12px rgba(196, 149, 42, 0.4); }
+  100% { text-shadow: 0 0 0 transparent; }
+}
+.gold-flash {
+  animation: gold-flash 0.6s ease-out;
+}
+
+/* Persona panel entrance */
+@keyframes persona-panel-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.persona-panel-enter {
+  animation: persona-panel-in 0.4s var(--ease-out) both;
+}
+
+/* Premium card hover — replaces basic hover-lift for main cards */
+.card-hover-premium {
+  transition: transform 300ms var(--ease-smooth), box-shadow 300ms var(--ease-smooth), border-color 300ms var(--ease-smooth);
+}
+.card-hover-premium:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(10, 22, 40, 0.08), 0 0 0 1px rgba(27, 77, 143, 0.06);
+  border-color: rgba(27, 77, 143, 0.25);
+}
+.dark .card-hover-premium:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(75, 159, 225, 0.1);
+  border-color: rgba(75, 159, 225, 0.25);
+}
+.card-hover-premium:hover .icon-animate {
+  transform: scale(1.08) rotate(-3deg);
+  transition: transform 300ms var(--ease-smooth);
+}
+
+/* FAQ chevron gold dot on open */
+.faq-chevron-dot {
+  transform: scale(0);
+  transition: transform 0.4s var(--ease-smooth);
+}
+details[open] .faq-chevron-dot {
+  transform: scale(1);
+}
+
+/* Footer link hover — gold dot appears */
+.footer-link-hover {
+  position: relative;
+  padding-left: 0;
+  transition: padding-left 0.3s var(--ease-smooth), color 0.15s var(--ease-smooth);
+}
+.footer-link-hover::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--tribai-gold);
+  transform: translateY(-50%) scale(0);
+  transition: transform 0.3s var(--ease-smooth);
+}
+.footer-link-hover:hover {
+  padding-left: 12px;
+}
+.footer-link-hover:hover::before {
+  transform: translateY(-50%) scale(1);
+}
+
 /* ─── Print ─── */
 @media print {
   @page { margin: 1.8cm; }

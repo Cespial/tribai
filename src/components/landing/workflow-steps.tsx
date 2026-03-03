@@ -1,27 +1,30 @@
 "use client";
 
-import { FileSearch, Calculator, ShieldCheck, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { TribaiIconComparador, TribaiIconCalculator, TribaiIconGuias } from "@/components/icons/tribai-icons";
+import { WorkflowConnector } from "@/components/ui/decorative-svgs";
+import { usePathDraw } from "@/hooks/usePathDraw";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
 
 const STEPS = [
   {
     number: "01",
-    icon: FileSearch,
+    icon: TribaiIconComparador,
     title: "Identifique la norma",
     description:
       "Busque el artículo en el Estatuto Tributario o pregúntele a la IA. Encuentre la norma aplicable con su texto vigente, historial de reformas y artículos relacionados.",
   },
   {
     number: "02",
-    icon: Calculator,
+    icon: TribaiIconCalculator,
     title: "Calcule con precisión",
     description:
       "Ejecute la calculadora con datos reales. Retención, renta, sanciones, IVA, laboral — cada resultado muestra la tarifa, la base y el artículo que lo respalda.",
   },
   {
     number: "03",
-    icon: ShieldCheck,
+    icon: TribaiIconGuias,
     title: "Sustente con fuentes",
     description:
       "Cada respuesta viene con citación normativa. Artículo del ET, doctrina DIAN, decreto o jurisprudencia. Su criterio profesional, respaldado por la fuente exacta.",
@@ -29,6 +32,8 @@ const STEPS = [
 ];
 
 export function WorkflowSteps() {
+  const connectorRef = usePathDraw();
+
   return (
     <section
       aria-labelledby="workflow-title"
@@ -45,9 +50,9 @@ export function WorkflowSteps() {
           De su pregunta a su respuesta. En 3 pasos.
         </h2>
 
-        <div className="relative mt-14 grid gap-8 md:grid-cols-3">
-          {/* Connecting line — desktop only */}
-          <div className="absolute left-0 right-0 top-[22px] hidden h-px bg-border md:block" aria-hidden="true" />
+        <div ref={connectorRef} className="relative mt-14 grid gap-8 md:grid-cols-3">
+          {/* Curved connector path — desktop only */}
+          <WorkflowConnector className="absolute left-0 right-0 top-[10px] hidden h-12 w-full md:block" />
 
           {STEPS.map((step, index) => (
             <Reveal key={step.number} delay={index * 100}>

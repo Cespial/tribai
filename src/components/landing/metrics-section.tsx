@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CornerBracket } from "@/components/ui/decorative-svgs";
 
 const METRICS = [
   { value: 35, display: "35", label: "Calculadoras de precisión", sublabel: "Renta, retención, IVA, sanciones, laboral y más" },
@@ -17,6 +18,7 @@ function formatNumber(n: number, target: (typeof METRICS)[number]): string {
 
 function useCountUp(target: number, duration: number, active: boolean) {
   const [value, setValue] = useState(0);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (!active || target === 0) return;
@@ -32,6 +34,8 @@ function useCountUp(target: number, duration: number, active: boolean) {
 
       if (progress < 1) {
         raf = requestAnimationFrame(tick);
+      } else {
+        setDone(true);
       }
     }
 
@@ -39,7 +43,7 @@ function useCountUp(target: number, duration: number, active: boolean) {
     return () => cancelAnimationFrame(raf);
   }, [target, duration, active]);
 
-  return value;
+  return { value, done };
 }
 
 export function MetricsSection() {
@@ -95,11 +99,13 @@ function MetricItem({
   metric: (typeof METRICS)[number];
   active: boolean;
 }) {
-  const count = useCountUp(metric.value, 1500, active);
+  const { value: count, done } = useCountUp(metric.value, 1500, active);
 
   return (
-    <div className="rounded-xl border border-border border-t-2 border-t-tribai-gold bg-card p-6 hover-lift">
-      <p className="font-values text-3xl font-semibold text-tribai-gold md:text-4xl">
+    <div className="relative rounded-xl border border-border border-t-2 border-t-tribai-gold bg-card p-6 card-hover-premium">
+      <CornerBracket position="top-left" className="absolute -left-1 -top-1 h-5 w-5" />
+      <CornerBracket position="bottom-right" className="absolute -bottom-1 -right-1 h-5 w-5" />
+      <p className={`font-values text-3xl font-semibold text-tribai-gold md:text-4xl ${done ? "gold-flash" : ""}`}>
         {metric.value === 0 ? metric.display : formatNumber(count, metric)}
       </p>
       <p className="mt-2 text-sm font-semibold text-foreground">{metric.label}</p>

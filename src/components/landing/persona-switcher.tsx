@@ -124,9 +124,10 @@ export function PersonaSwitcher() {
       <div className="pointer-events-none absolute left-0 top-0 h-10 w-12 bg-gradient-to-r from-background via-background/60 to-transparent md:hidden" />
 
       <article
+        key={activePersona.key}
         id={`persona-panel-${activePersona.key}`}
         role="tabpanel"
-        className="rounded-2xl border border-border bg-card p-6 md:p-8"
+        className="persona-panel-enter rounded-2xl border border-border bg-card p-6 md:p-8"
       >
         <h3 className="heading-serif text-2xl text-foreground md:text-4xl">
           {activePersona.title}

@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import {
-  ArrowRight,
-  BookOpen,
-  Calculator,
-  CalendarClock,
-  MessageSquareText,
-  Scale,
-  ShieldCheck,
-  Target,
-  FileSearch,
-  Bookmark,
-} from "lucide-react";
+  TribaiIconET,
+  TribaiIconCalculator,
+  TribaiIconAI,
+  TribaiIconCalendar,
+  TribaiIconBalance,
+  TribaiIconTarget,
+  TribaiIconComparador,
+  TribaiIconGuias,
+  TribaiIconWorkspace,
+} from "@/components/icons/tribai-icons";
 import { Header } from "@/components/layout/header";
 import { HeroVideo } from "@/components/hero/hero-video";
 import { PersonaSwitcher } from "@/components/landing/persona-switcher";
@@ -23,6 +23,8 @@ import { FooterLinks } from "@/components/landing/footer-links";
 import { MobileStickyCta } from "@/components/landing/mobile-sticky-cta";
 import { LazyChatContainer } from "@/components/landing/lazy-chat-container";
 import { Reveal } from "@/components/ui/reveal";
+import { SectionDivider } from "@/components/ui/section-divider";
+import { DecorativeDocLayers, DecorativeTriangleGrid, DecorativeNeuralNet, TrustSeparator, CTAConstellation } from "@/components/ui/decorative-svgs";
 import { ChatQuerySuggestions } from "@/components/landing/chat-query-suggestions";
 
 export const metadata: Metadata = {
@@ -73,7 +75,7 @@ export const metadata: Metadata = {
 /* ── Three Pillars ── */
 const PILLARS = [
   {
-    icon: BookOpen,
+    icon: TribaiIconET,
     title: "Estatuto Tributario completo",
     description:
       "1.294 artículos indexados, con historial de reformas, artículos relacionados y concordancias. Busque por número, tema o palabra clave.",
@@ -83,7 +85,7 @@ const PILLARS = [
     statLabel: "artículos",
   },
   {
-    icon: Calculator,
+    icon: TribaiIconCalculator,
     title: "Calculadoras de precisión",
     description:
       "35 calculadoras que reflejan la norma vigente 2026. Retención, renta, sanciones, IVA, laboral, patrimonio y más. Cada resultado cita su artículo.",
@@ -93,7 +95,7 @@ const PILLARS = [
     statLabel: "calculadoras",
   },
   {
-    icon: MessageSquareText,
+    icon: TribaiIconAI,
     title: "Asistente IA con fuentes",
     description:
       "Pregunte como le preguntaría a un colega. Reciba respuesta con el artículo exacto del ET, doctrina DIAN y jurisprudencia. Si no tiene evidencia, se lo dice.",
@@ -107,37 +109,37 @@ const PILLARS = [
 /* ── Tools Grid ── */
 const TOOLS = [
   {
-    icon: CalendarClock,
+    icon: TribaiIconCalendar,
     title: "Calendario DIAN 2026",
     description: "Vencimientos por NIT, alertas y exportación a calendario.",
     href: "/calendario",
   },
   {
-    icon: Scale,
+    icon: TribaiIconBalance,
     title: "Doctrina DIAN",
     description: "841 conceptos curados, clasificados y vinculados al ET.",
     href: "/doctrina",
   },
   {
-    icon: Target,
+    icon: TribaiIconTarget,
     title: "Indicadores económicos",
     description: "UVT, SMLMV, inflación y tasas con histórico desde 2006.",
     href: "/indicadores",
   },
   {
-    icon: FileSearch,
+    icon: TribaiIconComparador,
     title: "Comparador de artículos",
     description: "Compare versiones históricas y vea qué cambió en cada reforma.",
     href: "/comparar",
   },
   {
-    icon: ShieldCheck,
+    icon: TribaiIconGuias,
     title: "Guías interactivas",
     description: "Árboles de decisión para determinar obligaciones paso a paso.",
     href: "/guias",
   },
   {
-    icon: Bookmark,
+    icon: TribaiIconWorkspace,
     title: "Espacio de trabajo",
     description: "Favoritos, notas y workspaces organizados por cliente.",
     href: "/favoritos",
@@ -305,6 +307,8 @@ export default function Home() {
         </div>
       </section>
 
+      <SectionDivider variant="wave" className="text-background -mt-1" />
+
       {/* ═══════════════════════════════════════════
           SECTION 2: TRUST — Quick proof strip
           ═══════════════════════════════════════════ */}
@@ -315,8 +319,9 @@ export default function Home() {
             { value: "35", label: "calculadoras · 2026" },
             { value: "841", label: "conceptos DIAN" },
             { value: "36K", label: "fuentes normativas" },
-          ].map(({ value, label }) => (
+          ].map(({ value, label }, i) => (
             <div key={label} className="flex items-center gap-2.5">
+              {i > 0 && <TrustSeparator className="mr-5 hidden h-8 w-px md:block" />}
               <span className="font-values text-lg font-semibold text-tribai-gold">{value}</span>
               <span className="text-sm text-muted-foreground">{label}</span>
             </div>
@@ -324,14 +329,18 @@ export default function Home() {
         </div>
       </section>
 
+      <SectionDivider variant="node-line" className="py-2" />
+
       {/* ═══════════════════════════════════════════
           SECTION 3: THREE PILLARS — Core value prop
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="pillars-title"
-        className="bg-background px-6 py-20 md:px-8 md:py-28"
+        className="relative bg-background px-6 py-20 md:px-8 md:py-28"
       >
-        <Reveal className="mx-auto max-w-6xl">
+        {/* Triangle grid background pattern */}
+        <div className="bg-triangle-grid pointer-events-none absolute inset-0 opacity-[0.03]" aria-hidden="true" />
+        <Reveal className="relative mx-auto max-w-6xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
             El Estatuto, la calculadora y el criterio
           </p>
@@ -346,38 +355,48 @@ export default function Home() {
             {PILLARS.map((pillar, index) => (
               <Reveal key={pillar.title} delay={index * 100}>
               <div
-                className="group rounded-2xl border border-border border-t-2 border-t-tribai-gold/60 bg-card p-8 hover-lift hover:border-tribai-blue/30"
+                className="group relative overflow-hidden rounded-2xl border border-border border-t-2 border-t-tribai-gold/60 bg-card p-8 card-hover-premium"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-tribai-blue/10">
-                    <pillar.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
-                  </div>
-                  <div className="text-right">
-                    <span className="font-values text-2xl font-semibold text-tribai-gold">
-                      {pillar.stat}
-                    </span>
-                    <p className="text-xs text-muted-foreground">{pillar.statLabel}</p>
-                  </div>
+                {/* Decorative background illustration */}
+                <div className="pointer-events-none absolute -bottom-4 -right-4 h-32 w-32 text-tribai-blue opacity-[0.04]">
+                  {index === 0 && <DecorativeDocLayers className="h-full w-full" />}
+                  {index === 1 && <DecorativeTriangleGrid className="h-full w-full" />}
+                  {index === 2 && <DecorativeNeuralNet className="h-full w-full" />}
                 </div>
-                <h3 className="mt-5 text-lg font-semibold text-foreground">
-                  {pillar.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {pillar.description}
-                </p>
-                <Link
-                  href={pillar.href}
-                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
-                >
-                  {pillar.cta}
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                </Link>
+                <div className="relative">
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-tribai-blue/10">
+                      <pillar.icon className="icon-animate h-5 w-5 text-tribai-blue" />
+                    </div>
+                    <div className="text-right">
+                      <span className="font-values text-2xl font-semibold text-tribai-gold">
+                        {pillar.stat}
+                      </span>
+                      <p className="text-xs text-muted-foreground">{pillar.statLabel}</p>
+                    </div>
+                  </div>
+                  <h3 className="mt-5 text-lg font-semibold text-foreground">
+                    {pillar.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {pillar.description}
+                  </p>
+                  <Link
+                    href={pillar.href}
+                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
+                  >
+                    {pillar.cta}
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
+                </div>
               </div>
               </Reveal>
             ))}
           </div>
         </Reveal>
       </section>
+
+      <SectionDivider variant="node-line" className="py-2" />
 
       {/* ═══════════════════════════════════════════
           SECTION 4: PERSONAS — "¿Esto es para mí?"
@@ -434,10 +453,10 @@ export default function Home() {
               <Reveal key={tool.href} delay={index * 80}>
                 <Link
                   href={tool.href}
-                  className="group block rounded-xl border border-border bg-card p-6 hover-lift hover:border-tribai-blue/30"
+                  className="group block rounded-xl border border-border bg-card p-6 card-hover-premium"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-tribai-blue/10">
-                    <tool.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
+                    <tool.icon className="icon-animate h-5 w-5 text-tribai-blue" />
                   </div>
                   <h3 className="mt-4 text-base font-semibold text-foreground">
                     {tool.title}
@@ -452,6 +471,8 @@ export default function Home() {
         </Reveal>
       </section>
 
+      <SectionDivider variant="node-line" className="py-2" />
+
       {/* ═══════════════════════════════════════════
           SECTION 7: METRICS — Hard numbers
           ═══════════════════════════════════════════ */}
@@ -463,6 +484,8 @@ export default function Home() {
           <MetricsSection />
         </Reveal>
       </section>
+
+      <SectionDivider variant="constellation-break" className="py-4" />
 
       {/* ═══════════════════════════════════════════
           SECTION 8: ASISTENTE IA — Live demo
@@ -525,14 +548,18 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <FaqSection items={FAQ_ENTRIES} />
 
+      <SectionDivider variant="constellation-break" className="py-4" />
+
       {/* ═══════════════════════════════════════════
           SECTION 11: FINAL CTA
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="cta-final-title"
-        className="section-navy px-6 py-20 md:px-8 md:py-28"
+        className="relative overflow-hidden section-navy px-6 py-20 md:px-8 md:py-28"
       >
-        <Reveal className="mx-auto max-w-3xl text-center" delay={50}>
+        {/* Constellation background */}
+        <CTAConstellation className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" />
+        <Reveal className="relative mx-auto max-w-3xl text-center" delay={50}>
           <h2
             id="cta-final-title"
             className="heading-serif text-3xl text-white md:text-5xl lg:text-6xl"

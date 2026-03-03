@@ -1,36 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Clock, BookOpen, DollarSign, GraduationCap, Bot, Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
+import { TribaiIconClock, TribaiIconET, TribaiIconMoney, TribaiIconCertification, TribaiIconBrain } from "@/components/icons/tribai-icons";
 import { Reveal } from "@/components/ui/reveal";
 
 const ROWS = [
   {
-    icon: Clock,
+    icon: TribaiIconClock,
     criterion: "Buscar un artículo del ET",
     traditional: "5–15 min en PDF o Google",
     tribai: "5 segundos — búsqueda indexada",
   },
   {
-    icon: BookOpen,
+    icon: TribaiIconET,
     criterion: "Calcular retención salarial",
     traditional: "10–20 min en Excel manual",
     tribai: "30 seg — calculadora 2026",
   },
   {
-    icon: DollarSign,
+    icon: TribaiIconMoney,
     criterion: "Costo de arranque",
     traditional: "Suscripción mensual o paywall",
     tribai: "Gratuito. Sin registro.",
   },
   {
-    icon: GraduationCap,
+    icon: TribaiIconCertification,
     criterion: "Verificar doctrina DIAN",
     traditional: "20–40 min en DIAN.gov.co",
     tribai: "10 seg — 841 conceptos indexados",
   },
   {
-    icon: Bot,
+    icon: TribaiIconBrain,
     criterion: "Sustento normativo con IA",
     traditional: "ChatGPT genérico — sin fuentes reales",
     tribai: "IA con citación exacta del artículo",
