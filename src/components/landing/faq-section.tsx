@@ -16,31 +16,31 @@ export function FaqSection({ items }: FaqSectionProps) {
     <section
       id="faq"
       aria-labelledby="faq-title"
-      className="bg-background px-6 py-32 md:px-8 md:py-40"
+      className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
     >
-      <Reveal className="mx-auto max-w-6xl">
-        <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
+      <Reveal className="mx-auto max-w-[960px]">
+        <p className="eyebrow-label">
           Preguntas frecuentes
         </p>
         <h2
           id="faq-title"
-          className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl"
+          className="heading-serif mt-4 text-2xl text-foreground md:text-4xl"
         >
           Las preguntas que el contador realmente tiene.
         </h2>
 
-        <div className="mt-10 max-w-4xl space-y-3">
+        <div className="mt-12 space-y-3">
           {items.map((item, index) => (
             <details
               key={item.question}
               className="group rounded-lg border border-border bg-card transition-colors open:border-tribai-blue/30"
               open={index === 0}
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between p-5 text-base font-semibold text-foreground transition-colors hover:text-foreground/80">
+              <summary className="flex cursor-pointer list-none items-center justify-between p-5 text-base font-semibold text-foreground transition-colors hover:text-tribai-blue">
                 {item.question}
                 <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-180" />
               </summary>
-              <div className="px-5 pb-5">
+              <div className="px-5 pb-6 pt-0">
                 <p className="text-sm leading-relaxed text-muted-foreground">
                   {item.answer}
                 </p>
@@ -52,7 +52,7 @@ export function FaqSection({ items }: FaqSectionProps) {
         <div className="mt-8">
           <Link
             href="/asistente"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue"
           >
             Ir al asistente IA
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
