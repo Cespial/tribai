@@ -2,29 +2,29 @@
 
 /* ─── Light mode: Tribai color system ─── */
 :root {
-  --font-heading: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SFMono-Regular', monospace;
 
   /* Tribai palette */
   --tribai-navy: #0A1628;
-  --tribai-blue: #1B4D8F;
+  --tribai-blue: #0066FF;
   --tribai-gold: #C4952A;
   --tribai-light-blue: #3B82B8;
 
   /* Semantic tokens */
-  --background: #F8F6F3;
+  --background: #FFFFFF;
   --foreground: #1A1A1A;
   --card: #FFFFFF;
   --card-foreground: #1A1A1A;
-  --muted: #F0EEEB;
+  --muted: #F5F5F5;
   --muted-foreground: #6B7280;
-  --muted-section: #F3F1EE;
+  --muted-section: #F5F8FA;
   --foreground-body: #4B5563;
-  --border: #E5E7EB;
-  --primary: #1B4D8F;
+  --border: #E8E8E8;
+  --primary: #0066FF;
   --primary-foreground: #ffffff;
-  --ring: #1B4D8F;
+  --ring: #0066FF;
   --destructive: #dc2626;
   --success: #16a34a;
 
@@ -56,7 +56,6 @@
   --color-foreground-body: var(--foreground-body);
   --font-sans: var(--font-body);
   --font-mono: var(--font-mono);
-  --font-heading: var(--font-heading);
   --font-serif: var(--font-heading);
 }
 
@@ -69,15 +68,15 @@
   --muted: #1B2540;
   --muted-foreground: #9CA3AF;
   --border: #1F2937;
-  --primary: #4B9FE1;
+  --primary: #3B82F6;
   --primary-foreground: #0A0F1A;
-  --ring: #4B9FE1;
+  --ring: #3B82F6;
   --destructive: #ef4444;
   --success: #22c55e;
   --muted-section: #0F1629;
   --foreground-body: #B0ADA8;
   --tribai-navy: #0A0F1A;
-  --tribai-blue: #4B9FE1;
+  --tribai-blue: #3B82F6;
   --tribai-gold: #D4A83A;
   --tribai-light-blue: #6BB5E8;
 }
@@ -153,12 +152,12 @@ body {
    TRIBAI TYPOGRAPHY SYSTEM
    ═══════════════════════════════════════════════ */
 
-/* Heading — DM Serif Display, authoritative serif */
+/* Heading — Inter bold, clean authority */
 .heading-serif {
-  font-family: var(--font-heading), "DM Serif Display", Georgia, serif;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-family: var(--font-body), "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
 }
 
 /* Monospace values — JetBrains Mono for financial precision */
