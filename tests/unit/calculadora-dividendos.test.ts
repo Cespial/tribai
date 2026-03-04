@@ -6,9 +6,6 @@ import {
   DIVIDENDOS_NO_GRAVADOS_RATE,
   DIVIDENDOS_DESCUENTO_RATE,
 } from "../../src/config/tax-data-ganancias";
-import { UVT_VALUES } from "../../src/config/tax-data";
-
-const UVT = UVT_VALUES[2026];
 
 function calcDividendosPN(dividendosUVT: number): number {
   if (dividendosUVT <= 0) return 0;

@@ -11,7 +11,6 @@ import {
   UVT_VALUES,
   SMLMV_2026,
   AUXILIO_TRANSPORTE_2026,
-  SALARIO_INTEGRAL_MIN_SMLMV,
 } from "../../src/config/tax-data";
 
 const UVT = UVT_VALUES[2026];
