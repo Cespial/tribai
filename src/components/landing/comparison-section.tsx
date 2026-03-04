@@ -43,22 +43,22 @@ export function ComparisonSection() {
     <section
       id="comparativa"
       aria-labelledby="comparativa-title"
-      className="bg-background px-6 py-32 md:px-8 md:py-40"
+      className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
     >
-      <Reveal className="mx-auto max-w-6xl">
-        <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
+      <Reveal className="mx-auto max-w-[960px]">
+        <p className="eyebrow-label">
           Por qué confiar en Tribai
         </p>
         <h2
           id="comparativa-title"
-          className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl"
+          className="heading-serif mt-4 max-w-3xl text-2xl text-foreground md:text-4xl"
         >
           El flujo de siempre vs. el flujo con Tribai.
         </h2>
 
         {/* Desktop table */}
         <div className="mt-12 hidden overflow-hidden rounded-lg border border-border md:block">
-          <div className="grid grid-cols-[1fr_1fr_1fr] bg-muted/50">
+          <div className="grid grid-cols-[1fr_1fr_1fr] bg-muted-section">
             <div className="px-6 py-4 text-sm font-semibold text-foreground">Tarea</div>
             <div className="px-6 py-4 text-sm font-semibold text-muted-foreground">Flujo tradicional</div>
             <div className="bg-tribai-blue/5 px-6 py-4 text-sm font-semibold text-tribai-blue">Con Tribai</div>
@@ -66,7 +66,7 @@ export function ComparisonSection() {
           {ROWS.map((row) => (
             <div
               key={row.criterion}
-              className="grid grid-cols-[1fr_1fr_1fr] border-t border-border transition-colors hover:bg-muted/20"
+              className="grid grid-cols-[1fr_1fr_1fr] border-t border-border transition-colors hover:bg-muted-section"
             >
               <div className="flex items-center gap-3 px-6 py-4">
                 <row.icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
@@ -98,7 +98,7 @@ export function ComparisonSection() {
                 </div>
                 <div className="rounded-lg bg-tribai-blue/5 p-2.5">
                   <p className="text-xs font-medium text-tribai-blue">Con Tribai</p>
-                  <p className="mt-0.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+                  <p className="mt-0.5 flex items-center gap-1.5 border-l-2 border-tribai-blue pl-3 text-sm font-medium text-foreground">
                     <Check className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden="true" />
                     {row.tribai}
                   </p>
@@ -111,7 +111,7 @@ export function ComparisonSection() {
         <div className="mt-8">
           <Link
             href="/calculadoras"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue"
           >
             Probar la plataforma
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

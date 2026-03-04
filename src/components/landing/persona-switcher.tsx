@@ -112,7 +112,7 @@ export function PersonaSwitcher() {
               aria-controls={`persona-panel-${persona.key}`}
               data-active={isActive}
               onClick={() => setActiveKey(persona.key)}
-              className="whitespace-nowrap rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-300 hover:border-tribai-blue/30 data-[active=true]:border-tribai-blue data-[active=true]:bg-tribai-blue data-[active=true]:text-white"
+              className="whitespace-nowrap rounded-full border border-border px-6 py-2.5 text-sm font-medium text-foreground transition-all duration-300 hover:border-tribai-blue/30 data-[active=true]:border-tribai-blue data-[active=true]:bg-tribai-blue data-[active=true]:text-white"
             >
               {persona.label}
             </button>
@@ -127,7 +127,7 @@ export function PersonaSwitcher() {
         key={activePersona.key}
         id={`persona-panel-${activePersona.key}`}
         role="tabpanel"
-        className="rounded-lg border border-border bg-card p-6 md:p-8"
+        className="rounded-lg border border-border bg-card p-7 md:p-10"
       >
         <h3 className="heading-serif text-2xl text-foreground md:text-4xl">
           {activePersona.title}
@@ -139,7 +139,7 @@ export function PersonaSwitcher() {
         <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
           {activePersona.points.map((point) => (
             <li key={point} className="flex items-start gap-2.5">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-tribai-blue/40" aria-hidden="true" />
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-tribai-blue" aria-hidden="true" />
               {point}
             </li>
           ))}
@@ -147,7 +147,7 @@ export function PersonaSwitcher() {
 
         <Link
           href={activePersona.href}
-          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tribai-blue/30"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tribai-blue/30"
         >
           {activePersona.cta}
           <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />

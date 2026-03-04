@@ -31,15 +31,15 @@ export function WorkflowSteps() {
   return (
     <section
       aria-labelledby="workflow-title"
-      className="bg-background px-6 py-32 md:px-8 md:py-40"
+      className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
     >
-      <Reveal className="mx-auto max-w-6xl">
-        <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
+      <Reveal className="mx-auto max-w-[960px]">
+        <p className="eyebrow-label">
           Cómo funciona
         </p>
         <h2
           id="workflow-title"
-          className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl"
+          className="heading-serif mt-4 max-w-3xl text-2xl text-foreground md:text-4xl"
         >
           De su pregunta a su respuesta. En 3 pasos.
         </h2>
@@ -51,10 +51,10 @@ export function WorkflowSteps() {
               className={`p-8 ${index < STEPS.length - 1 ? "border-b border-border md:border-b-0" : ""}`}
             >
               <div className="flex items-center gap-4">
-                <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-background">
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-background">
                   <step.icon className="h-5 w-5 text-tribai-blue" aria-hidden="true" />
                 </div>
-                <span className="font-values text-sm font-semibold text-muted-foreground">
+                <span className="font-values text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Paso {step.number}
                 </span>
               </div>
@@ -71,7 +71,7 @@ export function WorkflowSteps() {
         <div className="mt-10">
           <Link
             href="/calculadoras"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:text-tribai-blue/80"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue"
           >
             Empezar ahora
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

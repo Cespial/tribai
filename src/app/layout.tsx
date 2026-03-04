@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, DM_Serif_Display } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { ArticlePanelProvider } from "@/contexts/article-panel-context";
 import { SlideOutPanel } from "@/components/article/slide-out-panel";
@@ -19,11 +19,17 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const dmSerifDisplay = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-heading",
+  display: "swap",
+});
+
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+  themeColor: "#F8F6F3",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export const metadata: Metadata = {
@@ -76,7 +82,7 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
       </head>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} ${dmSerifDisplay.variable} antialiased`}>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-tribai-blue focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"

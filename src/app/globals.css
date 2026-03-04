@@ -2,27 +2,29 @@
 
 /* ─── Light mode: Tribai color system ─── */
 :root {
-  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-heading: 'DM Serif Display', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SFMono-Regular', monospace;
 
   /* Tribai palette */
   --tribai-navy: #0A1628;
-  --tribai-blue: #0066FF;
+  --tribai-blue: #1B4D8F;
   --tribai-gold: #C4952A;
   --tribai-light-blue: #3B82B8;
 
   /* Semantic tokens */
-  --background: #FFFFFF;
+  --background: #F8F6F3;
   --foreground: #1A1A1A;
   --card: #FFFFFF;
   --card-foreground: #1A1A1A;
-  --muted: #F5F5F5;
+  --muted: #F0EEEB;
   --muted-foreground: #6B7280;
+  --muted-section: #F3F1EE;
+  --foreground-body: #4B5563;
   --border: #E5E7EB;
-  --primary: #0066FF;
+  --primary: #1B4D8F;
   --primary-foreground: #ffffff;
-  --ring: #0066FF;
+  --ring: #1B4D8F;
   --destructive: #dc2626;
   --success: #16a34a;
 
@@ -50,8 +52,11 @@
   --color-tribai-blue: var(--tribai-blue);
   --color-tribai-gold: var(--tribai-gold);
   --color-tribai-light-blue: var(--tribai-light-blue);
+  --color-muted-section: var(--muted-section);
+  --color-foreground-body: var(--foreground-body);
   --font-sans: var(--font-body);
   --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
   --font-serif: var(--font-heading);
 }
 
@@ -64,22 +69,40 @@
   --muted: #1B2540;
   --muted-foreground: #9CA3AF;
   --border: #1F2937;
-  --primary: #3B82F6;
+  --primary: #4B9FE1;
   --primary-foreground: #0A0F1A;
-  --ring: #3B82F6;
+  --ring: #4B9FE1;
   --destructive: #ef4444;
   --success: #22c55e;
+  --muted-section: #0F1629;
+  --foreground-body: #B0ADA8;
   --tribai-navy: #0A0F1A;
-  --tribai-blue: #3B82F6;
+  --tribai-blue: #4B9FE1;
   --tribai-gold: #D4A83A;
   --tribai-light-blue: #6BB5E8;
 }
 
-/* ─── Global transitions ─── */
-* {
+/* ─── Scoped transitions — interactive elements only ─── */
+a,
+button,
+input,
+select,
+textarea,
+[role="tab"],
+[role="button"],
+.surface-card,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.badge-accent {
   transition-property: color, background-color, border-color, box-shadow, opacity;
   transition-duration: 150ms;
   transition-timing-function: var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Theme switch: instant color change on html/body to avoid "mushiness" */
+html, body {
+  transition: background-color 80ms ease-out, color 80ms ease-out;
 }
 
 body {
@@ -130,11 +153,11 @@ body {
    TRIBAI TYPOGRAPHY SYSTEM
    ═══════════════════════════════════════════════ */
 
-/* Heading — Inter bold, clean authority */
+/* Heading — DM Serif Display, authoritative serif */
 .heading-serif {
-  font-family: var(--font-body), "Inter", system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-family: var(--font-heading), "DM Serif Display", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   line-height: 1.1;
 }
 
@@ -149,19 +172,21 @@ body {
    TRIBAI COMPONENT UTILITIES
    ═══════════════════════════════════════════════ */
 
+/* Eyebrow label */
+.eyebrow-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tribai-blue);
+  line-height: 1;
+}
+
 /* Card surface */
 .surface-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-}
-
-/* Hover lift — flat background shift */
-.hover-lift {
-  transition: background-color 150ms var(--ease-smooth);
-}
-.hover-lift:hover {
-  background-color: var(--muted);
 }
 
 /* ── Button variants ── */
@@ -171,8 +196,8 @@ body {
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.875rem;
+  padding: 0.875rem 1.75rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1;
   background: var(--tribai-blue);
@@ -187,8 +212,8 @@ body {
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.875rem;
+  padding: 0.875rem 1.75rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1;
   background: transparent;
@@ -204,8 +229,8 @@ body {
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.875rem;
+  padding: 0.875rem 1.75rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1;
   background: transparent;
@@ -214,12 +239,35 @@ body {
 }
 .btn-ghost:hover { background: color-mix(in srgb, var(--tribai-blue) 8%, transparent); }
 
+/* Hover lift — subtle card elevation on hover */
+.hover-lift {
+  transition: transform 200ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Badge gold — accent badge with gold tint */
+.badge-gold {
+  background: color-mix(in srgb, var(--tribai-gold) 12%, transparent);
+  color: var(--tribai-gold);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
 /* Tribai accent badge */
 .badge-accent {
   background: color-mix(in srgb, var(--tribai-blue) 10%, transparent);
   color: var(--tribai-blue);
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
 }
@@ -227,8 +275,14 @@ body {
 /* Tribai navy section */
 .section-navy {
   background: var(--tribai-navy);
-  color: #E8E6E3;
+  color: #C9CDD4;
 }
+.dark .section-navy {
+  background: #0F1629;
+}
+.section-navy a { color: #9CA3AF; transition: color 150ms var(--ease-smooth); }
+.section-navy a:hover { color: #E8E6E3; }
+.section-navy h3 { color: #6B7280; }
 
 /* Dark section inversion */
 .section-dark {
@@ -329,6 +383,154 @@ body {
   to { opacity: 1; }
 }
 
+/* ═══════════════════════════════════════════════
+   HERO GRID BACKGROUND — Pinecone-style subtle lines
+   ═══════════════════════════════════════════════ */
+
+/* Subtle vertical guide lines at content edges (Pinecone-style) */
+.hero-grid-bg {
+  position: relative;
+}
+.hero-grid-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, transparent calc(50% - 521px), rgba(0,0,0,0.05) calc(50% - 521px), rgba(0,0,0,0.05) calc(50% - 520px), transparent calc(50% - 520px)),
+    linear-gradient(to right, transparent calc(50% + 520px), rgba(0,0,0,0.05) calc(50% + 520px), rgba(0,0,0,0.05) calc(50% + 521px), transparent calc(50% + 521px));
+}
+.dark .hero-grid-bg::before {
+  background-image:
+    linear-gradient(to right, transparent calc(50% - 521px), rgba(255,255,255,0.04) calc(50% - 521px), rgba(255,255,255,0.04) calc(50% - 520px), transparent calc(50% - 520px)),
+    linear-gradient(to right, transparent calc(50% + 520px), rgba(255,255,255,0.04) calc(50% + 520px), rgba(255,255,255,0.04) calc(50% + 521px), transparent calc(50% + 521px));
+}
+
+/* Corner bracket decoration around hero CTAs (Pinecone-style) */
+.hero-btn-bracket {
+  position: relative;
+  padding: 6px;
+}
+.hero-btn-bracket::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--foreground), var(--foreground)) 0 0 / 10px 1px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) 0 0 / 1px 10px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) 100% 0 / 10px 1px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) 100% 0 / 1px 10px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) 0 100% / 10px 1px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) 0 100% / 1px 10px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) 100% 100% / 10px 1px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) 100% 100% / 1px 10px no-repeat;
+  opacity: 0.2;
+}
+
+/* ═══════════════════════════════════════════════
+   CONSTELLATION HERO — Animations & Utilities
+   ═══════════════════════════════════════════════ */
+
+/* ── Keyframes ── */
+
+@keyframes constellation-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50% { transform: scale(1.06); opacity: 0.25; }
+}
+
+@keyframes constellation-core-glow {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes constellation-dash {
+  from { stroke-dashoffset: 32; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes constellation-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes constellation-twinkle {
+  0%, 100% { opacity: 0.04; }
+  50% { opacity: 0.12; }
+}
+
+@keyframes constellation-node-enter {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes constellation-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Utility classes ── */
+
+.constellation-enter {
+  animation: constellation-fade-in 1s var(--ease-out) both;
+}
+
+/* Hub pulse rings */
+.constellation-pulse-outer {
+  transform-origin: center;
+  animation: constellation-pulse 4s var(--ease-in-out) infinite;
+}
+.constellation-pulse-inner {
+  transform-origin: center;
+  animation: constellation-pulse 4s var(--ease-in-out) 1s infinite;
+}
+
+/* Core dot glow */
+.constellation-core-pulse {
+  animation: constellation-core-glow 2.5s var(--ease-in-out) infinite;
+}
+
+/* Data flow particles on connection paths */
+.constellation-flow {
+  animation: constellation-dash 3s linear infinite;
+}
+.constellation-flow-delay-0 { animation-delay: 0s; }
+.constellation-flow-delay-1 { animation-delay: 0.5s; }
+.constellation-flow-delay-2 { animation-delay: 1s; }
+.constellation-flow-delay-3 { animation-delay: 1.5s; }
+.constellation-flow-delay-4 { animation-delay: 2s; }
+.constellation-flow-delay-5 { animation-delay: 2.5s; }
+
+/* Orbital ring rotation */
+.constellation-orbit-rotate {
+  transform-origin: center;
+  animation: constellation-orbit 90s linear infinite;
+}
+.constellation-orbit-rotate-reverse {
+  transform-origin: center;
+  animation: constellation-orbit 70s linear infinite reverse;
+}
+
+/* Scatter particle twinkle */
+.constellation-twinkle {
+  animation: constellation-twinkle 4s var(--ease-in-out) infinite;
+}
+.constellation-twinkle:nth-child(2n) { animation-delay: 0.6s; }
+.constellation-twinkle:nth-child(3n) { animation-delay: 1.2s; }
+.constellation-twinkle:nth-child(5n) { animation-delay: 1.8s; }
+.constellation-twinkle:nth-child(7n) { animation-delay: 2.4s; }
+
+/* Satellite node entrance stagger */
+.constellation-node-entrance {
+  animation: constellation-node-enter 0.7s var(--ease-out) both;
+}
+.constellation-node-delay-0 { animation-delay: 0.6s; }
+.constellation-node-delay-1 { animation-delay: 0.75s; }
+.constellation-node-delay-2 { animation-delay: 0.9s; }
+.constellation-node-delay-3 { animation-delay: 1.05s; }
+.constellation-node-delay-4 { animation-delay: 1.2s; }
+.constellation-node-delay-5 { animation-delay: 1.35s; }
+
 
 /* ─── Print ─── */
 @media print {
@@ -338,4 +540,5 @@ body {
   .print\:hidden { display: none !important; }
   #article-print-root { max-width: 100%; }
   a { color: inherit !important; text-decoration: none !important; }
+  .section-navy { background: #fff !important; color: #000 !important; }
 }

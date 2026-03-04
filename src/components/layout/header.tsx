@@ -48,7 +48,7 @@ function TribaiLogo({ className }: { className?: string }) {
       <circle cx="32" cy="14" r="2.5" fill="currentColor" />
       <circle cx="18" cy="44" r="2.5" fill="currentColor" />
       <circle cx="46" cy="44" r="2.5" fill="currentColor" />
-      <circle cx="32" cy="34" r="3" fill="var(--tribai-gold, #C4952A)" />
+      <circle cx="32" cy="34" r="3" fill="var(--tribai-blue, #0066FF)" />
       <line x1="32" y1="14" x2="32" y2="31" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <line x1="32" y1="34" x2="18" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <line x1="32" y1="34" x2="46" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -88,13 +88,13 @@ export function Header() {
     <header
       className="sticky top-0 z-50 border-b border-border bg-background print:hidden"
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:px-8">
+      <div className="mx-auto flex h-[72px] max-w-[1120px] items-center justify-between px-6 md:px-12 lg:px-16">
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <TribaiLogo className="h-7 w-7 text-foreground" />
           <span className="heading-serif text-lg text-foreground">
-            trib<span className="text-tribai-gold">ai</span>
-            <span className="text-sm text-muted-foreground">.co</span>
+            trib<span className="text-tribai-blue">ai</span>
+            <span className="text-xs text-muted-foreground">.co</span>
           </span>
         </Link>
 
@@ -107,7 +107,7 @@ export function Header() {
                 key={href}
                 href={href}
                 className={clsx(
-                  "relative rounded-md px-3 py-1.5 text-[13px] font-normal transition-colors",
+                  "relative rounded-md px-3 py-1.5 text-sm transition-colors",
                   isActive
                     ? "text-foreground font-semibold"
                     : "text-muted-foreground hover:text-foreground"
@@ -133,7 +133,7 @@ export function Header() {
             </button>
 
             {moreOpen && (
-              <div className="absolute right-0 top-full mt-2 w-52 rounded-lg border border-border bg-card p-1.5">
+              <div className="absolute right-0 top-full mt-2 w-52 rounded-lg border border-border bg-card p-1.5 shadow-sm">
                 {MORE_NAV.map(({ href, label }) => (
                   <Link
                     key={href}
@@ -159,7 +159,7 @@ export function Header() {
           {/* CTA — desktop only */}
           <Link
             href="/calculadoras"
-            className="hidden rounded-md bg-tribai-blue px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-tribai-blue/90 md:inline-flex"
+            className="hidden rounded-lg bg-tribai-blue px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-tribai-blue/90 md:inline-flex"
           >
             Probar ahora
           </Link>
@@ -192,12 +192,12 @@ export function Header() {
       {mobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 top-16 z-40 bg-foreground/20 md:hidden"
+            className="fixed inset-0 top-[72px] z-40 bg-foreground/20 md:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
           <nav
             id="mobile-navigation"
-            className="fixed right-0 top-16 z-50 h-[calc(100vh-64px)] w-72 overflow-y-auto border-l border-border bg-background p-5 md:hidden"
+            className="fixed right-0 top-[72px] z-50 h-[calc(100vh-72px)] w-72 overflow-y-auto border-l border-border bg-background p-5 md:hidden"
           >
             <div className="flex flex-col gap-0.5">
               {ALL_NAV.map(({ href, label }) => {

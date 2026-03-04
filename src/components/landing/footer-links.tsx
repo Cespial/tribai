@@ -46,7 +46,7 @@ function TribaiLogoSmall() {
       <circle cx="32" cy="14" r="2.5" fill="currentColor"/>
       <circle cx="18" cy="44" r="2.5" fill="currentColor"/>
       <circle cx="46" cy="44" r="2.5" fill="currentColor"/>
-      <circle cx="32" cy="34" r="3" fill="var(--tribai-gold)"/>
+      <circle cx="32" cy="34" r="3" fill="var(--tribai-blue)"/>
       <line x1="32" y1="14" x2="32" y2="31" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       <line x1="32" y1="34" x2="18" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       <line x1="32" y1="34" x2="46" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -92,11 +92,11 @@ export function FooterLinks() {
       <div className="mb-10 flex items-center gap-3">
         <TribaiLogoSmall />
         <div>
-          <p className="heading-serif text-lg text-foreground">
-            trib<span className="text-tribai-gold">ai</span>
-            <span className="text-muted-foreground text-sm">.co</span>
+          <p className="heading-serif text-lg text-white/90">
+            trib<span className="text-tribai-blue">ai</span>
+            <span className="text-white/40 text-xs">.co</span>
           </p>
-          <p className="text-xs text-muted-foreground">Inteligencia tributaria colombiana.</p>
+          <p className="text-xs text-white/50">Inteligencia tributaria colombiana.</p>
         </div>
       </div>
 
@@ -104,7 +104,7 @@ export function FooterLinks() {
       <div className="grid grid-cols-2 gap-8 md:grid-cols-3 md:gap-12">
         {FOOTER_COLUMNS.map((column) => (
           <div key={column.title}>
-            <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">
               {column.title}
             </h3>
             <ul className="space-y-2.5">
@@ -112,7 +112,7 @@ export function FooterLinks() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+                    className="text-sm text-white/60 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
                   >
                     {link.label}
                   </Link>
@@ -124,14 +124,14 @@ export function FooterLinks() {
       </div>
 
       {/* Bottom bar */}
-      <div className="mt-14 flex flex-col justify-between gap-6 border-t border-border pt-8 md:flex-row md:items-center">
+      <div className="mt-14 flex flex-col justify-between gap-6 border-t border-white/10 pt-8 md:flex-row md:items-center">
         <div className="max-w-2xl space-y-1">
-          <p className="text-xs leading-relaxed text-muted-foreground">
+          <p className="text-xs leading-relaxed text-white/50">
             Herramienta informativa de apoyo tributario. No constituye asesoría
             legal o contable personalizada. El criterio profesional siempre
             prevalece.
           </p>
-          <p className="text-xs text-muted-foreground/60">
+          <p className="text-xs text-white/30">
             &copy; {currentYear} tribai.co — Hecho en Colombia para Colombia.
           </p>
         </div>
@@ -141,7 +141,7 @@ export function FooterLinks() {
             href="https://linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground transition-colors hover:text-foreground"
+            className="text-white/50 transition-colors hover:text-white"
             aria-label="LinkedIn"
           >
             <LinkedInIcon className="h-5 w-5" />
@@ -150,14 +150,14 @@ export function FooterLinks() {
             href="https://x.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground transition-colors hover:text-foreground"
+            className="text-white/50 transition-colors hover:text-white"
             aria-label="X / Twitter"
           >
             <XIcon className="h-5 w-5" />
           </a>
           <a
             href="mailto:hola@tribai.co"
-            className="text-muted-foreground transition-colors hover:text-foreground"
+            className="text-white/50 transition-colors hover:text-white"
             aria-label="Email"
           >
             <EmailIcon className="h-5 w-5" />
