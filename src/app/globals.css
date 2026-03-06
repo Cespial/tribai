@@ -539,14 +539,14 @@ body {
   position: relative;
   width: 280px;
   height: 572px;
-  background: #1A1A1A;
+  background: #1C1C1E;
   border-radius: 44px;
   padding: 12px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    0 25px 80px rgba(0, 0, 0, 0.5),
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 0 0 1px rgba(0, 0, 0, 0.12),
+    0 25px 80px rgba(0, 0, 0, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .phone-dynamic-island {
@@ -581,10 +581,27 @@ body {
   z-index: 10;
 }
 
-/* Tab bar glass effect inside iframe */
-.app-tab-bar {
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+/* Store badges with "Pronto" overlay */
+.phone-store-badge {
+  position: relative;
+  display: inline-block;
+  opacity: 0.5;
+  filter: grayscale(0.3);
+  cursor: default;
+}
+.phone-store-coming {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background: var(--tribai-blue);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  line-height: 1.2;
 }
 
 /* Typing indicator dots */
