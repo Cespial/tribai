@@ -6,6 +6,7 @@ import type { ForwardRefExoticComponent, RefAttributes } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ET_BOOK_COLOR_MAP, ET_BOOKS } from "@/lib/constants/et-books";
+import { Reveal } from "@/components/ui/reveal";
 
 /* ── Types ── */
 interface GraphNode {
@@ -52,7 +53,17 @@ const ForceGraph2D = dynamic(
     import("react-force-graph-2d") as Promise<{
       default: React.ComponentType<ForceGraphComponentProps>;
     }>,
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center text-muted-foreground">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-tribai-blue border-t-transparent" />
+          <span className="text-xs">Cargando grafo...</span>
+        </div>
+      </div>
+    ),
+  }
 ) as React.ComponentType<ForceGraphComponentProps>;
 
 const ForceGraph2DWithRef =
@@ -60,36 +71,14 @@ const ForceGraph2DWithRef =
     ForceGraphComponentProps & RefAttributes<ForceGraphRef>
   >;
 
-/* ── Stat counter with count-up animation ── */
-function AnimatedStat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="text-center">
-      <span className="font-values text-2xl font-bold text-white md:text-3xl">
-        {value}
-      </span>
-      <p className="mt-1 text-[12px] text-white/50">{label}</p>
-    </div>
-  );
-}
-
-/* ── Relation type pill ── */
-function RelationPill({ color, label }: { color: string; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-[11px] text-white/60">
-      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
-      {label}
-    </span>
-  );
-}
-
 export function BrainGraphSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<ForceGraphRef | null>(null);
   const [graphData, setGraphData] = useState<{
     nodes: GraphNode[];
     links: { source: string; target: string }[];
   } | null>(null);
-  const [dimensions, setDimensions] = useState({ width: 900, height: 600 });
+  const [dimensions, setDimensions] = useState({ width: 900, height: 520 });
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -98,7 +87,6 @@ export function BrainGraphSection() {
     fetch("/data/graph-data.json")
       .then((r) => r.json())
       .then((data: { nodes: GraphNode[]; edges: { source: string; target: string }[] }) => {
-        // Take top nodes by connectivity for a dense, impressive visual
         const sorted = [...data.nodes].sort(
           (a, b) => b.refs_in + b.refs_out - (a.refs_in + a.refs_out)
         );
@@ -113,11 +101,13 @@ export function BrainGraphSection() {
 
   /* Responsive dimensions */
   useEffect(() => {
-    const el = containerRef.current;
+    const el = canvasContainerRef.current;
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
-      setDimensions({ width: Math.round(width), height: Math.round(height) });
+      if (width > 0 && height > 0) {
+        setDimensions({ width: Math.round(width), height: Math.round(height) });
+      }
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -125,7 +115,7 @@ export function BrainGraphSection() {
 
   /* Intersection observer for lazy render */
   useEffect(() => {
-    const el = containerRef.current;
+    const el = canvasContainerRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => {
@@ -134,28 +124,26 @@ export function BrainGraphSection() {
           io.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.05 }
     );
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
-  /* Zoom to fit after cooldown */
+  /* Zoom to fit after simulation settles */
   useEffect(() => {
     if (!isVisible || !graphData) return;
     const timer = setTimeout(() => {
-      graphRef.current?.zoomToFit(600, 60);
+      graphRef.current?.zoomToFit(600, 50);
     }, 3000);
     return () => clearTimeout(timer);
   }, [isVisible, graphData]);
 
-  const nodeColor = useCallback((node: GraphNode) => {
-    return ET_BOOK_COLOR_MAP[node.libro] || "#6b7280";
-  }, []);
+  const isDark =
+    typeof window !== "undefined" &&
+    document.documentElement.classList.contains("dark");
 
-  const nodeVal = useCallback((node: GraphNode) => {
-    return 2 + (node.complexity || 0) * 0.6;
-  }, []);
+  const bgColor = isDark ? "#131B2E" : "#FFFFFF";
 
   const nodeCanvasObject = useCallback(
     (
@@ -164,14 +152,14 @@ export function BrainGraphSection() {
       globalScale: number
     ) => {
       const degree = (node.refs_in || 0) + (node.refs_out || 0);
-      const baseSize = 2 + Math.min(degree * 0.3, 4);
+      const baseSize = 2.5 + Math.min(degree * 0.35, 5);
       const color = ET_BOOK_COLOR_MAP[node.libro] || "#6b7280";
 
-      // Glow for high-degree nodes
+      // Soft glow for high-degree nodes
       if (degree > 8) {
         ctx.beginPath();
-        ctx.arc(node.x, node.y, baseSize + 4, 0, 2 * Math.PI);
-        ctx.fillStyle = `${color}33`;
+        ctx.arc(node.x, node.y, baseSize + 5, 0, 2 * Math.PI);
+        ctx.fillStyle = `${color}18`;
         ctx.fill();
       }
 
@@ -182,142 +170,176 @@ export function BrainGraphSection() {
       ctx.fill();
 
       // Label on zoom
-      if (globalScale > 3) {
-        ctx.font = `${9 / globalScale}px -apple-system, system-ui, sans-serif`;
-        ctx.fillStyle = "rgba(255,255,255,0.7)";
+      if (globalScale > 2.5) {
+        ctx.font = `${10 / globalScale}px -apple-system, system-ui, sans-serif`;
+        ctx.fillStyle = isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.55)";
         ctx.textAlign = "center";
-        ctx.fillText(node.label, node.x, node.y + baseSize + 7 / globalScale);
+        ctx.fillText(node.label, node.x, node.y + baseSize + 8 / globalScale);
       }
     },
-    []
+    [isDark]
   );
 
-  const totalNodes = 540;
-  const totalEdges = 667;
+  const nodeColor = useCallback((node: GraphNode) => {
+    return ET_BOOK_COLOR_MAP[node.libro] || "#6b7280";
+  }, []);
+
+  const nodeVal = useCallback((node: GraphNode) => {
+    return 2 + (node.complexity || 0) * 0.6;
+  }, []);
+
+  const linkColorValue = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)";
 
   return (
     <section
       aria-labelledby="brain-title"
-      className="relative overflow-hidden bg-[#070B14] px-6 py-16 md:px-12 md:py-24 lg:px-20"
+      className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
     >
-      {/* Graph canvas — full background */}
-      <div
-        ref={containerRef}
-        className="absolute inset-0 z-0"
-      >
-        {isVisible && graphData && (
-          <ForceGraph2DWithRef
-            ref={graphRef}
-            graphData={graphData}
-            nodeColor={nodeColor}
-            nodeVal={nodeVal}
-            linkColor={() => "rgba(255,255,255,0.06)"}
-            linkWidth={0.5}
-            cooldownTicks={200}
-            nodeCanvasObject={nodeCanvasObject}
-            onNodeHover={setHoveredNode}
-            onNodeClick={() => {}}
-            width={dimensions.width}
-            height={dimensions.height}
-            backgroundColor="#070B14"
-            enableZoomInteraction={true}
-            enablePanInteraction={true}
-          />
-        )}
-      </div>
-
-      {/* Gradient overlays for readability */}
-      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#070B14] via-[#070B14]/70 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-[#070B14] via-transparent to-[#070B14]/60" />
-
-      {/* Content overlay */}
-      <div className="relative z-20 mx-auto max-w-[960px]">
-        <div className="max-w-lg">
-          <p className="eyebrow-label !text-tribai-gold">
+      <Reveal className="mx-auto max-w-[960px]" delay={50}>
+        {/* Header copy */}
+        <div className="text-center">
+          <p className="eyebrow-label">
             Arquitectura de conocimiento
           </p>
           <h2
             id="brain-title"
-            className="heading-serif mt-4 text-2xl text-white md:text-4xl"
+            className="heading-serif mx-auto mt-4 max-w-3xl text-2xl text-foreground md:text-4xl"
           >
-            El cerebro normativo que alimenta cada respuesta.
+            Cada respuesta está respaldada por una red de 540 artículos conectados.
           </h2>
-          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/60">
-            Cada artículo del Estatuto Tributario está conectado con sus
-            referencias cruzadas, leyes modificatorias, decretos reglamentarios
-            y doctrina DIAN. No es una base de datos — es una red de
-            conocimiento legal con PageRank, comunidades temáticas y relaciones
-            tipadas.
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-foreground-body">
+            No es una base de datos plana. Es un grafo de conocimiento legal con
+            relaciones tipadas, PageRank y comunidades temáticas que alimenta
+            cada respuesta del asistente IA.
           </p>
+        </div>
 
-          {/* Stats */}
-          <div className="mt-8 flex gap-8">
-            <AnimatedStat value={String(totalNodes)} label="artículos conectados" />
-            <AnimatedStat value={String(totalEdges)} label="relaciones legales" />
-            <AnimatedStat value="6" label="tipos de relación" />
+        {/* Inline stats */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+          <div className="flex items-center gap-2">
+            <span className="font-values text-xl font-bold text-foreground">540</span>
+            <span className="text-sm text-foreground-body">artículos conectados</span>
           </div>
-
-          {/* Relation types */}
-          <div className="mt-6 flex flex-wrap gap-x-4 gap-y-2">
-            <RelationPill color="#ef4444" label="Modifica" />
-            <RelationPill color="#a855f7" label="Reglamenta" />
-            <RelationPill color="#3b82f6" label="Interpreta" />
-            <RelationPill color="#22c55e" label="Analiza" />
-            <RelationPill color="#6b7280" label="Referencia" />
-            <RelationPill color="#f59e0b" label="Contiene" />
+          <div className="flex items-center gap-2">
+            <span className="font-values text-xl font-bold text-foreground">667</span>
+            <span className="text-sm text-foreground-body">relaciones legales</span>
           </div>
-
-          {/* Legend by Libro */}
-          <div className="mt-6 flex flex-wrap gap-x-4 gap-y-1.5">
-            {ET_BOOKS.map((book) => (
-              <span
-                key={book.key}
-                className="inline-flex items-center gap-1.5 text-[11px] text-white/40"
-              >
-                <span
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: book.color }}
-                />
-                {book.shortLabel}
-              </span>
-            ))}
-          </div>
-
-          {/* CTA */}
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/asistente"
-              className="btn-primary h-12 px-6"
-            >
-              Consultar con esta inteligencia
-              <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-            </Link>
-            <Link
-              href="/explorador"
-              className="inline-flex h-12 items-center gap-2 rounded-lg border border-white/20 px-6 text-[14px] font-medium text-white/70 transition-colors hover:border-white/40 hover:text-white"
-            >
-              Explorar el grafo completo
-            </Link>
+          <div className="flex items-center gap-2">
+            <span className="font-values text-xl font-bold text-foreground">6</span>
+            <span className="text-sm text-foreground-body">tipos de relación</span>
           </div>
         </div>
 
-        {/* Hovered node tooltip */}
-        {hoveredNode && (
-          <div className="absolute bottom-6 right-6 z-30 max-w-xs rounded-lg border border-white/10 bg-[#0D1322]/95 p-3 backdrop-blur-sm">
-            <p className="font-values text-sm font-semibold text-white">
-              {hoveredNode.label}
-            </p>
-            <p className="mt-0.5 text-[12px] leading-snug text-white/60">
-              {hoveredNode.titulo}
-            </p>
-            <div className="mt-2 flex gap-3 text-[11px] text-white/40">
-              <span>{hoveredNode.libro}</span>
-              <span>Entrantes: {hoveredNode.refs_in}</span>
-              <span>Salientes: {hoveredNode.refs_out}</span>
+        {/* Graph card — same pattern as chat demo */}
+        <div className="relative mt-10 overflow-hidden rounded-lg border border-border bg-card">
+          {/* Navy header bar */}
+          <div className="flex items-center justify-between border-b border-white/10 bg-tribai-navy px-5 py-4">
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-[#22C55E]" />
+              <h3 className="text-sm font-semibold text-white/90">
+                Grafo del Estatuto Tributario — 540 nodos · 667 relaciones
+              </h3>
+            </div>
+            <span className="hidden text-xs text-white/40 sm:inline">
+              Zoom con scroll · Arrastra para explorar
+            </span>
+          </div>
+
+          {/* Graph canvas */}
+          <div ref={canvasContainerRef} className="relative h-[420px] sm:h-[500px] md:h-[560px]">
+            {isVisible && graphData && (
+              <ForceGraph2DWithRef
+                ref={graphRef}
+                graphData={graphData}
+                nodeColor={nodeColor}
+                nodeVal={nodeVal}
+                linkColor={() => linkColorValue}
+                linkWidth={0.5}
+                cooldownTicks={200}
+                nodeCanvasObject={nodeCanvasObject}
+                onNodeHover={setHoveredNode}
+                onNodeClick={() => {}}
+                width={dimensions.width}
+                height={dimensions.height}
+                backgroundColor={bgColor}
+                enableZoomInteraction={true}
+                enablePanInteraction={true}
+              />
+            )}
+
+            {/* Hovered node tooltip */}
+            {hoveredNode && (
+              <div className="absolute right-3 top-3 z-30 max-w-xs rounded-lg border border-border bg-card/95 p-3 shadow-sm backdrop-blur-sm">
+                <p className="font-values text-sm font-semibold text-foreground">
+                  {hoveredNode.label}
+                </p>
+                <p className="mt-0.5 text-[12px] leading-snug text-muted-foreground">
+                  {hoveredNode.titulo}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                  <span>{hoveredNode.libro}</span>
+                  <span>Entrantes: {hoveredNode.refs_in}</span>
+                  <span>Salientes: {hoveredNode.refs_out}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Legend footer inside the card */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3">
+            {/* Libro colors */}
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
+              {ET_BOOKS.map((book) => (
+                <span
+                  key={book.key}
+                  className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground"
+                >
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: book.color }}
+                  />
+                  {book.shortLabel}
+                </span>
+              ))}
+            </div>
+            {/* Relation types */}
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
+              {[
+                { color: "#ef4444", label: "Modifica" },
+                { color: "#a855f7", label: "Reglamenta" },
+                { color: "#3b82f6", label: "Interpreta" },
+                { color: "#22c55e", label: "Analiza" },
+                { color: "#6b7280", label: "Referencia" },
+              ].map((rel) => (
+                <span
+                  key={rel.label}
+                  className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground"
+                >
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: rel.color }}
+                  />
+                  {rel.label}
+                </span>
+              ))}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+
+        {/* CTAs */}
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link href="/asistente" className="btn-primary h-12 px-6">
+            Consultar con esta inteligencia
+            <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+          </Link>
+          <Link
+            href="/explorador"
+            className="btn-secondary h-12 px-6"
+          >
+            Explorar el grafo completo
+          </Link>
+        </div>
+      </Reveal>
     </section>
   );
 }
