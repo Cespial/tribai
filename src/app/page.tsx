@@ -74,6 +74,17 @@ export const metadata: Metadata = {
 /* ── Three Pillars ── */
 const PILLARS = [
   {
+    icon: TribaiIconAI,
+    title: "Asistente IA con fuentes",
+    description:
+      "Pregunte como le preguntaría a un colega. Reciba respuesta con el artículo exacto del ET, doctrina DIAN y jurisprudencia. Si no tiene evidencia, se lo dice.",
+    href: "/asistente",
+    cta: "Hacer una consulta",
+    stat: "36K",
+    statLabel: "fuentes",
+    featured: true,
+  },
+  {
     icon: TribaiIconET,
     title: "Estatuto Tributario completo",
     description:
@@ -92,16 +103,6 @@ const PILLARS = [
     cta: "Ver calculadoras",
     stat: "35",
     statLabel: "calculadoras",
-  },
-  {
-    icon: TribaiIconAI,
-    title: "Asistente IA con fuentes",
-    description:
-      "Pregunte como le preguntaría a un colega. Reciba respuesta con el artículo exacto del ET, doctrina DIAN y jurisprudencia. Si no tiene evidencia, se lo dice.",
-    href: "/asistente",
-    cta: "Hacer una consulta",
-    stat: "36K",
-    statLabel: "fuentes",
   },
 ];
 
@@ -249,18 +250,18 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-1 sm:flex-row sm:items-center">
               <div className="hero-btn-bracket">
                 <Link
-                  href="/calculadoras/debo-declarar"
+                  href="/asistente"
                   className="inline-flex h-12 items-center justify-center bg-tribai-blue px-7 text-[15px] font-semibold text-white transition-colors hover:bg-tribai-blue/90"
                 >
-                  Empezar ahora
+                  Preguntarle a la IA
                 </Link>
               </div>
               <div className="hero-btn-bracket">
                 <Link
-                  href="#asistente"
+                  href="/calculadoras"
                   className="inline-flex h-12 items-center justify-center border border-border px-7 text-[15px] font-semibold text-foreground transition-colors hover:bg-muted"
                 >
-                  Preguntarle a la IA
+                  Ver calculadoras
                 </Link>
               </div>
             </div>
@@ -322,37 +323,40 @@ export default function Home() {
           </h2>
 
           <div className="mt-12 overflow-hidden rounded-lg border border-border md:grid md:grid-cols-3 md:divide-x md:divide-border">
-            {PILLARS.map((pillar, index) => (
-              <div
-                key={pillar.title}
-                className={`group p-8 ${index < PILLARS.length - 1 ? "border-b border-border md:border-b-0" : ""}`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md border border-border">
-                    <pillar.icon className="h-5 w-5 text-tribai-blue" />
-                  </div>
-                  <div className="text-right">
-                    <span className="font-values text-2xl font-semibold text-foreground">
-                      {pillar.stat}
-                    </span>
-                    <p className="text-xs text-muted-foreground">{pillar.statLabel}</p>
-                  </div>
-                </div>
-                <h3 className="mt-6 text-lg font-semibold text-foreground">
-                  {pillar.title}
-                </h3>
-                <p className="mt-2.5 text-sm leading-relaxed text-foreground-body">
-                  {pillar.description}
-                </p>
-                <Link
-                  href={pillar.href}
-                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue"
+            {PILLARS.map((pillar, index) => {
+              const isFeatured = "featured" in pillar && pillar.featured;
+              return (
+                <div
+                  key={pillar.title}
+                  className={`group p-8 ${index < PILLARS.length - 1 ? "border-b border-border md:border-b-0" : ""} ${isFeatured ? "bg-tribai-blue/[0.04] dark:bg-tribai-blue/[0.06]" : ""}`}
                 >
-                  {pillar.cta}
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                </Link>
-              </div>
-            ))}
+                  <div className="flex items-center justify-between">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-md border ${isFeatured ? "border-tribai-blue/30 bg-tribai-blue/10" : "border-border"}`}>
+                      <pillar.icon className="h-5 w-5 text-tribai-blue" />
+                    </div>
+                    <div className="text-right">
+                      <span className="font-values text-2xl font-semibold text-foreground">
+                        {pillar.stat}
+                      </span>
+                      <p className="text-xs text-muted-foreground">{pillar.statLabel}</p>
+                    </div>
+                  </div>
+                  <h3 className="mt-6 text-lg font-semibold text-foreground">
+                    {pillar.title}
+                  </h3>
+                  <p className="mt-2.5 text-sm leading-relaxed text-foreground-body">
+                    {pillar.description}
+                  </p>
+                  <Link
+                    href={pillar.href}
+                    className={`mt-5 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:underline ${isFeatured ? "rounded-md bg-tribai-blue px-4 py-2 text-white hover:bg-tribai-blue/90 hover:no-underline" : "text-tribai-blue hover:text-tribai-blue"}`}
+                  >
+                    {pillar.cta}
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </Reveal>
       </section>
@@ -395,7 +399,58 @@ export default function Home() {
       <WorkflowSteps />
 
       {/* ═══════════════════════════════════════════
-          SECTION 6: TOOLS GRID — "¿Qué más tiene?"
+          SECTION 6: ASISTENTE IA — Live demo (promoted)
+          ═══════════════════════════════════════════ */}
+      <section
+        id="asistente"
+        aria-labelledby="asistente-title"
+        className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+      >
+        <Reveal className="mx-auto max-w-[960px]" delay={50}>
+          <div className="text-center">
+            <p className="eyebrow-label">
+              Asistente con inteligencia artificial
+            </p>
+            <h2
+              id="asistente-title"
+              className="heading-serif mx-auto mt-4 max-w-3xl text-2xl text-foreground md:text-4xl"
+            >
+              Pregunte como le preguntaría a un colega. Reciba respuesta con artículo.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-foreground-body md:text-lg">
+              Consulte artículos del ET, sanciones, retención e interpretación
+              práctica. La IA busca en 36.000 fuentes normativas y le muestra
+              exactamente de dónde sale cada respuesta.
+            </p>
+          </div>
+
+          <ChatQuerySuggestions
+            queries={[
+              "¿Debo declarar renta por ingresos de 2025?",
+              "¿Cómo calculo retención en la fuente por salarios?",
+              "¿Qué sanción aplica por declarar extemporáneo?",
+              "Muéstreme el artículo del ET sobre ganancias ocasionales.",
+            ]}
+          />
+
+          <div className="mt-10 overflow-hidden rounded-lg border border-border bg-card">
+            <div className="border-b border-white/10 bg-tribai-navy px-5 py-4">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-[#22C55E]" />
+                <h3 className="text-sm font-semibold text-white/90">
+                  Asistente IA — contexto tributario colombiano
+                </h3>
+              </div>
+            </div>
+            <div className="h-[480px] sm:h-[600px] md:h-[720px]">
+              <LazyChatContainer />
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          SECTION 7: TOOLS GRID — "¿Qué más tiene?"
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="tools-title"
@@ -455,57 +510,6 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 8: ASISTENTE IA — Live demo
-          ═══════════════════════════════════════════ */}
-      <section
-        id="asistente"
-        aria-labelledby="asistente-title"
-        className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
-      >
-        <Reveal className="mx-auto max-w-[960px]" delay={50}>
-          <div className="text-center">
-            <p className="eyebrow-label">
-              Asistente con inteligencia artificial
-            </p>
-            <h2
-              id="asistente-title"
-              className="heading-serif mx-auto mt-4 max-w-3xl text-2xl text-foreground md:text-4xl"
-            >
-              Pregunte como le preguntaría a un colega. Reciba respuesta con artículo.
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-foreground-body md:text-lg">
-              Consulte artículos del ET, sanciones, retención e interpretación
-              práctica. La IA busca en 36.000 fuentes normativas y le muestra
-              exactamente de dónde sale cada respuesta.
-            </p>
-          </div>
-
-          <ChatQuerySuggestions
-            queries={[
-              "¿Debo declarar renta por ingresos de 2025?",
-              "¿Cómo calculo retención en la fuente por salarios?",
-              "¿Qué sanción aplica por declarar extemporáneo?",
-              "Muéstreme el artículo del ET sobre ganancias ocasionales.",
-            ]}
-          />
-
-          <div className="mt-10 overflow-hidden rounded-lg border border-border bg-card">
-            <div className="border-b border-white/10 bg-tribai-navy px-5 py-4">
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-[#22C55E]" />
-                <h3 className="text-sm font-semibold text-white/90">
-                  Asistente IA — contexto tributario colombiano
-                </h3>
-              </div>
-            </div>
-            <div className="h-[480px] sm:h-[600px] md:h-[720px]">
-              <LazyChatContainer />
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* ═══════════════════════════════════════════
           SECTION 9: COMPARISON — Rigor
           ═══════════════════════════════════════════ */}
       <ComparisonSection />
@@ -534,17 +538,17 @@ export default function Home() {
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
-              href="/calculadoras"
+              href="/asistente"
               className="btn-primary h-12 px-6"
             >
-              Explorar calculadoras
+              Preguntarle a la IA
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
             </Link>
             <Link
-              href="/asistente"
+              href="/calculadoras"
               className="btn-secondary h-12 border-white/20 px-6 text-white hover:border-white/40 hover:bg-white/10"
             >
-              Preguntarle a la IA
+              Explorar calculadoras
             </Link>
           </div>
           <p className="mt-4 text-xs text-white/50">

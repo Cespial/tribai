@@ -8,9 +8,9 @@ import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 
 const MAIN_NAV = [
+  { href: "/asistente", label: "Asistente IA" },
   { href: "/calculadoras", label: "Calculadoras" },
   { href: "/explorador", label: "Estatuto" },
-  { href: "/asistente", label: "Asistente IA" },
   { href: "/calendario", label: "Calendario" },
   { href: "/doctrina", label: "Doctrina" },
 ];
@@ -48,13 +48,13 @@ function TribaiLogo({ className }: { className?: string }) {
       <circle cx="32" cy="14" r="2.5" fill="currentColor" />
       <circle cx="18" cy="44" r="2.5" fill="currentColor" />
       <circle cx="46" cy="44" r="2.5" fill="currentColor" />
-      <circle cx="32" cy="34" r="3" fill="var(--tribai-blue, #0066FF)" />
+      <circle cx="32" cy="34" r="3" fill="var(--tribai-gold, #C4952A)" />
       <line x1="32" y1="14" x2="32" y2="31" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <line x1="32" y1="34" x2="18" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <line x1="32" y1="34" x2="46" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="32" y1="14" x2="18" y2="44" stroke="currentColor" strokeWidth="0.75" strokeLinecap="round" opacity="0.3" />
-      <line x1="32" y1="14" x2="46" y2="44" stroke="currentColor" strokeWidth="0.75" strokeLinecap="round" opacity="0.3" />
-      <line x1="18" y1="44" x2="46" y2="44" stroke="currentColor" strokeWidth="0.75" strokeLinecap="round" opacity="0.3" />
+      <line x1="32" y1="14" x2="18" y2="44" stroke="currentColor" strokeWidth="0.75" strokeLinecap="round" opacity="0.4" />
+      <line x1="32" y1="14" x2="46" y2="44" stroke="currentColor" strokeWidth="0.75" strokeLinecap="round" opacity="0.4" />
+      <line x1="18" y1="44" x2="46" y2="44" stroke="currentColor" strokeWidth="0.75" strokeLinecap="round" opacity="0.4" />
     </svg>
   );
 }
@@ -158,10 +158,10 @@ export function Header() {
         <div className="flex items-center gap-2">
           {/* CTA — desktop only */}
           <Link
-            href="/calculadoras"
+            href="/asistente"
             className="hidden rounded-lg bg-tribai-blue px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-tribai-blue/90 md:inline-flex"
           >
-            Probar ahora
+            Preguntarle a la IA
           </Link>
 
           {/* Theme toggle */}
@@ -222,11 +222,11 @@ export function Header() {
             </div>
             <div className="mt-4 border-t border-border pt-4">
               <Link
-                href="/calculadoras"
+                href="/asistente"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block w-full rounded-md bg-tribai-blue px-4 py-2.5 text-center text-sm font-semibold text-white"
               >
-                Probar ahora
+                Preguntarle a la IA
               </Link>
             </div>
           </nav>
