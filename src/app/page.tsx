@@ -25,6 +25,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { ChatQuerySuggestions } from "@/components/landing/chat-query-suggestions";
 import { ProposalConstellation } from "@/components/landing/hero-diagram-proposals";
 import { PhoneMockupSection } from "@/components/landing/phone-mockup-section";
+import { BrainGraphSection } from "@/components/landing/brain-graph-section";
 
 export const metadata: Metadata = {
   title: "tribai.co — Inteligencia tributaria para contadores colombianos",
@@ -362,7 +363,12 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 3.5: APP PREVIEW — iPhone mockup
+          SECTION 3.5: BRAIN GRAPH — Knowledge graph WOW
+          ═══════════════════════════════════════════ */}
+      <BrainGraphSection />
+
+      {/* ═══════════════════════════════════════════
+          SECTION 3.6: APP PREVIEW — iPhone mockup
           ═══════════════════════════════════════════ */}
       <PhoneMockupSection />
 
