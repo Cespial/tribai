@@ -363,16 +363,6 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 3.5: BRAIN GRAPH — Knowledge graph WOW
-          ═══════════════════════════════════════════ */}
-      <BrainGraphSection />
-
-      {/* ═══════════════════════════════════════════
-          SECTION 3.6: APP PREVIEW — iPhone mockup
-          ═══════════════════════════════════════════ */}
-      <PhoneMockupSection />
-
-      {/* ═══════════════════════════════════════════
           SECTION 4: PERSONAS — "¿Esto es para mí?"
           ═══════════════════════════════════════════ */}
       <section
@@ -400,12 +390,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 5: WORKFLOW — 3 steps
-          ═══════════════════════════════════════════ */}
-      <WorkflowSteps />
-
-      {/* ═══════════════════════════════════════════
-          SECTION 6: ASISTENTE IA — Live demo (promoted)
+          SECTION 5: ASISTENTE IA — Live demo (promoted)
           ═══════════════════════════════════════════ */}
       <section
         id="asistente"
@@ -456,7 +441,17 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 7: TOOLS GRID — "¿Qué más tiene?"
+          SECTION 6: WORKFLOW — 3 steps
+          ═══════════════════════════════════════════ */}
+      <WorkflowSteps />
+
+      {/* ═══════════════════════════════════════════
+          SECTION 7: BRAIN GRAPH — Knowledge graph WOW
+          ═══════════════════════════════════════════ */}
+      <BrainGraphSection />
+
+      {/* ═══════════════════════════════════════════
+          SECTION 8: TOOLS GRID — "¿Qué más tiene?"
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="tools-title"
@@ -504,7 +499,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 7: METRICS — Hard numbers
+          SECTION 9: METRICS — Hard numbers
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="metrics-title"
@@ -516,17 +511,22 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 9: COMPARISON — Rigor
+          SECTION 10: COMPARISON — Rigor
           ═══════════════════════════════════════════ */}
       <ComparisonSection />
 
       {/* ═══════════════════════════════════════════
-          SECTION 10: FAQ
+          SECTION 11: APP PREVIEW — iPhone mockup
+          ═══════════════════════════════════════════ */}
+      <PhoneMockupSection />
+
+      {/* ═══════════════════════════════════════════
+          SECTION 12: FAQ
           ═══════════════════════════════════════════ */}
       <FaqSection items={FAQ_ENTRIES} />
 
       {/* ═══════════════════════════════════════════
-          SECTION 11: FINAL CTA
+          SECTION 13: FINAL CTA
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="cta-final-title"
