@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
@@ -26,39 +27,6 @@ const TABS: { id: AppTab; label: string; icon: typeof Home }[] = [
   { id: "et", label: "ET", icon: BookOpen },
   { id: "more", label: "Mas", icon: MoreHorizontal },
 ];
-
-/* ── App Store badge SVG (official proportions) ── */
-function AppStoreBadge({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Download on the App Store">
-      <rect width="120" height="40" rx="6" fill="#000" />
-      <text x="60" y="13" textAnchor="middle" fill="#fff" fontSize="6.5" fontFamily="system-ui, sans-serif" fontWeight="400">Disponible en</text>
-      <text x="60" y="28" textAnchor="middle" fill="#fff" fontSize="12" fontFamily="system-ui, sans-serif" fontWeight="600">App Store</text>
-      {/* Apple logo simplified */}
-      <g transform="translate(15, 13)" fill="#fff">
-        <path d="M7.5 0C7.5 0 8.1 1.1 8.1 2.3c0 1.5-1.2 2.3-1.2 2.3s-.9-.8-.9-2.2C6 1.1 7.5 0 7.5 0zm-2.3 3.5c-.5 0-1.4.6-2.3.6C1.8 4.1.8 3 .8 3s-.8.9-.8 2.5c0 2.6 2.3 5.5 3.3 5.5.5 0 1.1-.5 1.8-.5.7 0 1.1.5 1.7.5 1.1 0 2.4-2 2.9-3.2 0 0-1.8-.7-1.8-2.6 0-1.6 1.3-2.3 1.3-2.3S8.3 1.4 7 1.4c-.9 0-1.3.6-1.8.6z" transform="scale(0.85)" />
-      </g>
-    </svg>
-  );
-}
-
-/* ── Google Play badge SVG (official proportions) ── */
-function GooglePlayBadge({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 135 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Get it on Google Play">
-      <rect width="135" height="40" rx="6" fill="#000" />
-      <text x="72" y="13" textAnchor="middle" fill="#fff" fontSize="6" fontFamily="system-ui, sans-serif" fontWeight="400">DISPONIBLE EN</text>
-      <text x="72" y="28" textAnchor="middle" fill="#fff" fontSize="11.5" fontFamily="system-ui, sans-serif" fontWeight="600">Google Play</text>
-      {/* Play triangle */}
-      <g transform="translate(12, 10)">
-        <path d="M0 0l12 10L0 20V0z" fill="#48B9A7" />
-        <path d="M0 0l8 7-8 7V0z" fill="#34A853" />
-        <path d="M0 0l12 10-4 3L0 7V0z" fill="#FBBC04" />
-        <path d="M0 20l8-6 4 3-12 3z" fill="#EA4335" />
-      </g>
-    </svg>
-  );
-}
 
 export function PhoneMockupSection() {
   const [activeTab, setActiveTab] = useState<AppTab>("home");
@@ -101,19 +69,31 @@ export function PhoneMockupSection() {
               ))}
             </ul>
 
-            {/* Store badges */}
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/asistente" className="btn-primary h-12 px-6">
+            {/* CTA + Store badges */}
+            <div className="mt-8 flex flex-col gap-4">
+              <Link href="/asistente" className="btn-primary h-12 w-fit px-6">
                 Probar el asistente
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </Link>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <span className="phone-store-badge" aria-label="Proximamente en App Store">
-                  <AppStoreBadge className="h-[40px] w-auto" />
+                  <Image
+                    src="/brand/app-store-badge.png"
+                    alt="Download on the App Store"
+                    width={135}
+                    height={44}
+                    className="h-[44px] w-auto"
+                  />
                   <span className="phone-store-coming">Pronto</span>
                 </span>
                 <span className="phone-store-badge" aria-label="Proximamente en Google Play">
-                  <GooglePlayBadge className="h-[40px] w-auto" />
+                  <Image
+                    src="/brand/google-play-badge.png"
+                    alt="Get it on Google Play"
+                    width={135}
+                    height={44}
+                    className="h-[44px] w-auto"
+                  />
                   <span className="phone-store-coming">Pronto</span>
                 </span>
               </div>
