@@ -531,6 +531,95 @@ body {
 .constellation-node-delay-5 { animation-delay: 1.35s; }
 
 
+/* ═══════════════════════════════════════════════
+   PHONE MOCKUP — iPhone 15 Pro proportions
+   ═══════════════════════════════════════════════ */
+
+.phone-mockup {
+  position: relative;
+  width: 280px;
+  height: 572px;
+  background: #1A1A1A;
+  border-radius: 44px;
+  padding: 12px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 25px 80px rgba(0, 0, 0, 0.5),
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.phone-dynamic-island {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 26px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 10;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 34px;
+  overflow: hidden;
+  background: var(--background);
+}
+
+.phone-home-indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  z-index: 10;
+}
+
+/* Tab bar glass effect inside iframe */
+.app-tab-bar {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+/* Typing indicator dots */
+@keyframes app-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+.app-typing-dot {
+  animation: app-typing-bounce 1.2s ease-in-out infinite;
+}
+
+/* Responsive phone mockup */
+@media (max-width: 768px) {
+  .phone-mockup {
+    width: 240px;
+    height: 490px;
+    border-radius: 38px;
+    padding: 10px;
+  }
+  .phone-dynamic-island {
+    width: 76px;
+    height: 22px;
+    top: 15px;
+  }
+  .phone-screen {
+    border-radius: 29px;
+  }
+  .phone-home-indicator {
+    bottom: 8px;
+    width: 84px;
+    height: 3px;
+  }
+}
+
 /* ─── Print ─── */
 @media print {
   @page { margin: 1.8cm; }

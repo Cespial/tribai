@@ -24,6 +24,7 @@ import { LazyChatContainer } from "@/components/landing/lazy-chat-container";
 import { Reveal } from "@/components/ui/reveal";
 import { ChatQuerySuggestions } from "@/components/landing/chat-query-suggestions";
 import { ProposalConstellation } from "@/components/landing/hero-diagram-proposals";
+import { PhoneMockupSection } from "@/components/landing/phone-mockup-section";
 
 export const metadata: Metadata = {
   title: "tribai.co — Inteligencia tributaria para contadores colombianos",
@@ -355,6 +356,11 @@ export default function Home() {
           </div>
         </Reveal>
       </section>
+
+      {/* ═══════════════════════════════════════════
+          SECTION 3.5: APP PREVIEW — iPhone mockup
+          ═══════════════════════════════════════════ */}
+      <PhoneMockupSection />
 
       {/* ═══════════════════════════════════════════
           SECTION 4: PERSONAS — "¿Esto es para mí?"
