@@ -72,9 +72,13 @@ export function AppChatTab() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const msgCounter = useRef(0);
 
+  /* Smart scroll — only auto-scroll if user is near bottom */
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const el = scrollRef.current;
+    if (!el) return;
+    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    if (isNearBottom) {
+      el.scrollTop = el.scrollHeight;
     }
   }, [messages]);
 
@@ -106,7 +110,7 @@ export function AppChatTab() {
   function handleCopy(text: string, id: string) {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    setTimeout(() => setCopiedId(null), 3000);
   }
 
   return (
@@ -159,28 +163,22 @@ export function AppChatTab() {
                   /* Assistant bubble — left aligned, card bg */
                   <div className="max-w-[92%]">
                     <div className="rounded-2xl rounded-bl-md border border-border bg-card px-4 py-3 text-[14px] leading-relaxed text-foreground">
-                      {/* Render markdown-ish content */}
+                      {/* Render markdown-ish content — safe line-by-line */}
                       {msg.content.split("\n").map((line, i) => {
-                        if (line.startsWith("- **")) {
-                          const parts = line.replace("- ", "").split("**");
-                          return (
-                            <p key={i} className="ml-2 py-0.5">
-                              <span className="mr-1 text-muted-foreground">•</span>
-                              <strong className="font-semibold">{parts[1]}</strong>
-                              {parts[2]}
-                            </p>
-                          );
-                        }
                         if (line === "") return <br key={i} />;
+                        const isBullet = line.startsWith("- ");
+                        const text = isBullet ? line.slice(2) : line;
+                        const rendered = text.split(/(\*\*[^*]+\*\*)/g).map((seg, j) =>
+                          seg.startsWith("**") && seg.endsWith("**") ? (
+                            <strong key={j} className="font-semibold">{seg.slice(2, -2)}</strong>
+                          ) : (
+                            <span key={j}>{seg}</span>
+                          )
+                        );
                         return (
-                          <p key={i} className="py-0.5">
-                            {line.split("**").map((part, j) =>
-                              j % 2 === 1 ? (
-                                <strong key={j} className="font-semibold">{part}</strong>
-                              ) : (
-                                <span key={j}>{part}</span>
-                              )
-                            )}
+                          <p key={i} className={isBullet ? "ml-2 py-0.5" : "py-0.5"}>
+                            {isBullet && <span className="mr-1 text-muted-foreground">•</span>}
+                            {rendered}
                           </p>
                         );
                       })}
@@ -243,7 +241,7 @@ export function AppChatTab() {
       {/* Input bar — iOS style */}
       <div className="shrink-0 border-t border-border bg-card/80 px-3 pb-2 pt-2 backdrop-blur-xl">
         <form onSubmit={handleSubmit} className="flex items-end gap-2">
-          <div className="flex-1 rounded-2xl border border-border bg-background px-4 py-2.5">
+          <div className="flex-1 rounded-2xl border border-border bg-background px-4 py-2.5 focus-within:border-tribai-blue">
             <input
               type="text"
               value={input}
@@ -256,6 +254,7 @@ export function AppChatTab() {
           <button
             type="submit"
             disabled={!input.trim() || isStreaming}
+            aria-label={isStreaming ? "Detener" : "Enviar mensaje"}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tribai-blue text-white transition-opacity disabled:opacity-40"
           >
             {isStreaming ? (

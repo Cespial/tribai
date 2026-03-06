@@ -71,7 +71,7 @@ export function WorkflowSteps() {
         <div className="mt-10">
           <Link
             href="/calculadoras"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tribai-blue/30"
           >
             Empezar ahora
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

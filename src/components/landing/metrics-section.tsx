@@ -67,13 +67,13 @@ export function MetricsSection() {
 
   return (
     <div ref={ref}>
-      <p className="text-sm font-semibold uppercase tracking-widest text-tribai-blue">
+      <p className="eyebrow-label">
         La plataforma hoy
       </p>
-      <h2 id="metrics-title" className="heading-serif mt-3 max-w-3xl text-3xl text-foreground md:text-5xl">
+      <h2 id="metrics-title" className="heading-serif mt-4 max-w-3xl text-2xl text-foreground md:text-4xl">
         Números que hablan por sí solos.
       </h2>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
+      <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground-body">
         No es solo lectura. Cada artículo, cada calculadora y cada respuesta de
         la IA está diseñada para resolver casos tributarios reales.
       </p>
@@ -84,7 +84,7 @@ export function MetricsSection() {
         ))}
       </div>
 
-      <p className="mt-6 text-xs text-muted-foreground">
+      <p className="mt-8 text-xs text-muted-foreground">
         Datos del año fiscal 2026 · UVT $52.374 · Resultados orientativos, validar con criterio profesional.
       </p>
     </div>
@@ -103,8 +103,8 @@ function MetricItem({
   const { value: count } = useCountUp(metric.value, 1500, active);
 
   return (
-    <div className={`p-6 ${index < 2 ? "border-b border-border md:border-b-0" : ""}`}>
-      <p className="font-values text-3xl font-semibold text-foreground md:text-4xl">
+    <div className={`p-4 sm:p-6 md:p-8 ${index < 2 ? "border-b border-border md:border-b-0" : ""}`}>
+      <p className="font-values text-2xl font-bold text-foreground sm:text-3xl md:text-5xl">
         {metric.value === 0 ? metric.display : formatNumber(count, metric)}
       </p>
       <p className="mt-2 text-sm font-semibold text-foreground">{metric.label}</p>

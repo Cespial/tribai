@@ -46,7 +46,7 @@ function TribaiLogoSmall() {
       <circle cx="32" cy="14" r="2.5" fill="currentColor"/>
       <circle cx="18" cy="44" r="2.5" fill="currentColor"/>
       <circle cx="46" cy="44" r="2.5" fill="currentColor"/>
-      <circle cx="32" cy="34" r="3" fill="var(--tribai-blue)"/>
+      <circle cx="32" cy="34" r="3" fill="var(--tribai-gold, #C4952A)"/>
       <line x1="32" y1="14" x2="32" y2="31" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       <line x1="32" y1="34" x2="18" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       <line x1="32" y1="34" x2="46" y2="44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -93,8 +93,8 @@ export function FooterLinks() {
         <TribaiLogoSmall />
         <div>
           <p className="heading-serif text-lg text-white/90">
-            trib<span className="text-tribai-blue">ai</span>
-            <span className="text-white/40 text-xs">.co</span>
+            trib<span className="text-tribai-gold">ai</span>
+            <span className="text-white/55 text-xs">.co</span>
           </p>
           <p className="text-xs text-white/50">Inteligencia tributaria colombiana.</p>
         </div>
@@ -104,7 +104,7 @@ export function FooterLinks() {
       <div className="grid grid-cols-2 gap-8 md:grid-cols-3 md:gap-12">
         {FOOTER_COLUMNS.map((column) => (
           <div key={column.title}>
-            <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/55">
               {column.title}
             </h3>
             <ul className="space-y-2.5">
@@ -112,7 +112,7 @@ export function FooterLinks() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/60 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+                    className="text-sm text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
                   >
                     {link.label}
                   </Link>
@@ -138,7 +138,7 @@ export function FooterLinks() {
 
         <div className="flex items-center gap-4">
           <a
-            href="https://linkedin.com"
+            href="https://www.linkedin.com/company/tribaico"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white/50 transition-colors hover:text-white"
@@ -147,7 +147,7 @@ export function FooterLinks() {
             <LinkedInIcon className="h-5 w-5" />
           </a>
           <a
-            href="https://x.com"
+            href="https://x.com/tribaico"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white/50 transition-colors hover:text-white"

@@ -67,14 +67,14 @@ export function AppMoreTab() {
                   key={item.title}
                   className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-muted"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-tribai-blue/10">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-tribai-blue/10 dark:bg-tribai-blue/20">
                     <item.icon className="h-4 w-4 text-tribai-blue" />
                   </div>
                   <div className="flex-1">
                     <p className="text-[14px] font-medium text-foreground">{item.title}</p>
                     <p className="text-[12px] text-muted-foreground">{item.desc}</p>
                   </div>
-                  <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
                   </svg>
                 </div>

@@ -268,7 +268,7 @@ export default function Home() {
             </div>
 
             {/* Launch teaser */}
-            <div className="mt-5 flex items-center gap-2.5">
+            <div className="mt-8 flex items-center gap-2.5">
               <span className="relative flex h-2 w-2" aria-hidden="true">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tribai-blue opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-tribai-blue" />
@@ -279,8 +279,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right column — constellation diagram, desktop only */}
-          <div className="hidden flex-1 items-center justify-center md:flex">
+          {/* Right column — constellation diagram, tablet+ */}
+          <div className="hidden flex-1 items-center justify-center sm:flex">
             <ProposalConstellation />
           </div>
         </div>
@@ -329,7 +329,7 @@ export default function Home() {
               return (
                 <div
                   key={pillar.title}
-                  className={`group p-8 ${index < PILLARS.length - 1 ? "border-b border-border md:border-b-0" : ""} ${isFeatured ? "bg-tribai-blue/[0.04] dark:bg-tribai-blue/[0.06]" : ""}`}
+                  className={`group p-8 ${index < PILLARS.length - 1 ? "border-b border-border md:border-b-0" : ""} ${isFeatured ? "border-l-2 border-l-tribai-blue bg-tribai-blue/[0.06] dark:bg-tribai-blue/[0.08] md:border-l-0 md:border-t-2 md:border-t-tribai-blue" : ""}`}
                 >
                   <div className="flex items-center justify-between">
                     <div className={`flex h-10 w-10 items-center justify-center rounded-md border ${isFeatured ? "border-tribai-blue/30 bg-tribai-blue/10" : "border-border"}`}>
@@ -539,7 +539,7 @@ export default function Home() {
           >
             Resuelva su primera consulta. Ahora mismo.
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-white/70 md:text-lg">
+          <p className="mt-5 text-base leading-relaxed text-white/80 md:text-lg">
             Sin registro. Sin costo. Con el rigor que su profesión exige.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">

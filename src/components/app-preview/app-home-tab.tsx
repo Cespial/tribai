@@ -102,7 +102,7 @@ export function AppHomeTab({ onNavigate }: Props) {
       </div>
 
       {/* Quick access calculators — horizontal scroll */}
-      <div className="mb-5">
+      <div className="relative mb-5">
         <h2 className="mb-2 text-lg font-semibold text-foreground">Acceso rapido</h2>
         <div className="scrollbar-hide flex gap-2 overflow-x-auto">
           {QUICK_CALCS.map((calc) => (
@@ -116,6 +116,7 @@ export function AppHomeTab({ onNavigate }: Props) {
             </button>
           ))}
         </div>
+        <div className="pointer-events-none absolute right-0 top-8 h-10 w-6 bg-gradient-to-l from-background to-transparent" />
       </div>
 
       {/* Key indicators */}

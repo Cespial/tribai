@@ -36,7 +36,7 @@ export function AppCalculatorsTab() {
           Calculadoras
         </h1>
         {/* Search */}
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 focus-within:border-tribai-blue">
           <Search className="h-4 w-4 text-muted-foreground" />
           <input
             type="text"
@@ -67,9 +67,14 @@ export function AppCalculatorsTab() {
       {/* Grid */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <div className="grid grid-cols-2 gap-2">
-          {filtered.map((calc, i) => (
+          {filtered.length === 0 && (
+            <p className="col-span-2 py-8 text-center text-[13px] text-muted-foreground">
+              No se encontraron calculadoras.
+            </p>
+          )}
+          {filtered.map((calc) => (
             <div
-              key={i}
+              key={calc.title}
               className="flex flex-col gap-1.5 rounded-lg border border-border bg-card p-3 transition-colors active:bg-muted"
             >
               <calc.icon className="h-5 w-5 text-foreground" strokeWidth={1.6} />

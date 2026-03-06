@@ -106,9 +106,9 @@ export function PhoneMockupSection() {
               {/* Dynamic Island */}
               <div className="phone-dynamic-island" />
 
-              {/* Screen content — rendered directly */}
-              <div className="phone-screen">
-                <div className="flex h-full flex-col bg-background text-foreground">
+              {/* Screen content — rendered directly, forced light mode */}
+              <div className="phone-screen" data-theme="light">
+                <div className="flex h-full flex-col bg-white text-[#1A1A1A]" style={{ colorScheme: "light" }}>
                   {/* Tab content */}
                   <div className="flex-1 overflow-y-auto overflow-x-hidden">
                     {activeTab === "home" && <AppHomeTab onNavigate={setActiveTab} />}

@@ -61,7 +61,7 @@ export function ComparisonSection() {
           <div className="grid grid-cols-[1fr_1fr_1fr] bg-muted-section">
             <div className="px-6 py-4 text-sm font-semibold text-foreground">Tarea</div>
             <div className="px-6 py-4 text-sm font-semibold text-muted-foreground">Flujo tradicional</div>
-            <div className="bg-tribai-blue/5 px-6 py-4 text-sm font-semibold text-tribai-blue">Con Tribai</div>
+            <div className="bg-tribai-blue/5 dark:bg-tribai-blue/10 px-6 py-4 text-sm font-semibold text-tribai-blue">Con Tribai</div>
           </div>
           {ROWS.map((row) => (
             <div
@@ -75,7 +75,7 @@ export function ComparisonSection() {
               <div className="flex items-center px-6 py-4 text-sm text-muted-foreground">
                 {row.traditional}
               </div>
-              <div className="flex items-center gap-2 bg-tribai-blue/5 px-6 py-4 text-sm font-medium text-foreground">
+              <div className="flex items-center gap-2 bg-tribai-blue/5 dark:bg-tribai-blue/10 px-6 py-4 text-sm font-medium text-foreground">
                 <Check className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
                 {row.tribai}
               </div>
@@ -96,7 +96,7 @@ export function ComparisonSection() {
                   <p className="text-xs font-medium text-muted-foreground">Antes</p>
                   <p className="text-sm text-muted-foreground">{row.traditional}</p>
                 </div>
-                <div className="rounded-lg bg-tribai-blue/5 p-2.5">
+                <div className="rounded-lg bg-tribai-blue/5 dark:bg-tribai-blue/10 p-2.5">
                   <p className="text-xs font-medium text-tribai-blue">Con Tribai</p>
                   <p className="mt-0.5 flex items-center gap-1.5 border-l-2 border-tribai-blue pl-3 text-sm font-medium text-foreground">
                     <Check className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden="true" />
@@ -111,7 +111,7 @@ export function ComparisonSection() {
         <div className="mt-8">
           <Link
             href="/calculadoras"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tribai-blue/30"
           >
             Probar la plataforma
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

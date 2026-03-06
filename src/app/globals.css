@@ -56,7 +56,7 @@
   --color-foreground-body: var(--foreground-body);
   --font-sans: var(--font-body);
   --font-mono: var(--font-mono);
-  --font-serif: var(--font-heading);
+  --font-serif: var(--font-serif);
 }
 
 /* ─── Dark mode ─── */
@@ -152,12 +152,12 @@ body {
    TRIBAI TYPOGRAPHY SYSTEM
    ═══════════════════════════════════════════════ */
 
-/* Heading — Inter bold, clean authority */
+/* Heading — DM Serif Display, clean authority */
 .heading-serif {
-  font-family: var(--font-body), "Inter", system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
+  font-family: var(--font-serif, "DM Serif Display"), "Georgia", serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 /* Monospace values — JetBrains Mono for financial precision */
@@ -200,7 +200,7 @@ body {
   font-weight: 600;
   line-height: 1;
   background: var(--tribai-blue);
-  color: #fff;
+  color: var(--primary-foreground, #fff);
   transition: background 150ms var(--ease-smooth);
 }
 .btn-primary:hover { background: color-mix(in srgb, var(--tribai-blue) 90%, black); }
@@ -279,9 +279,9 @@ body {
 .dark .section-navy {
   background: #0F1629;
 }
-.section-navy a { color: #9CA3AF; transition: color 150ms var(--ease-smooth); }
-.section-navy a:hover { color: #E8E6E3; }
-.section-navy h3 { color: #6B7280; }
+.section-navy a { color: var(--muted-foreground); transition: color 150ms var(--ease-smooth); }
+.section-navy a:hover { color: var(--foreground); }
+.section-navy h3 { color: var(--muted-foreground); }
 
 /* Dark section inversion */
 .section-dark {
@@ -424,7 +424,10 @@ body {
     linear-gradient(var(--foreground), var(--foreground)) 0 100% / 1px 10px no-repeat,
     linear-gradient(var(--foreground), var(--foreground)) 100% 100% / 10px 1px no-repeat,
     linear-gradient(var(--foreground), var(--foreground)) 100% 100% / 1px 10px no-repeat;
-  opacity: 0.2;
+  opacity: 0.15;
+}
+.dark .hero-btn-bracket::before {
+  opacity: 0.25;
 }
 
 /* ═══════════════════════════════════════════════
@@ -614,14 +617,15 @@ body {
   animation: app-typing-bounce 1.2s ease-in-out infinite;
 }
 
-/* Responsive phone mockup */
-@media (max-width: 768px) {
-  .phone-mockup {
-    width: 240px;
-    height: 490px;
-    border-radius: 38px;
-    padding: 10px;
-  }
+/* Responsive phone mockup — fluid sizing */
+.phone-mockup {
+  width: clamp(240px, 40vw, 280px);
+  height: clamp(490px, 82vw, 572px);
+  border-radius: clamp(38px, 6vw, 44px);
+  padding: clamp(10px, 1.8vw, 12px);
+}
+
+@media (max-width: 480px) {
   .phone-dynamic-island {
     width: 76px;
     height: 22px;

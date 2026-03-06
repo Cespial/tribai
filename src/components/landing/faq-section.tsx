@@ -36,9 +36,9 @@ export function FaqSection({ items }: FaqSectionProps) {
               className="group rounded-lg border border-border bg-card transition-colors open:border-tribai-blue/30"
               open={index === 0}
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between p-5 text-base font-semibold text-foreground transition-colors hover:text-tribai-blue">
+              <summary className="flex cursor-pointer list-none items-center justify-between p-5 text-base font-semibold text-foreground transition-colors hover:text-tribai-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:rounded-lg">
                 {item.question}
-                <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-180" />
+                <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />
               </summary>
               <div className="px-5 pb-6 pt-0">
                 <p className="text-sm leading-relaxed text-muted-foreground">

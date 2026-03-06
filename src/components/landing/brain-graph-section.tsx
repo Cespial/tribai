@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
 import Link from "next/link";
@@ -139,9 +139,16 @@ export function BrainGraphSection() {
     return () => clearTimeout(timer);
   }, [isVisible, graphData]);
 
-  const isDark =
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark");
+  const isDark = useSyncExternalStore(
+    (cb) => {
+      const root = document.documentElement;
+      const mo = new MutationObserver(cb);
+      mo.observe(root, { attributes: true, attributeFilter: ["class"] });
+      return () => mo.disconnect();
+    },
+    () => document.documentElement.classList.contains("dark"),
+    () => false
+  );
 
   const bgColor = isDark ? "#131B2E" : "#FFFFFF";
 
@@ -240,7 +247,7 @@ export function BrainGraphSection() {
                 Grafo del Estatuto Tributario — 540 nodos · 667 relaciones
               </h3>
             </div>
-            <span className="hidden text-xs text-white/40 sm:inline">
+            <span className="text-[10px] text-white/40 sm:text-xs">
               Zoom con scroll · Arrastra para explorar
             </span>
           </div>
@@ -267,9 +274,9 @@ export function BrainGraphSection() {
               />
             )}
 
-            {/* Hovered node tooltip */}
+            {/* Hovered node tooltip — positioned dynamically */}
             {hoveredNode && (
-              <div className="absolute right-3 top-3 z-30 max-w-xs rounded-lg border border-border bg-card/95 p-3 shadow-sm backdrop-blur-sm">
+              <div className="absolute left-3 top-3 z-30 max-w-[220px] rounded-lg border border-border bg-card/95 p-3 shadow-sm backdrop-blur-sm sm:left-auto sm:right-3">
                 <p className="font-values text-sm font-semibold text-foreground">
                   {hoveredNode.label}
                 </p>
@@ -285,44 +292,21 @@ export function BrainGraphSection() {
             )}
           </div>
 
-          {/* Legend footer inside the card */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3">
-            {/* Libro colors */}
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
-              {ET_BOOKS.map((book) => (
+          {/* Legend footer — libro colors */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border px-5 py-3">
+            <span className="text-[11px] font-medium text-muted-foreground">Libros:</span>
+            {ET_BOOKS.map((book) => (
+              <span
+                key={book.key}
+                className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground"
+              >
                 <span
-                  key={book.key}
-                  className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground"
-                >
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: book.color }}
-                  />
-                  {book.shortLabel}
-                </span>
-              ))}
-            </div>
-            {/* Relation types */}
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
-              {[
-                { color: "#ef4444", label: "Modifica" },
-                { color: "#a855f7", label: "Reglamenta" },
-                { color: "#3b82f6", label: "Interpreta" },
-                { color: "#22c55e", label: "Analiza" },
-                { color: "#6b7280", label: "Referencia" },
-              ].map((rel) => (
-                <span
-                  key={rel.label}
-                  className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground"
-                >
-                  <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: rel.color }}
-                  />
-                  {rel.label}
-                </span>
-              ))}
-            </div>
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: book.color }}
+                />
+                {book.shortLabel}
+              </span>
+            ))}
           </div>
         </div>
 

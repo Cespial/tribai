@@ -21,9 +21,9 @@ const ARTICLES = [
 
 function EstadoBadge({ estado }: { estado: "vigente" | "modificado" | "derogado" }) {
   const styles = {
-    vigente: "bg-green-500/10 text-green-600 dark:text-green-400",
-    modificado: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
-    derogado: "bg-red-500/10 text-red-600 dark:text-red-400",
+    vigente: "bg-green-500/15 text-green-700 dark:text-green-400",
+    modificado: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400",
+    derogado: "bg-red-500/15 text-red-700 dark:text-red-400",
   };
   return (
     <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${styles[estado]}`}>
@@ -34,10 +34,15 @@ function EstadoBadge({ estado }: { estado: "vigente" | "modificado" | "derogado"
 
 export function AppETTab() {
   const [search, setSearch] = useState("");
+  const [libro, setLibro] = useState("Todos");
+  const [estado, setEstado] = useState("Todos");
 
-  const filtered = ARTICLES.filter(
-    (a) => !search || a.id.toLowerCase().includes(search.toLowerCase()) || a.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = ARTICLES.filter((a) => {
+    const matchSearch = !search || a.id.toLowerCase().includes(search.toLowerCase()) || a.title.toLowerCase().includes(search.toLowerCase());
+    const matchLibro = libro === "Todos" || a.libro.includes(libro);
+    const matchEstado = estado === "Todos" || a.estado.toLowerCase() === estado.toLowerCase();
+    return matchSearch && matchLibro && matchEstado;
+  });
 
   return (
     <div className="flex h-full flex-col">
@@ -46,7 +51,7 @@ export function AppETTab() {
         <h1 className="mb-3 text-[28px] font-bold leading-tight tracking-tight text-foreground">
           Estatuto Tributario
         </h1>
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 focus-within:border-tribai-blue">
           <Search className="h-4 w-4 text-muted-foreground" />
           <input
             type="text"
@@ -56,25 +61,36 @@ export function AppETTab() {
             className="w-full bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
           />
         </div>
-        {/* Filter chips */}
+        {/* Libro filter chips */}
         <div className="scrollbar-hide mt-2.5 flex gap-2 overflow-x-auto">
-          {LIBROS.map((libro) => (
-            <span
-              key={libro}
-              className="shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-foreground"
+          {LIBROS.map((l) => (
+            <button
+              key={l}
+              onClick={() => setLibro(l)}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                libro === l
+                  ? "bg-tribai-blue text-white"
+                  : "border border-border bg-card text-foreground"
+              }`}
             >
-              {libro}
-            </span>
+              {l}
+            </button>
           ))}
         </div>
+        {/* Estado filter chips */}
         <div className="scrollbar-hide mt-2 flex gap-2 overflow-x-auto">
-          {ESTADOS.map((estado) => (
-            <span
-              key={estado}
-              className="shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-foreground"
+          {ESTADOS.map((e) => (
+            <button
+              key={e}
+              onClick={() => setEstado(e)}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                estado === e
+                  ? "bg-tribai-blue text-white"
+                  : "border border-border bg-card text-foreground"
+              }`}
             >
-              {estado}
-            </span>
+              {e}
+            </button>
           ))}
         </div>
       </div>
@@ -101,11 +117,16 @@ export function AppETTab() {
                   {article.libro}
                 </span>
               </div>
-              <svg className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
               </svg>
             </div>
           ))}
+          {filtered.length === 0 && (
+            <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">
+              No se encontraron artículos.
+            </p>
+          )}
         </div>
       </div>
     </div>
