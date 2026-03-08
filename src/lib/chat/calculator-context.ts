@@ -81,18 +81,22 @@ const CALCULATOR_KEYWORDS: Array<{ keywords: string[]; calculator: CalculatorSug
   },
 ];
 
+function stripAccents(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 export function suggestCalculators(
   query: string,
   maxResults = 3,
   pageContext?: ChatPageContext
 ): CalculatorSuggestion[] {
-  const q = query.toLowerCase();
+  const q = stripAccents(query.toLowerCase());
   const scored: Array<{ calculator: CalculatorSuggestion; score: number }> = [];
 
   for (const entry of CALCULATOR_KEYWORDS) {
     let score = 0;
     for (const keyword of entry.keywords) {
-      if (q.includes(keyword)) {
+      if (q.includes(stripAccents(keyword))) {
         score += keyword.length; // Longer keyword matches are more specific
       }
     }

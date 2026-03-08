@@ -25,7 +25,7 @@ const TABS: { id: AppTab; label: string; icon: typeof Home }[] = [
   { id: "chat", label: "Asistente", icon: MessageCircle },
   { id: "calculators", label: "Calc.", icon: Calculator },
   { id: "et", label: "ET", icon: BookOpen },
-  { id: "more", label: "Mas", icon: MoreHorizontal },
+  { id: "more", label: "Más", icon: MoreHorizontal },
 ];
 
 export function PhoneMockupSection() {
@@ -34,14 +34,14 @@ export function PhoneMockupSection() {
   return (
     <section
       aria-labelledby="app-preview-title"
-      className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+      className="border-t border-border bg-background px-6 py-10 md:px-12 md:py-24 lg:px-20"
     >
       <Reveal className="mx-auto max-w-[960px]" delay={50}>
         <div className="flex flex-col items-center gap-12 md:flex-row md:items-center md:gap-16">
           {/* Left — Copy */}
           <div className="w-full shrink-0 md:w-[45%]">
             <p className="eyebrow-label">
-              Proximamente en iOS y Android
+              Disponible en web · Próximamente en iOS y Android
             </p>
             <h2
               id="app-preview-title"
@@ -72,24 +72,24 @@ export function PhoneMockupSection() {
             {/* CTA + Store badges */}
             <div className="mt-8 flex flex-col gap-4">
               <Link href="/asistente" className="btn-primary h-12 w-fit px-6">
-                Probar el asistente
+                Probar en la web ahora
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </Link>
               <div className="flex items-center gap-3">
-                <span className="phone-store-badge" aria-label="Proximamente en App Store">
+                <span className="phone-store-badge">
                   <Image
                     src="/brand/app-store-badge.png"
-                    alt="Download on the App Store"
+                    alt="Próximamente en App Store"
                     width={135}
                     height={44}
                     className="h-[44px] w-auto"
                   />
                   <span className="phone-store-coming">Pronto</span>
                 </span>
-                <span className="phone-store-badge" aria-label="Proximamente en Google Play">
+                <span className="phone-store-badge">
                   <Image
                     src="/brand/google-play-badge.png"
-                    alt="Get it on Google Play"
+                    alt="Próximamente en Google Play"
                     width={135}
                     height={44}
                     className="h-[44px] w-auto"
@@ -126,7 +126,8 @@ export function PhoneMockupSection() {
                         <button
                           key={id}
                           onClick={() => setActiveTab(id)}
-                          className={`flex flex-col items-center gap-0.5 px-2 py-0.5 transition-colors ${
+                          aria-label={label}
+                          className={`flex flex-col items-center gap-0.5 rounded-md px-2 py-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 ${
                             isActive ? "text-tribai-blue" : "text-muted-foreground"
                           }`}
                         >

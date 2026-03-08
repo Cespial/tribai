@@ -41,10 +41,10 @@ const DEMO_CONVERSATION: DemoMessage[] = [
 function ConfidenceDot({ level }: { level: "high" | "medium" | "low" }) {
   const color =
     level === "high"
-      ? "bg-green-500"
+      ? "bg-success"
       : level === "medium"
         ? "bg-yellow-500"
-        : "bg-red-500";
+        : "bg-destructive";
   return (
     <span className="inline-flex items-center gap-1">
       <span className={`inline-block h-1.5 w-1.5 rounded-full ${color}`} />
@@ -56,10 +56,10 @@ function ConfidenceDot({ level }: { level: "high" | "medium" | "low" }) {
 function EstadoDot({ estado }: { estado: "vigente" | "modificado" | "derogado" }) {
   const color =
     estado === "vigente"
-      ? "bg-green-500"
+      ? "bg-success"
       : estado === "modificado"
         ? "bg-yellow-500"
-        : "bg-red-500";
+        : "bg-destructive";
   return <span className={`inline-block h-1.5 w-1.5 rounded-full ${color}`} />;
 }
 
@@ -118,7 +118,7 @@ export function AppChatTab() {
       {/* Nav bar */}
       <div className="flex shrink-0 items-center justify-between border-b border-border bg-card/80 px-4 pb-2.5 pt-14 backdrop-blur-xl">
         <h1 className="text-[17px] font-semibold text-foreground">Asistente IA</h1>
-        <div className="flex h-1.5 w-1.5 rounded-full bg-green-500" />
+        <div className="flex h-1.5 w-1.5 rounded-full bg-success" aria-label="En línea" />
       </div>
 
       {/* Messages area */}
@@ -206,7 +206,7 @@ export function AppChatTab() {
                     <div className="mt-1.5 flex items-center gap-2">
                       <button
                         onClick={() => handleCopy(msg.content, msg.id)}
-                        className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                        className="flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
                       >
                         {copiedId === msg.id ? (
                           <>
@@ -247,6 +247,7 @@ export function AppChatTab() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Pregunte sobre tributaria..."
+              aria-label="Escriba su consulta tributaria"
               className="w-full bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
               disabled={isStreaming}
             />
@@ -255,7 +256,7 @@ export function AppChatTab() {
             type="submit"
             disabled={!input.trim() || isStreaming}
             aria-label={isStreaming ? "Detener" : "Enviar mensaje"}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tribai-blue text-white transition-opacity disabled:opacity-40"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tribai-blue text-white transition-opacity disabled:bg-muted disabled:text-muted-foreground"
           >
             {isStreaming ? (
               <Square className="h-4 w-4" fill="currentColor" />

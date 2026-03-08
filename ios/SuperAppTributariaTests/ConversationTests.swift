@@ -49,9 +49,10 @@ struct ConversationTests {
                 SourceCitation(
                     idArticulo: "Art. 240",
                     titulo: "Tarifa general",
+                    url: "https://estatuto.co/240",
+                    categoriaLibro: "Libro I",
+                    relevanceScore: 0.85,
                     slug: "art-240",
-                    contenidoTexto: "La tarifa general del impuesto...",
-                    libro: "Libro I",
                     estado: .vigente
                 )
             ],
@@ -69,19 +70,20 @@ struct ConversationTests {
                 dynamicThreshold: 0.28,
                 queryType: "specific-article",
                 namespacesSearched: ["ET", "doctrina"],
-                siblingChunksAdded: true,
+                siblingChunksAdded: 2,
                 embeddingCacheHitRate: 0.5,
                 confidenceLevel: .high,
                 evidenceQuality: 0.9,
-                namespaceContribution: ["ET": 0.7, "doctrina": 0.3],
-                contradictionFlags: [],
+                namespaceContribution: ["ET": 7, "doctrina": 3],
+                contradictionFlags: false,
                 pipelineMs: 1094,
                 timings: PipelineTimings(
                     queryEnhancement: 200,
                     retrieval: 400,
                     reranking: 200,
                     contextAssembly: 150,
-                    promptBuilding: 144
+                    promptBuilding: 144,
+                    totalPipeline: 1094
                 ),
                 degradedMode: false,
                 degradedReason: nil

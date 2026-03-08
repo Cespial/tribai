@@ -13,6 +13,7 @@
  */
 
 import { PipelineResult } from "@/lib/rag/pipeline";
+import crypto from "crypto";
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_CACHE_SIZE = 500;
@@ -35,12 +36,13 @@ const cache = new Map<string, CacheEntry>();
  * Strips whitespace, lowercases, removes accents for fuzzy matching.
  */
 function normalizeQuery(query: string): string {
-  return query
+  const normalized = query
     .toLowerCase()
     .trim()
     .replace(/\s+/g, " ")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, ""); // strip accents
+  return crypto.createHash("sha256").update(normalized).digest("hex");
 }
 
 /**

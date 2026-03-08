@@ -10,7 +10,10 @@ export function stripDiacritics(input: string): string {
 }
 
 export function normalizeSlugLike(input: string): string {
-  return normalizeForSearch(input).replace(/[^a-z0-9- ]+/g, "");
+  return normalizeForSearch(input)
+    .replace(/[^a-z0-9- ]+/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function normalizeWhitespace(input: string): string {

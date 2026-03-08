@@ -548,7 +548,7 @@ export function ProposalConstellation() {
               fill="currentColor"
               fontSize="9"
               fontWeight="500"
-              opacity="0.4"
+              opacity="0.6"
               fontFamily="var(--font-body)"
             >
               {s.label}

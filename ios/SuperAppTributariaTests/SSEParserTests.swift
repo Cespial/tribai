@@ -142,14 +142,10 @@ struct SSEParserTests {
         #expect(delta == "hello")
     }
 
-    @Test func returnErrorForMalformedJSON() {
+    @Test func skipMalformedJSON() {
         let line = "data: {not valid json}"
         let event = SSEParser.parse(line: line)
-
-        guard case .error(.decodingError) = event else {
-            Issue.record("Expected .error(.decodingError), got \(String(describing: event))")
-            return
-        }
+        #expect(event == nil, "Malformed JSON should be skipped (nil), not error")
     }
 
     @Test func parsesUnknownChunkType() {

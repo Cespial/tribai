@@ -48,15 +48,20 @@ struct CalculatorResultView: View {
             }
 
             // Disclaimer
-            if let disclaimer {
-                Text(disclaimer)
+            VStack(spacing: 6) {
+                if let disclaimer {
+                    Text(disclaimer)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(Color.appMutedForeground)
+                }
+                Text("Este calculo es aproximado y no constituye asesoria tributaria profesional. Consulte con un contador publico certificado.")
                     .font(AppTypography.caption)
                     .foregroundStyle(Color.appMutedForeground)
-                    .padding(12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.appMuted.opacity(0.5))
-                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
             }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.appMuted.opacity(0.5))
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
 
             // Consult assistant
             if let action = onConsultAssistant {

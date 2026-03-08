@@ -96,6 +96,9 @@ export function BrainGraphSection() {
           (e) => nodeIds.has(e.source) && nodeIds.has(e.target)
         );
         setGraphData({ nodes: topNodes, links });
+      })
+      .catch(() => {
+        setGraphData({ nodes: [], links: [] });
       });
   }, []);
 
@@ -150,7 +153,11 @@ export function BrainGraphSection() {
     () => false
   );
 
-  const bgColor = isDark ? "#131B2E" : "#FFFFFF";
+  const bgColor = typeof window === "undefined"
+    ? "#FFFFFF"
+    : isDark
+      ? getComputedStyle(document.documentElement).getPropertyValue("--card").trim() || "#131B2E"
+      : getComputedStyle(document.documentElement).getPropertyValue("--background").trim() || "#FFFFFF";
 
   const nodeCanvasObject = useCallback(
     (
@@ -179,7 +186,7 @@ export function BrainGraphSection() {
       // Label on zoom
       if (globalScale > 2.5) {
         ctx.font = `${10 / globalScale}px -apple-system, system-ui, sans-serif`;
-        ctx.fillStyle = isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.55)";
+        ctx.fillStyle = isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.7)";
         ctx.textAlign = "center";
         ctx.fillText(node.label, node.x, node.y + baseSize + 8 / globalScale);
       }
@@ -200,7 +207,7 @@ export function BrainGraphSection() {
   return (
     <section
       aria-labelledby="brain-title"
-      className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+      className="border-t border-border bg-background px-6 py-10 md:px-12 md:py-24 lg:px-20"
     >
       <Reveal className="mx-auto max-w-[960px]" delay={50}>
         {/* Header copy */}
@@ -212,12 +219,12 @@ export function BrainGraphSection() {
             id="brain-title"
             className="heading-serif mx-auto mt-4 max-w-3xl text-2xl text-foreground md:text-4xl"
           >
-            Cada respuesta está respaldada por una red de 540 artículos conectados.
+            Cada respuesta se respalda con una red de 540 artículos conectados.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-foreground-body">
-            No es una base de datos plana. Es un grafo de conocimiento legal con
-            relaciones tipadas, PageRank y comunidades temáticas que alimenta
-            cada respuesta del asistente IA.
+            Cada artículo está conectado a sus normas relacionadas, doctrina
+            DIAN y jurisprudencia. Cuando consulta, la IA navega esta red
+            para encontrar la respuesta más completa y precisa.
           </p>
         </div>
 
@@ -240,20 +247,20 @@ export function BrainGraphSection() {
         {/* Graph card — same pattern as chat demo */}
         <div className="relative mt-10 overflow-hidden rounded-lg border border-border bg-card">
           {/* Navy header bar */}
-          <div className="flex items-center justify-between border-b border-white/10 bg-tribai-navy px-5 py-4">
+          <div className="flex items-center justify-between border-b border-border bg-tribai-navy px-5 py-4">
             <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-[#22C55E]" />
+              <div className="h-2 w-2 rounded-full bg-success" />
               <h3 className="text-sm font-semibold text-white/90">
                 Grafo del Estatuto Tributario — 540 nodos · 667 relaciones
               </h3>
             </div>
-            <span className="text-[10px] text-white/40 sm:text-xs">
+            <span className="hidden text-[10px] text-white/40 sm:inline sm:text-xs">
               Zoom con scroll · Arrastra para explorar
             </span>
           </div>
 
           {/* Graph canvas */}
-          <div ref={canvasContainerRef} className="relative h-[420px] sm:h-[500px] md:h-[560px]">
+          <div ref={canvasContainerRef} role="img" aria-label="Grafo interactivo del Estatuto Tributario — 540 artículos conectados por 667 relaciones legales" className="relative h-[420px] sm:h-[500px] md:h-[560px]">
             {isVisible && graphData && (
               <ForceGraph2DWithRef
                 ref={graphRef}
@@ -310,17 +317,14 @@ export function BrainGraphSection() {
           </div>
         </div>
 
-        {/* CTAs */}
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/asistente" className="btn-primary h-12 px-6">
-            Consultar con esta inteligencia
-            <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-          </Link>
+        {/* CTA */}
+        <div className="mt-8 flex justify-center">
           <Link
             href="/explorador"
-            className="btn-secondary h-12 px-6"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
           >
             Explorar el grafo completo
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </div>
       </Reveal>

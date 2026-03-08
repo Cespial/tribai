@@ -26,7 +26,7 @@ struct SourceCitationChip: View {
             )
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(source.idArticulo), \(source.titulo), estado: \(source.estado.rawValue)")
+        .accessibilityLabel("\(source.idArticulo), \(source.titulo), estado: \(source.estado?.rawValue ?? "desconocido")")
         .accessibilityHint("Toca para ver detalles del artículo")
     }
 
@@ -35,6 +35,7 @@ struct SourceCitationChip: View {
         case .vigente: return ColorPalette.vigente
         case .modificado: return ColorPalette.modificado
         case .derogado: return ColorPalette.derogado
+        case nil: return Color.appMutedForeground
         }
     }
 }
@@ -45,9 +46,10 @@ struct SourceCitationChip: View {
             source: SourceCitation(
                 idArticulo: "Art. 240",
                 titulo: "Tarifa general del impuesto",
-                slug: "articulo-240",
-                contenidoTexto: "La tarifa general del impuesto...",
-                libro: "Libro I",
+                url: "https://estatuto.co/240",
+                categoriaLibro: "Libro I",
+                relevanceScore: 0.9,
+                slug: "240",
                 estado: .vigente
             ),
             onTap: {}
@@ -56,9 +58,10 @@ struct SourceCitationChip: View {
             source: SourceCitation(
                 idArticulo: "Art. 592",
                 titulo: "Quiénes no están obligados",
-                slug: "articulo-592",
-                contenidoTexto: "",
-                libro: "Libro I",
+                url: "https://estatuto.co/592",
+                categoriaLibro: "Libro I",
+                relevanceScore: 0.8,
+                slug: "592",
                 estado: .modificado
             ),
             onTap: {}

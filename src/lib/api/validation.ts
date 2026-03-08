@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 
 const MessagePartSchema = z.object({
-  type: z.string(),
+  type: z.enum(["text"]),
   text: z.string().optional(),
 });
 
@@ -12,7 +12,7 @@ const UIMessageSchema = z.object({
 });
 
 const PageContextSchema = z.object({
-  pathname: z.string(),
+  pathname: z.string().max(500),
   module: z.enum([
     "home",
     "comparar",
@@ -22,9 +22,9 @@ const PageContextSchema = z.object({
     "articulo",
     "other",
   ]),
-  calculatorSlug: z.string().optional(),
-  articleSlug: z.string().optional(),
-  workspaceId: z.string().optional(),
+  calculatorSlug: z.string().max(100).optional(),
+  articleSlug: z.string().max(100).optional(),
+  workspaceId: z.string().max(100).optional(),
 });
 
 export const ChatRequestSchema = z.object({

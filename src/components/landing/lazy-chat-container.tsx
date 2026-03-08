@@ -7,7 +7,11 @@ const DynamicChatContainer = dynamic(
   () => import("@/components/chat/chat-container").then((mod) => mod.ChatContainer),
   {
     ssr: false,
-    loading: () => <ChatSkeleton />,
+    loading: () => (
+      <div aria-busy="true" aria-label="Cargando asistente IA">
+        <ChatSkeleton />
+      </div>
+    ),
   }
 );
 

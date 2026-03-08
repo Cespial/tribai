@@ -18,7 +18,7 @@ struct OnboardingView: View {
         (
             "bubble.left.and.text.bubble.right",
             "Asistente IA Tributario",
-            "Pregunta lo que necesites sobre tributaria colombiana. El asistente consulta el ET, doctrina DIAN y jurisprudencia para darte respuestas fundamentadas."
+            "Pregunta lo que necesites sobre tributaria colombiana. El asistente usa inteligencia artificial generativa para consultar el ET, doctrina DIAN y jurisprudencia. Las respuestas son informativas y no reemplazan la asesoria de un profesional."
         ),
         (
             "calendar.badge.checkmark",

@@ -41,29 +41,26 @@ struct SourceDetailRow: View {
 
                 Spacer()
 
-                Text(source.estado.rawValue.capitalized)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(statusColor)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(statusColor.opacity(0.1))
-                    .clipShape(Capsule())
+                if let estado = source.estado {
+                    Text(estado.rawValue.capitalized)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(statusColor)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(statusColor.opacity(0.1))
+                        .clipShape(Capsule())
+                }
             }
 
             Text(source.titulo)
                 .font(AppTypography.bodySmall)
                 .foregroundStyle(Color.appForeground)
 
-            if !source.contenidoTexto.isEmpty {
-                Text(source.contenidoTexto)
+            if !source.libro.isEmpty {
+                Text(source.libro)
                     .font(AppTypography.caption)
                     .foregroundStyle(Color.appMutedForeground)
-                    .lineLimit(4)
             }
-
-            Text(source.libro)
-                .font(AppTypography.caption)
-                .foregroundStyle(Color.appMutedForeground)
 
             Button {
                 showSafari = true
@@ -74,12 +71,14 @@ struct SourceDetailRow: View {
         }
         .padding(.vertical, 4)
         .sheet(isPresented: $showSafari) {
-            SafariView(
-                url: APIConfig.baseURL.appendingPathComponent("articulo/\(source.slug)")
-            )
+            if let urlString = source.url, let url = URL(string: urlString) {
+                SafariView(url: url)
+            } else if let slug = source.slug {
+                SafariView(url: APIConfig.baseURL.appendingPathComponent("articulo/\(slug)"))
+            }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(source.idArticulo): \(source.titulo), estado: \(source.estado.rawValue)")
+        .accessibilityLabel("\(source.idArticulo): \(source.titulo), estado: \(source.estado?.rawValue ?? "desconocido")")
     }
 
     private var statusColor: Color {
@@ -87,6 +86,7 @@ struct SourceDetailRow: View {
         case .vigente: return ColorPalette.vigente
         case .modificado: return ColorPalette.modificado
         case .derogado: return ColorPalette.derogado
+        case nil: return Color.appMutedForeground
         }
     }
 }

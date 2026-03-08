@@ -12,16 +12,21 @@ export function ChatQuerySuggestions({ queries }: ChatQuerySuggestionsProps) {
   };
 
   return (
-    <div className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-2">
+    <div className="mx-auto mt-8 max-w-3xl">
+      <p className="mb-3 text-center text-sm text-muted-foreground">
+        Seleccione una pregunta para probar el asistente:
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2">
       {queries.map((query) => (
         <button
           key={query}
           onClick={() => handleQueryClick(query)}
-          className="rounded-md border border-border bg-card px-4 py-3 text-left text-sm text-muted-foreground transition hover:border-tribai-blue/30 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+          className="rounded-lg border border-border bg-card px-4 py-3.5 text-left text-sm text-foreground-body transition hover:border-tribai-blue/30 hover:bg-muted-section hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
         >
           {query}
         </button>
       ))}
+      </div>
     </div>
   );
 }

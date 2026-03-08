@@ -3,40 +3,48 @@ import SwiftUI
 // MARK: - Colors
 
 enum ColorPalette {
-    // Light mode base colors
+    // Light mode base colors — synced with tribai.co brand
     enum Light {
-        static let background = Color(hex: 0xFAFAF9)
-        static let foreground = Color(hex: 0x0F0E0D)
-        static let card = Color.white
-        static let cardForeground = Color(hex: 0x0F0E0D)
-        static let muted = Color(hex: 0xF2F1F0)
-        static let mutedForeground = Color(hex: 0x706D66)
-        static let border = Color(hex: 0xE5E5E3)
-        static let borderSecondary = Color(hex: 0xCCCAC6)
-        static let primary = Color(hex: 0x0F0E0D)
-        static let primaryForeground = Color(hex: 0xFAFAF9)
-        static let accent = Color(hex: 0xF2F1F0)
-        static let accentForeground = Color(hex: 0x0F0E0D)
+        static let background = Color.white                    // #FFFFFF
+        static let foreground = Color(hex: 0x1A1A1A)          // --foreground
+        static let card = Color.white                          // #FFFFFF
+        static let cardForeground = Color(hex: 0x1A1A1A)
+        static let muted = Color(hex: 0xF0EEEB)               // --muted
+        static let mutedForeground = Color(hex: 0x6B7280)      // --muted-foreground
+        static let border = Color(hex: 0xE5E7EB)              // --border
+        static let borderSecondary = Color(hex: 0xD1D5DB)
+        static let primary = Color(hex: 0x0066FF)             // --tribai-blue
+        static let primaryForeground = Color.white
+        static let accent = Color(hex: 0xF0EEEB)
+        static let accentForeground = Color(hex: 0x1A1A1A)
         static let destructive = Color(hex: 0xDC2626)
         static let success = Color(hex: 0x16A34A)
     }
 
-    // Dark mode base colors
+    // Dark mode base colors — synced with tribai.co brand
     enum Dark {
-        static let background = Color(hex: 0x0F0E0D)
-        static let foreground = Color(hex: 0xFAFAF9)
-        static let card = Color(hex: 0x1F1D1A)
-        static let cardForeground = Color(hex: 0xFAFAF9)
-        static let muted = Color(hex: 0x1F1D1A)
-        static let mutedForeground = Color(hex: 0x8F8B85)
-        static let border = Color(hex: 0x33312C)
-        static let borderSecondary = Color(hex: 0x524F49)
-        static let primary = Color(hex: 0xFAFAF9)
-        static let primaryForeground = Color(hex: 0x0F0E0D)
-        static let accent = Color(hex: 0x1F1D1A)
-        static let accentForeground = Color(hex: 0xFAFAF9)
+        static let background = Color(hex: 0x0A0F1A)          // --tribai-navy dark
+        static let foreground = Color(hex: 0xE8E6E3)          // --foreground dark
+        static let card = Color(hex: 0x131B2E)                // --card dark
+        static let cardForeground = Color(hex: 0xE8E6E3)
+        static let muted = Color(hex: 0x1B2540)               // --muted dark
+        static let mutedForeground = Color(hex: 0x9CA3AF)      // --muted-foreground dark
+        static let border = Color(hex: 0x1F2937)              // --border dark
+        static let borderSecondary = Color(hex: 0x374151)
+        static let primary = Color(hex: 0x3B82F6)             // --tribai-blue dark
+        static let primaryForeground = Color.white
+        static let accent = Color(hex: 0x1B2540)
+        static let accentForeground = Color(hex: 0xE8E6E3)
         static let destructive = Color(hex: 0xEF4444)
         static let success = Color(hex: 0x22C55E)
+    }
+
+    // Tribai brand colors
+    enum Brand {
+        static let navy = Color(hex: 0x0A1628)
+        static let blue = Color(hex: 0x0066FF)
+        static let gold = Color(hex: 0xC4952A)
+        static let lightBlue = Color(hex: 0x3B82B8)
     }
 
     // Status colors

@@ -16,7 +16,7 @@ export function FaqSection({ items }: FaqSectionProps) {
     <section
       id="faq"
       aria-labelledby="faq-title"
-      className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+      className="border-t border-border bg-background px-6 py-10 md:px-12 md:py-24 lg:px-20"
     >
       <Reveal className="mx-auto max-w-[960px]">
         <p className="eyebrow-label">
@@ -52,9 +52,9 @@ export function FaqSection({ items }: FaqSectionProps) {
         <div className="mt-8">
           <Link
             href="/asistente"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
           >
-            Ir al asistente IA
+            ¿Tiene otra pregunta? Consulte al asistente
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </div>

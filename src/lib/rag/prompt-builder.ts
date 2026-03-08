@@ -5,6 +5,10 @@ import { ChatPageContext } from "@/types/chat-history";
 import { EvidenceCheckResult } from "./evidence-checker";
 import { EVIDENCE_THRESHOLDS } from "@/config/constants";
 
+function escapeXml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 const CITATION_INSTRUCTIONS = `
 
 REGLA ABSOLUTA DE CITACIÓN: SOLO cita artículos y fuentes que aparezcan en el <context>. Si el usuario pregunta por un artículo que NO está en el contexto, di "No tengo ese artículo en mi contexto actual" en lugar de inventar el contenido.
@@ -30,8 +34,9 @@ export function buildMessages(
   evidenceCheck?: EvidenceCheckResult
 ): { system: string; contextBlock: string } {
   const contextString = buildContextString(context);
+  const safeUserQuery = escapeXml(userQuery);
   const pageContextBlock = pageContext
-    ? `<page_context>\n${JSON.stringify(pageContext, null, 2)}\n</page_context>\n\n`
+    ? `<page_context>\n${escapeXml(JSON.stringify(pageContext, null, 2))}\n</page_context>\n\n`
     : "";
 
   // Build citation fence: explicit list of available articles in context
@@ -85,17 +90,21 @@ INSTRUCCIONES OBLIGATORIAS — No se encontraron fuentes relevantes para esta co
   }
 
   const contextBlock = contextString
-    ? `${pageContextBlock}${evidenceTag}${evidenceWarning}${contradictionWarning}\n<context>${citationFence}\n${contextString}\n</context>\n\nPregunta del usuario: ${userQuery}`
-    : `${pageContextBlock}${evidenceTag}${evidenceWarning}${contradictionWarning}\nNo se encontraron artículos relevantes en las fuentes consultadas para esta consulta.\n\nPregunta del usuario: ${userQuery}`;
+    ? `${pageContextBlock}${evidenceTag}${evidenceWarning}${contradictionWarning}\n<context>${citationFence}\n${contextString}\n</context>\n\nPregunta del usuario: ${safeUserQuery}`
+    : `${pageContextBlock}${evidenceTag}${evidenceWarning}${contradictionWarning}\nNo se encontraron artículos relevantes en las fuentes consultadas para esta consulta.\n\nPregunta del usuario: ${safeUserQuery}`;
 
   // Dynamic system prompt with calculator filtering based on query
   const systemPrompt = buildSystemPrompt(userQuery);
-  const enhancedSystem = conversationHistory
-    ? `${systemPrompt}${CITATION_INSTRUCTIONS}\n\n${conversationHistory}`
-    : `${systemPrompt}${CITATION_INSTRUCTIONS}`;
+  const system = `${systemPrompt}${CITATION_INSTRUCTIONS}`;
+
+  // Conversation history goes in the context block (not system prompt) to prevent
+  // cross-turn prompt injection via prior user messages
+  const historyBlock = conversationHistory
+    ? `\n<conversation_history>\n${escapeXml(conversationHistory)}\n</conversation_history>\n`
+    : "";
 
   return {
-    system: enhancedSystem,
-    contextBlock,
+    system,
+    contextBlock: `${historyBlock}${contextBlock}`,
   };
 }

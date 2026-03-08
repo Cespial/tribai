@@ -76,6 +76,8 @@ struct HomeView: View {
             RoundedRectangle(cornerRadius: AppRadius.card)
                 .stroke(Color.appBorder, lineWidth: 1)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 
     // MARK: - Indicators
@@ -105,6 +107,8 @@ struct HomeView: View {
             RoundedRectangle(cornerRadius: AppRadius.card)
                 .stroke(Color.appBorder, lineWidth: 1)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title): \(value)")
     }
 
     // MARK: - Features Grid

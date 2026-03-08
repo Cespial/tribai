@@ -35,24 +35,6 @@ final class AuthViewModel {
         }
     }
 
-    @MainActor
-    func signInWithGoogle(presenting: Any) {
-        isLoading = true
-        Task { [weak self] in
-            guard let self else { return }
-            do {
-                try await authService.signInWithGoogle(presenting: presenting)
-                currentUser = authService.currentUser
-                isAuthenticated = true
-                isLoading = false
-            } catch {
-                self.error = error.localizedDescription
-                showError = true
-                isLoading = false
-            }
-        }
-    }
-
     func continueWithoutAccount() {
         authService.continueWithoutAccount()
         currentUser = authService.currentUser

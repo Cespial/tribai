@@ -24,6 +24,8 @@ struct CalendarioView: View {
                             ) {
                                 viewModel.selectedMonth = month
                             }
+                            .accessibilityLabel("Filtrar por \(monthLabels[month - 1])")
+                            .accessibilityAddTraits(viewModel.selectedMonth == month ? .isSelected : [])
                         }
                     }
                     .padding(.horizontal, AppSpacing.sm)
@@ -103,6 +105,11 @@ struct CalendarioView: View {
                                     )
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel(
+                                DeadlineNotificationService.shared.isReminderSet(deadlineId: deadline.id)
+                                    ? "Desactivar recordatorio para \(deadline.obligacion)"
+                                    : "Activar recordatorio para \(deadline.obligacion)"
+                            )
                         }
                     }
                 }

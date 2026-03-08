@@ -15,9 +15,12 @@ export async function assembleContext(
 ): Promise<AssembledContext> {
   const {
     useSiblingRetrieval = RAG_CONFIG.useSiblingRetrieval,
-    maxTokens = RAG_CONFIG.maxContextTokens,
+    maxTokens: rawMaxTokens = RAG_CONFIG.maxContextTokens,
     multiSourceChunks = [],
   } = options;
+
+  // Apply 10% buffer to avoid overflow from token estimation imprecision
+  const maxTokens = Math.floor(rawMaxTokens * 0.9);
 
   let allChunks = [...chunks];
 
@@ -285,7 +288,12 @@ function applyTokenBudget(
           const truncatedContenido = group.contenido.map(c => c).join("\n\n");
           // Estimate chars per token (~3.5 for Spanish legal text)
           const maxChars = Math.floor(remainingBudget * 3.5);
-          const truncated = truncatedContenido.slice(0, maxChars);
+          let truncated = truncatedContenido.slice(0, maxChars);
+          // Find last sentence boundary to avoid cutting mid-sentence
+          const lastPeriod = Math.max(truncated.lastIndexOf(". "), truncated.lastIndexOf(".\n"));
+          if (lastPeriod > truncated.length * 0.5) {
+            truncated = truncated.slice(0, lastPeriod + 1);
+          }
           if (truncated.length > 100) {
             const truncatedGroup: ArticleGroup = {
               ...group,

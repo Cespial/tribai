@@ -29,7 +29,7 @@ const dmSerifDisplay = DM_Serif_Display({
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0A1628" },
+    { media: "(prefers-color-scheme: dark)", color: "#0A0F1A" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -37,6 +37,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://superapp-tributaria-colombia.vercel.app"),
+  alternates: {
+    canonical: "/",
+  },
   title: "tribai.co — Inteligencia tributaria colombiana",
   description:
     "Resuelva tributaria colombiana con rigor: 35 calculadoras, 1.294 artículos del Estatuto Tributario, asistente IA con citación de fuentes. Sin costo. Sin registro.",

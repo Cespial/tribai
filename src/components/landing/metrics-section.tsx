@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 
 const METRICS = [
-  { value: 35, display: "35", label: "Calculadoras de precisión", sublabel: "Renta, retención, IVA, sanciones, laboral y más" },
-  { value: 1294, display: "1.294", label: "Artículos del Estatuto Tributario", sublabel: "Indexados con historial de reformas" },
-  { value: 841, display: "841", label: "Conceptos DIAN", sublabel: "Doctrina curada y vinculada al ET" },
-  { value: 0, display: "24/7", label: "Asistente IA con fuentes", sublabel: "36K vectores de conocimiento normativo" },
+  { value: 35, display: "35", label: "Calculadoras listas para usar", sublabel: "Resuelva renta, retención, IVA y sanciones en segundos" },
+  { value: 1294, display: "1.294", label: "Artículos del ET navegables", sublabel: "Con historial de reformas y artículos relacionados" },
+  { value: 841, display: "841", label: "Conceptos DIAN verificables", sublabel: "Doctrina indexada y vinculada al artículo del ET" },
+  { value: 0, display: "24/7", label: "Asistente IA sin registro", sublabel: "Consulte con fuentes normativas en cualquier momento" },
 ] as const;
 
 function formatNumber(n: number, target: (typeof METRICS)[number]): string {
@@ -68,23 +68,23 @@ export function MetricsSection() {
   return (
     <div ref={ref}>
       <p className="eyebrow-label">
-        La plataforma hoy
+        En números
       </p>
       <h2 id="metrics-title" className="heading-serif mt-4 max-w-3xl text-2xl text-foreground md:text-4xl">
-        Números que hablan por sí solos.
+        Todo lo que necesita. En un solo lugar.
       </h2>
       <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground-body">
-        No es solo lectura. Cada artículo, cada calculadora y cada respuesta de
-        la IA está diseñada para resolver casos tributarios reales.
+        Cada herramienta está diseñada para resolver casos tributarios reales
+        — con la norma vigente, el cálculo exacto y la fuente que lo respalda.
       </p>
 
-      <div className="mt-12 overflow-hidden rounded-lg border border-border grid grid-cols-2 divide-x divide-border md:grid-cols-4">
+      <div className="mt-12 grid grid-cols-2 gap-0 divide-x divide-border overflow-hidden rounded-lg border border-border md:grid-cols-4">
         {METRICS.map((metric, index) => (
           <MetricItem key={metric.label} metric={metric} active={visible} index={index} />
         ))}
       </div>
 
-      <p className="mt-8 text-xs text-muted-foreground">
+      <p className="mt-6 text-xs text-muted-foreground">
         Datos del año fiscal 2026 · UVT $52.374 · Resultados orientativos, validar con criterio profesional.
       </p>
     </div>

@@ -52,30 +52,6 @@ struct SignInView: View {
                 .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
                 .accessibilityLabel("Iniciar sesión con Apple")
 
-                // Google Sign In
-                Button {
-                    // Google Sign-In requires presenting view controller
-                    // This will be wired up when GoogleSignIn SDK is configured
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "g.circle.fill")
-                            .font(.title3)
-                        Text("Iniciar sesión con Google")
-                            .font(AppTypography.bodyDefault)
-                            .fontWeight(.medium)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(Color.appCard)
-                    .foregroundStyle(Color.appForeground)
-                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: AppRadius.card)
-                            .stroke(Color.appBorder, lineWidth: 1)
-                    )
-                }
-                .accessibilityLabel("Iniciar sesión con Google")
-
                 // Continue without account
                 Button {
                     viewModel.continueWithoutAccount()

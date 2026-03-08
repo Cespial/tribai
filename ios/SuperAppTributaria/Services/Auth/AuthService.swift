@@ -18,7 +18,6 @@ protocol AuthServiceProtocol {
     var currentUser: AuthUser? { get }
     var isAuthenticated: Bool { get }
     func signInWithApple(credential: ASAuthorizationAppleIDCredential) async throws
-    func signInWithGoogle(presenting: Any) async throws
     func signOut()
     func continueWithoutAccount()
 }
@@ -49,13 +48,6 @@ final class AuthService: AuthServiceProtocol {
 
         try saveUser(user)
         currentUser = user
-    }
-
-    func signInWithGoogle(presenting: Any) async throws {
-        // Google Sign-In implementation will be configured with GoogleSignIn SDK
-        // Requires GIDSignIn.sharedInstance.signIn(withPresenting:)
-        // Placeholder — requires Google OAuth client ID in Info.plist
-        throw AuthError.notConfigured
     }
 
     func signOut() {

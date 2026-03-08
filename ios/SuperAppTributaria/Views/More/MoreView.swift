@@ -76,11 +76,34 @@ struct MoreView: View {
                     }
                 }
 
+                Section("Legal") {
+                    NavigationLink {
+                        LegalView(page: .terms)
+                    } label: {
+                        moreRow(icon: "doc.plaintext", title: "Terminos de Uso", subtitle: "Condiciones del servicio")
+                    }
+
+                    NavigationLink {
+                        LegalView(page: .privacy)
+                    } label: {
+                        moreRow(icon: "lock.shield", title: "Politica de Privacidad", subtitle: "Tratamiento de datos personales")
+                    }
+
+                    NavigationLink {
+                        LegalView(page: .about)
+                    } label: {
+                        moreRow(icon: "info.circle", title: "Acerca de", subtitle: "Version, creditos e IA generativa")
+                    }
+                }
+
                 Section {
                     HStack {
                         Spacer()
                         VStack(spacing: 4) {
                             Text("SuperApp Tributaria Colombia")
+                                .font(AppTypography.caption)
+                                .foregroundStyle(Color.appMutedForeground)
+                            Text("v1.0.0")
                                 .font(AppTypography.caption)
                                 .foregroundStyle(Color.appMutedForeground)
                             Text("UVT \(TaxData.currentUVTYear): \(CurrencyFormatter.cop(TaxData.uvt2026)) | SMLMV: \(CurrencyFormatter.cop(TaxData.smlmv2026))")

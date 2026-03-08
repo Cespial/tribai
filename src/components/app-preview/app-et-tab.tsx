@@ -21,9 +21,9 @@ const ARTICLES = [
 
 function EstadoBadge({ estado }: { estado: "vigente" | "modificado" | "derogado" }) {
   const styles = {
-    vigente: "bg-green-500/15 text-green-700 dark:text-green-400",
+    vigente: "bg-success/15 text-success",
     modificado: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400",
-    derogado: "bg-red-500/15 text-red-700 dark:text-red-400",
+    derogado: "bg-destructive/15 text-destructive",
   };
   return (
     <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${styles[estado]}`}>
@@ -56,6 +56,7 @@ export function AppETTab() {
           <input
             type="text"
             placeholder="Buscar artículos..."
+            aria-label="Buscar artículos"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
@@ -102,7 +103,7 @@ export function AppETTab() {
         </p>
         <div className="divide-y divide-border">
           {filtered.map((article) => (
-            <div key={article.id} className="flex items-start justify-between px-4 py-3 transition-colors active:bg-muted">
+            <button key={article.id} className="flex w-full items-start justify-between px-4 py-3 text-left transition-colors hover:bg-muted active:bg-muted">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="font-values text-[14px] font-semibold text-foreground">
@@ -120,7 +121,7 @@ export function AppETTab() {
               <svg className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
               </svg>
-            </div>
+            </button>
           ))}
           {filtered.length === 0 && (
             <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">

@@ -64,6 +64,11 @@ struct MessageBubbleView: View {
                         onCopy: onCopy,
                         onRetry: onRetry
                     )
+
+                    // AI-generated content notice
+                    Text("Respuesta generada por IA — no constituye asesoria profesional")
+                        .font(.system(size: 10))
+                        .foregroundStyle(Color.appMutedForeground.opacity(0.7))
                 }
             }
 
@@ -189,9 +194,10 @@ private struct SuggestedCalculatorChip: View {
                     SourceCitation(
                         idArticulo: "Art. 592",
                         titulo: "Quiénes no están obligados a declarar",
-                        slug: "articulo-592",
-                        contenidoTexto: "No están obligados a presentar declaración de renta...",
-                        libro: "Libro I",
+                        url: "https://estatuto.co/592",
+                        categoriaLibro: "Libro I",
+                        relevanceScore: 0.9,
+                        slug: "592",
                         estado: .vigente
                     )
                 ]

@@ -1,22 +1,44 @@
 import Foundation
 
 struct SourceCitation: Codable, Identifiable, Equatable, Hashable {
-    var id: String { idArticulo + slug }
+    var id: String { idArticulo + (slug ?? "") }
 
     let idArticulo: String
     let titulo: String
-    let slug: String
-    let contenidoTexto: String
-    let libro: String
-    let estado: ArticleStatus
+    let url: String?
+    let categoriaLibro: String?
+    let relevanceScore: Double?
+    let slug: String?
+    let estado: ArticleStatus?
+    let totalModificaciones: Int?
+    let docType: String?
+    let namespace: String?
 
-    enum CodingKeys: String, CodingKey {
-        case idArticulo
-        case titulo
-        case slug
-        case contenidoTexto = "contenido_texto"
-        case libro
-        case estado
+    /// Convenience for views that need a libro display string.
+    var libro: String { categoriaLibro ?? "" }
+
+    init(
+        idArticulo: String,
+        titulo: String,
+        url: String? = nil,
+        categoriaLibro: String? = nil,
+        relevanceScore: Double? = nil,
+        slug: String? = nil,
+        estado: ArticleStatus? = nil,
+        totalModificaciones: Int? = nil,
+        docType: String? = nil,
+        namespace: String? = nil
+    ) {
+        self.idArticulo = idArticulo
+        self.titulo = titulo
+        self.url = url
+        self.categoriaLibro = categoriaLibro
+        self.relevanceScore = relevanceScore
+        self.slug = slug
+        self.estado = estado
+        self.totalModificaciones = totalModificaciones
+        self.docType = docType
+        self.namespace = namespace
     }
 }
 

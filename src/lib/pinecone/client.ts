@@ -59,6 +59,8 @@ function recordFailure(): void {
 /**
  * Retry with exponential backoff + circuit breaker for Pinecone operations.
  */
+const HARD_TIMEOUT_MS = 10_000; // 10s hard timeout per operation
+
 export async function withRetry<T>(
   fn: () => Promise<T>,
   maxRetries = 3,
@@ -71,12 +73,19 @@ export async function withRetry<T>(
 
   for (let i = 0; i <= maxRetries; i++) {
     try {
-      const result = await fn();
+      const result = await Promise.race([
+        fn(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Pinecone operation timed out")), HARD_TIMEOUT_MS)
+        ),
+      ]);
       recordSuccess();
       return result;
     } catch (e) {
-      recordFailure();
-      if (i === maxRetries) throw e;
+      if (i === maxRetries) {
+        recordFailure();
+        throw e;
+      }
       const delay = baseDelay * Math.pow(2, i) + Math.random() * 500;
       console.warn(`[pinecone] Retry ${i + 1}/${maxRetries} after ${Math.round(delay)}ms`);
       await new Promise((r) => setTimeout(r, delay));

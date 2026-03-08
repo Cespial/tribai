@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 
 const USE_CASES = [
-  "Declaracion de Renta",
-  "Retencion en la Fuente",
-  "Regimen SIMPLE",
-  "Liquidacion Laboral",
+  "Declaración de Renta",
+  "Retención en la Fuente",
+  "Régimen SIMPLE",
+  "Liquidación Laboral",
   "Consulta del Estatuto",
   "Calendario Fiscal",
-  "Comparacion de Regimenes",
+  "Comparación de Regímenes",
 ];
 
 export function UseCaseTicker() {

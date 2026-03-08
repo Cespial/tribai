@@ -14,14 +14,18 @@ const store = new Map<string, RequestRecord>();
 // Only set up interval cleanup in non-edge environments
 if (typeof globalThis !== "undefined" && typeof setInterval !== "undefined") {
   try {
-    // Clean old entries every 5 minutes
-    setInterval(() => {
+    // Clean old entries every 1 minute
+    const cleanupTimer = setInterval(() => {
       const now = Date.now();
       for (const [key, record] of store) {
         record.timestamps = record.timestamps.filter((t) => now - t < WINDOW_MS);
         if (record.timestamps.length === 0) store.delete(key);
       }
-    }, 5 * 60_000);
+    }, 60_000);
+    if (typeof (cleanupTimer as { unref?: () => void }).unref === "function") {
+      // Prevent timer from blocking process exit (tests / short-lived workers).
+      (cleanupTimer as { unref: () => void }).unref();
+    }
   } catch {
     // Interval not supported in this environment (Edge runtime)
   }

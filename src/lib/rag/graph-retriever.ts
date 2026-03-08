@@ -27,39 +27,77 @@ interface TaxGraph {
 }
 
 let cachedGraph: TaxGraph | null = null;
+let loadingPromise: Promise<TaxGraph> | null = null;
 
+async function loadGraphAsync(): Promise<TaxGraph> {
+  if (cachedGraph) return cachedGraph;
+  if (loadingPromise) return loadingPromise;
+
+  loadingPromise = (async () => {
+    try {
+      const paths = [
+        `${process.cwd()}/public/data/graph-data.json`,
+        `${process.cwd()}/data/graph/tax-graph.json`,
+      ];
+
+      for (const graphPath of paths) {
+        try {
+          const fs = await import("fs").then((m) => m.promises);
+          const raw = await fs.readFile(graphPath, "utf-8");
+          cachedGraph = JSON.parse(raw);
+          console.log(`[graph-retriever] Loaded graph from ${graphPath} with ${cachedGraph?.nodes.length} nodes`);
+          return cachedGraph!;
+        } catch {
+          continue;
+        }
+      }
+
+      console.warn("[graph-retriever] Graph file not found in any expected location");
+      cachedGraph = { nodes: [], edges: [] };
+      return cachedGraph;
+    } catch (error) {
+      console.error("[graph-retriever] Failed to load graph:", error);
+      cachedGraph = { nodes: [], edges: [] };
+      return cachedGraph;
+    } finally {
+      loadingPromise = null;
+    }
+  })();
+
+  return loadingPromise;
+}
+
+/** Synchronous access — returns cached graph or empty if not yet loaded */
 function loadGraph(): TaxGraph {
   if (cachedGraph) return cachedGraph;
 
+  // Trigger async load for future calls
+  loadGraphAsync();
+
+  // Fallback: try synchronous load for first call
   try {
-    // Try multiple paths: public/data for Vercel, data/graph for local scripts
     const paths = [
       `${process.cwd()}/public/data/graph-data.json`,
       `${process.cwd()}/data/graph/tax-graph.json`,
     ];
-
     for (const graphPath of paths) {
       try {
-        // Use dynamic import-friendly approach that works in both Node and Edge
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const fs = require("fs");
         if (fs.existsSync(graphPath)) {
           const raw = fs.readFileSync(graphPath, "utf-8");
           cachedGraph = JSON.parse(raw);
-          console.log(`[graph-retriever] Loaded graph from ${graphPath} with ${cachedGraph?.nodes.length} nodes`);
           return cachedGraph!;
         }
       } catch {
         continue;
       }
     }
-
-    console.warn("[graph-retriever] Graph file not found in any expected location");
-    return { nodes: [], edges: [] };
-  } catch (error) {
-    console.error("[graph-retriever] Failed to load graph:", error);
-    return { nodes: [], edges: [] };
+  } catch {
+    // Sync load failed, async will handle it
   }
+
+  return { nodes: [], edges: [] };
 }
 
 // Relation weights for scoring — higher weight = more relevant connection

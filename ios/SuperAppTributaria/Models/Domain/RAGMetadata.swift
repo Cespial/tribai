@@ -23,14 +23,14 @@ struct RAGMetadata: Codable, Equatable {
     let namespacesSearched: [String]?
 
     // Advanced features
-    let siblingChunksAdded: Bool?
+    let siblingChunksAdded: Int?
     let embeddingCacheHitRate: Double?
 
     // Confidence & evidence
     let confidenceLevel: ConfidenceLevel?
     let evidenceQuality: Double?
-    let namespaceContribution: [String: Double]?
-    let contradictionFlags: [String]?
+    let namespaceContribution: [String: Int]?
+    let contradictionFlags: Bool?
 
     // Performance timing
     let pipelineMs: Double?
@@ -53,4 +53,5 @@ struct PipelineTimings: Codable, Equatable {
     let reranking: Double?
     let contextAssembly: Double?
     let promptBuilding: Double?
+    let totalPipeline: Double?
 }

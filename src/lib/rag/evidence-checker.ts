@@ -136,8 +136,9 @@ function detectContradictions(context: AssembledContext): {
     if (article.estado === "derogado") {
       // Check if any external source references this article as vigente
       const artSlug = article.idArticulo.replace(/^Art\.\s*/, "");
+      const slugPattern = new RegExp(`(?:^|\\b)${artSlug.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\b|$)`);
       for (const ext of context.externalSources ?? []) {
-        if (ext.vigente && ext.articulosET.some(a => a.includes(artSlug))) {
+        if (ext.vigente && ext.articulosET.some(a => slugPattern.test(a))) {
           details.push(
             `${article.idArticulo} está derogado pero ${ext.docType} ${ext.numero} lo referencia como vigente`
           );

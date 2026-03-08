@@ -152,11 +152,11 @@ body {
    TRIBAI TYPOGRAPHY SYSTEM
    ═══════════════════════════════════════════════ */
 
-/* Heading — DM Serif Display, clean authority */
+/* Heading — clean geometric sans, Pinecone-style authority */
 .heading-serif {
-  font-family: var(--font-serif, "DM Serif Display"), "Georgia", serif;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+  font-weight: 700;
+  letter-spacing: -0.03em;
   line-height: 1.1;
 }
 
@@ -533,6 +533,19 @@ body {
 .constellation-node-delay-4 { animation-delay: 1.2s; }
 .constellation-node-delay-5 { animation-delay: 1.35s; }
 
+/* Disable constellation animations for motion-sensitive users */
+@media (prefers-reduced-motion: reduce) {
+  .constellation-pulse-outer,
+  .constellation-pulse-inner,
+  .constellation-core-pulse,
+  .constellation-flow,
+  .constellation-orbit-rotate,
+  .constellation-orbit-rotate-reverse,
+  .constellation-twinkle {
+    animation: none !important;
+  }
+}
+
 
 /* ═══════════════════════════════════════════════
    PHONE MOCKUP — iPhone 15 Pro proportions
@@ -540,11 +553,11 @@ body {
 
 .phone-mockup {
   position: relative;
-  width: 280px;
-  height: 572px;
+  width: clamp(240px, 40vw, 280px);
+  height: clamp(490px, 82vw, 572px);
   background: #1C1C1E;
-  border-radius: 44px;
-  padding: 12px;
+  border-radius: clamp(38px, 6vw, 44px);
+  padding: clamp(10px, 1.8vw, 12px);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.12),
     0 25px 80px rgba(0, 0, 0, 0.15),
@@ -617,13 +630,7 @@ body {
   animation: app-typing-bounce 1.2s ease-in-out infinite;
 }
 
-/* Responsive phone mockup — fluid sizing */
-.phone-mockup {
-  width: clamp(240px, 40vw, 280px);
-  height: clamp(490px, 82vw, 572px);
-  border-radius: clamp(38px, 6vw, 44px);
-  padding: clamp(10px, 1.8vw, 12px);
-}
+/* Responsive phone mockup — small screen adjustments */
 
 @media (max-width: 480px) {
   .phone-dynamic-island {

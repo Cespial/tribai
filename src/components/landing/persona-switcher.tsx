@@ -97,10 +97,22 @@ export function PersonaSwitcher() {
 
   return (
     <div className="relative">
+      <p className="mb-3 text-xs text-muted-foreground md:hidden">Deslice o use flechas para ver más perfiles →</p>
       <div
         role="tablist"
-        aria-label="Seleccion de perfil"
+        aria-label="Selección de perfil"
         className="mb-8 flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0"
+        onKeyDown={(e) => {
+          const tabs = PERSONAS.map((p) => p.key);
+          const currentIndex = tabs.indexOf(activeKey);
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            setActiveKey(tabs[(currentIndex + 1) % tabs.length]);
+          } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            setActiveKey(tabs[(currentIndex - 1 + tabs.length) % tabs.length]);
+          }
+        }}
       >
         {PERSONAS.map((persona) => {
           const isActive = persona.key === activePersona.key;

@@ -40,7 +40,14 @@ export async function retrieve(
     .filter((t, i, arr) => arr.indexOf(t) === i); // dedup
 
   // Embed all queries in parallel
-  const embeddings = await embedQueries(queryTexts);
+  let embeddings: number[][];
+  try {
+    embeddings = await embedQueries(queryTexts);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message.slice(0, 80) : String(error);
+    console.error(`[retriever] embedQueries failed: ${msg}`);
+    throw new Error("No se pudieron generar los embeddings para la consulta.");
+  }
 
   // Query Pinecone default namespace with each embedding in parallel
   const index = getIndex();
@@ -71,7 +78,20 @@ export async function retrieve(
     }
   }
 
-  const results = await Promise.all(queryPromises);
+  const settledResults = await Promise.allSettled(queryPromises);
+  const results = settledResults
+    .filter((r): r is PromiseFulfilledResult<Awaited<(typeof queryPromises)[number]>> => r.status === "fulfilled")
+    .map((r) => r.value);
+
+  if (results.length === 0) {
+    throw new Error("All Pinecone queries failed");
+  }
+
+  // Log rejected queries
+  const rejected = settledResults.filter((r) => r.status === "rejected");
+  if (rejected.length > 0) {
+    console.warn(`[retriever] ${rejected.length}/${settledResults.length} queries failed, continuing with ${results.length} results`);
+  }
 
   // Improved dynamic threshold: use median of top-5 scores across ALL queries
   const allScores = results

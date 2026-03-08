@@ -84,7 +84,8 @@ export async function llmRerank(
         .join("\n\n")}`,
     });
 
-    const winnerId = text.trim();
+    const idMatch = text.trim().match(/^[\w-]+/);
+    const winnerId = idMatch ? idMatch[0] : text.trim();
     const winnerIdx = top3.findIndex((c) => c.id === winnerId);
 
     if (winnerIdx > 0) {
@@ -364,8 +365,8 @@ export function heuristicRerank(
     const artId = chunk.metadata.id_articulo;
     const count = articleCounts.get(artId) || 0;
     if (count > 0) {
-      // Penalize repeat appearances of the same article
-      chunk.rerankedScore += BOOST.diversityPenalty * count;
+      // Penalize repeat appearances of the same article, with floor to prevent negative scores
+      chunk.rerankedScore = Math.max(chunk.rerankedScore + BOOST.diversityPenalty * count, 0.05);
     }
     articleCounts.set(artId, count + 1);
   }

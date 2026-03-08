@@ -31,7 +31,7 @@ export function WorkflowSteps() {
   return (
     <section
       aria-labelledby="workflow-title"
-      className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+      className="border-t border-border bg-background px-6 py-10 md:px-12 md:py-24 lg:px-20"
     >
       <Reveal className="mx-auto max-w-[960px]">
         <p className="eyebrow-label">
@@ -73,7 +73,7 @@ export function WorkflowSteps() {
             href="/calculadoras"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-tribai-blue transition-colors hover:underline hover:text-tribai-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tribai-blue/30"
           >
-            Empezar ahora
+            Probar con una consulta real
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </div>

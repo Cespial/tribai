@@ -14,7 +14,7 @@ struct ChatServiceTests {
             ],
             conversationId: "conv-abc123",
             filters: nil,
-            pageContext: PageContext(pathname: "/", module: "home")
+            pageContext: PageContext(pathname: "/", module: .home)
         )
 
         let data = try JSONEncoder().encode(request)

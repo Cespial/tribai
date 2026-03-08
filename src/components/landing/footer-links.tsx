@@ -28,6 +28,8 @@ const FOOTER_COLUMNS = [
       { label: "Comparador de artículos", href: "/comparar" },
       { label: "Favoritos", href: "/favoritos" },
       { label: "Preguntas frecuentes", href: "#faq" },
+      { label: "Términos de uso", href: "/terminos" },
+      { label: "Privacidad", href: "/privacidad" },
     ],
   },
 ] as const;
@@ -112,7 +114,7 @@ export function FooterLinks() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+                    className="text-sm text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                   >
                     {link.label}
                   </Link>
@@ -131,8 +133,8 @@ export function FooterLinks() {
             legal o contable personalizada. El criterio profesional siempre
             prevalece.
           </p>
-          <p className="text-xs text-white/30">
-            &copy; {currentYear} tribai.co — Hecho en Colombia para Colombia.
+          <p className="text-xs text-white/50">
+            &copy; {currentYear} tribai.co — Por contadores colombianos, para contadores colombianos.
           </p>
         </div>
 
@@ -141,7 +143,7 @@ export function FooterLinks() {
             href="https://www.linkedin.com/company/tribaico"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white/50 transition-colors hover:text-white"
+            className="text-white/50 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:rounded-sm"
             aria-label="LinkedIn"
           >
             <LinkedInIcon className="h-5 w-5" />
@@ -150,14 +152,14 @@ export function FooterLinks() {
             href="https://x.com/tribaico"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white/50 transition-colors hover:text-white"
+            className="text-white/50 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:rounded-sm"
             aria-label="X / Twitter"
           >
             <XIcon className="h-5 w-5" />
           </a>
           <a
             href="mailto:hola@tribai.co"
-            className="text-white/50 transition-colors hover:text-white"
+            className="text-white/50 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:rounded-sm"
             aria-label="Email"
           >
             <EmailIcon className="h-5 w-5" />

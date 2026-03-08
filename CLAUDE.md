@@ -162,7 +162,7 @@ eval/                             # Framework de evaluación RAG (340 queries, 1
 | Token | Light | Dark | Uso |
 |-------|-------|------|-----|
 | `--tribai-navy` | `#0A1628` | `#0A0F1A` | Hero backgrounds, section-dark |
-| `--tribai-blue` | `#1B4D8F` | `#4B9FE1` | Primary CTA, links, active states |
+| `--tribai-blue` | `#0066FF` | `#3B82F6` | Primary CTA, links, active states |
 | `--tribai-gold` | `#C4952A` | `#D4A83A` | Accents, badges, metric values (large text only — 3:1 AA) |
 | `--tribai-light-blue` | `#3B82B8` | `#6BB5E8` | Secondary blue accent |
 
@@ -170,13 +170,13 @@ eval/                             # Framework de evaluación RAG (340 queries, 1
 
 | Token | Light | Dark |
 |-------|-------|------|
-| `--background` | `#F8F6F3` (ivory cálido) | `#0A0F1A` |
+| `--background` | `#FFFFFF` | `#0A0F1A` |
 | `--foreground` | `#1A1A1A` | `#E8E6E3` |
 | `--card` | `#ffffff` | `#131B2E` |
-| `--muted` | `#F0EEEB` | `#1B2540` |
+| `--muted` | `#F5F5F5` | `#1B2540` |
 | `--muted-foreground` | `#6B7280` | `#9CA3AF` |
-| `--border` | `#E5E7EB` | `#1F2937` |
-| `--primary` | `#1B4D8F` (= tribai-blue) | `#4B9FE1` |
+| `--border` | `#E8E8E8` | `#1F2937` |
+| `--primary` | `#0066FF` (= tribai-blue) | `#3B82F6` |
 | `--destructive` | `#dc2626` | `#ef4444` |
 | `--success` | `#16a34a` | `#22c55e` |
 

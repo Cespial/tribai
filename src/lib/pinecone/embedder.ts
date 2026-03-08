@@ -21,7 +21,7 @@ export function getCacheStats() {
 }
 
 function getHash(text: string): string {
-  return crypto.createHash("md5").update(text).digest("hex");
+  return crypto.createHash("sha256").update(text).digest("hex");
 }
 
 function getFromCache(text: string): number[] | undefined {

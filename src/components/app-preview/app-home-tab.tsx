@@ -39,7 +39,7 @@ const FEATURES: {
   {
     icon: Calculator,
     title: "Calculadoras",
-    description: "35 herramientas 2026",
+    description: "35 calculadoras 2026",
     tab: "calculators",
   },
   {
@@ -103,13 +103,13 @@ export function AppHomeTab({ onNavigate }: Props) {
 
       {/* Quick access calculators — horizontal scroll */}
       <div className="relative mb-5">
-        <h2 className="mb-2 text-lg font-semibold text-foreground">Acceso rapido</h2>
+        <h2 className="mb-2 text-lg font-semibold text-foreground">Acceso rápido</h2>
         <div className="scrollbar-hide flex gap-2 overflow-x-auto">
           {QUICK_CALCS.map((calc) => (
             <button
               key={calc.title}
               onClick={() => onNavigate("calculators")}
-              className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2.5 transition-colors active:bg-muted"
+              className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2.5 transition-colors hover:bg-muted active:bg-muted"
             >
               <calc.icon className="h-3.5 w-3.5 text-foreground" />
               <span className="text-[13px] font-medium text-foreground">{calc.title}</span>
@@ -128,7 +128,7 @@ export function AppHomeTab({ onNavigate }: Props) {
           </p>
         </div>
         <div className="rounded-lg border border-border bg-card p-3">
-          <p className="text-[11px] text-muted-foreground">Sancion Minima</p>
+          <p className="text-[11px] text-muted-foreground">Sanción Mínima</p>
           <p className="font-values mt-0.5 text-[14px] font-semibold text-foreground">
             {formatCOP(523740)}
           </p>
@@ -142,7 +142,7 @@ export function AppHomeTab({ onNavigate }: Props) {
           <button
             key={feature.title}
             onClick={() => onNavigate(feature.tab)}
-            className="flex flex-col items-start gap-2 rounded-lg border border-border bg-card p-3.5 text-left transition-colors active:bg-muted"
+            className="flex flex-col items-start gap-2 rounded-lg border border-border bg-card p-3.5 text-left transition-colors hover:bg-muted active:bg-muted"
           >
             <feature.icon className="h-6 w-6 text-foreground" strokeWidth={1.6} />
             <div>

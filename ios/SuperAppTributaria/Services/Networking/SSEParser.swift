@@ -34,7 +34,12 @@ enum SSEParser {
             let chunk = try JSONDecoder().decode(SSEChunkDTO.self, from: data)
             return mapChunk(chunk)
         } catch {
-            return .error(.decodingError(underlying: error))
+            // Skip unparseable events instead of killing the stream.
+            // The finish event metadata may contain new fields from the server.
+            #if DEBUG
+            print("[SSEParser] Skipping unparseable event: \(error.localizedDescription)")
+            #endif
+            return nil
         }
     }
 
@@ -72,6 +77,9 @@ enum SSEParser {
 
         default:
             // Ignore unknown chunk types (tool calls, reasoning, etc.)
+            #if DEBUG
+            print("[SSEParser] Unknown event type: \(chunk.type)")
+            #endif
             return .unknown(type: chunk.type)
         }
     }

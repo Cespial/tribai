@@ -50,7 +50,7 @@ export function AppMoreTab() {
       {/* Nav bar */}
       <div className="shrink-0 border-b border-border bg-card/80 px-4 pb-3 pt-14 backdrop-blur-xl">
         <h1 className="text-[28px] font-bold leading-tight tracking-tight text-foreground">
-          Mas
+          Más
         </h1>
       </div>
 
@@ -63,9 +63,9 @@ export function AppMoreTab() {
             </p>
             <div className="divide-y divide-border">
               {section.items.map((item) => (
-                <div
+                <button
                   key={item.title}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-muted"
+                  className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted active:bg-muted"
                 >
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-tribai-blue/10 dark:bg-tribai-blue/20">
                     <item.icon className="h-4 w-4 text-tribai-blue" />
@@ -77,7 +77,7 @@ export function AppMoreTab() {
                   <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
                   </svg>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -85,7 +85,7 @@ export function AppMoreTab() {
 
         {/* Footer */}
         <div className="px-4 pb-8 pt-6 text-center">
-          <p className="text-[11px] text-muted-foreground">tribai.co v1.0</p>
+          <p className="text-[11px] text-muted-foreground">tribai.co</p>
           <p className="mt-1 text-[11px] text-muted-foreground">
             UVT 2026: $52.374 · SMLMV: $1.750.905
           </p>

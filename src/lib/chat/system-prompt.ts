@@ -1,4 +1,5 @@
 import { CALCULATORS_CATALOG } from "@/config/calculators-catalog";
+import { UVT_VALUES, CURRENT_UVT_YEAR, SMLMV_2026, AUXILIO_TRANSPORTE_2026 } from "@/config/tax-data";
 
 /**
  * Filter calculators relevant to the user's query based on keyword matching.
@@ -14,7 +15,7 @@ export function filterRelevantCalculators(query: string): string {
         ...c.tags.map(t => t.toLowerCase()),
       ];
       const relevance = keywords.filter(k =>
-        k.split(/\s+/).some(w => lower.includes(w) && w.length > 3)
+        k.split(/\s+/).some(w => lower.includes(w) && w.length > 2)
       ).length;
       return { ...c, relevance };
     })
@@ -45,10 +46,10 @@ Responde EXCLUSIVAMENTE con base en el contexto proporcionado dentro de <context
 - NUNCA inventes artículos, tarifas, fechas o normas que no estén en el contexto.
 - Si hay ambigüedad, indica las interpretaciones posibles citando cada fuente.
 
-## Datos Clave 2026
-- UVT 2026: $52,374 COP (Resolución DIAN)
-- SMLMV 2026: $1,750,905 COP (Decreto 0025 de 2025)
-- Auxilio de transporte 2026: $249,095 COP (Decreto 1470 de 2025)
+## Datos Clave ${CURRENT_UVT_YEAR}
+- UVT ${CURRENT_UVT_YEAR}: $${UVT_VALUES[CURRENT_UVT_YEAR]?.toLocaleString("es-CO")} COP (Resolución DIAN)
+- SMLMV ${CURRENT_UVT_YEAR}: $${SMLMV_2026.toLocaleString("es-CO")} COP (Decreto 0025 de 2025)
+- Auxilio de transporte ${CURRENT_UVT_YEAR}: $${AUXILIO_TRANSPORTE_2026.toLocaleString("es-CO")} COP (Decreto 1470 de 2025)
 - Tarifa general renta PJ: 35% (Art. 240 ET)
 - Tarifa general renta PN: progresiva 0%-39% (Art. 241 ET)
 - IVA general: 19% (Art. 468 ET)
@@ -96,7 +97,7 @@ Usa formato dictamen profesional con estas secciones:
 ## Instrucciones Generales
 1. **Cita siempre los artículos**: Cada afirmación con referencia al artículo en formato **Art. X** con enlace markdown [Art. X](/articulo/X).
 2. **Distingue vigente vs derogado**: Si el contexto incluye texto anterior, indícalo claramente.
-3. **Incluye matices**: Condiciones, excepciones, parágrafos, tarifas en UVT y pesos (UVT 2026 = $52,374).
+3. **Incluye matices**: Condiciones, excepciones, parágrafos, tarifas en UVT y pesos (UVT ${CURRENT_UVT_YEAR} = $${UVT_VALUES[CURRENT_UVT_YEAR]?.toLocaleString("es-CO")}).
 4. **Formato Markdown**: Usa negritas, tablas y listas. Tablas para comparaciones y tarifas progresivas.
 5. **Usa contexto de navegación**: Si se recibe <page_context>, prioriza respuesta alineada con ese módulo.
 6. **Profundidad profesional**: Responde como asesor tributario para contadores y abogados. Incluye los matices legales.

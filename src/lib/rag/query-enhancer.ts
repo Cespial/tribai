@@ -115,7 +115,7 @@ export async function enhanceQuery(
   if (isDirectLookup) {
     return {
       original: query,
-      rewritten: expanded,
+      rewritten: query,
       detectedArticles,
       detectedLibro,
     };

@@ -4,7 +4,7 @@ import { openai } from "@ai-sdk/openai";
 import { runRAGPipeline } from "@/lib/rag/pipeline";
 import { LIBROS } from "@/config/categories";
 import { ChatRequestSchema, validateMessageLength } from "@/lib/api/validation";
-import { checkRateLimit } from "@/lib/api/rate-limiter";
+import { checkRateLimitWithHeaders } from "@/lib/api/rate-limiter";
 import { buildConversationContext } from "@/lib/chat/session-memory";
 import { suggestCalculators } from "@/lib/chat/calculator-context";
 import type { ChatPageContext } from "@/types/chat-history";
@@ -28,15 +28,15 @@ function getTextFromMessage(message: UIMessage): string {
 }
 
 function getClientIP(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return "unknown";
+  const realIp = req.headers.get("x-real-ip");
+  const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return realIp || forwarded || "unknown";
 }
 
 export async function POST(req: Request) {
   // Rate limiting
   const ip = getClientIP(req);
-  const { allowed, retryAfter } = checkRateLimit(ip);
+  const { allowed, retryAfter } = checkRateLimitWithHeaders(req);
   if (!allowed) {
     return new Response(
       JSON.stringify({ error: "Demasiadas solicitudes. Intenta de nuevo en unos segundos." }),
@@ -92,6 +92,13 @@ export async function POST(req: Request) {
   }
 
   const userQuery = getTextFromMessage(lastMessage as unknown as UIMessage);
+
+  if (!userQuery.trim()) {
+    return new Response(
+      JSON.stringify({ error: "El mensaje está vacío." }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   // Resolve libro filter
   let libroFilter: string | undefined;

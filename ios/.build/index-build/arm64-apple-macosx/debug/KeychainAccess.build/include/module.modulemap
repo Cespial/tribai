@@ -1,0 +1,3 @@
+module KeychainAccess {
+    header "/Users/cristianespinal/Claude Code/Projects/tribai.co/superapp-tributaria-colombia/ios/.build/index-build/arm64-apple-macosx/debug/KeychainAccess.build/include/KeychainAccess-Swift.h"
+}

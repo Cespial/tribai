@@ -28,12 +28,9 @@ import { PhoneMockupSection } from "@/components/landing/phone-mockup-section";
 import { BrainGraphSection } from "@/components/landing/brain-graph-section";
 
 export const metadata: Metadata = {
-  title: "tribai.co — Inteligencia tributaria para contadores colombianos",
+  title: "tribai.co — Inteligencia tributaria colombiana",
   description:
-    "Resuelva tributaria colombiana en minutos: 35 calculadoras de precisión, 1.294 artículos del Estatuto Tributario y asistente IA con citación de fuentes. Sin costo. Sin registro.",
-  alternates: {
-    canonical: "https://superapp-tributaria-colombia.vercel.app/",
-  },
+    "Resuelva tributaria colombiana con rigor: 35 calculadoras, 1.294 artículos del Estatuto Tributario, asistente IA con citación de fuentes. Sin costo. Sin registro.",
   keywords: [
     "tribai",
     "tributaria colombia",
@@ -46,30 +43,6 @@ export const metadata: Metadata = {
     "calculadoras tributarias colombia",
     "contadores colombia",
   ],
-  openGraph: {
-    title: "tribai.co — Inteligencia tributaria colombiana",
-    description:
-      "El Estatuto, la calculadora y el criterio. Todo en uno. Sin costo.",
-    url: "https://superapp-tributaria-colombia.vercel.app/",
-    locale: "es_CO",
-    type: "website",
-    siteName: "tribai.co",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "tribai.co — Inteligencia tributaria colombiana",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "tribai.co — Inteligencia tributaria colombiana",
-    description:
-      "35 calculadoras. 1.294 artículos del ET. IA con fuente normativa. Gratis.",
-    images: ["/og-image.png"],
-  },
 };
 
 /* ── Three Pillars ── */
@@ -224,7 +197,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="hero-title"
-        className="bg-background px-6 pb-16 pt-12 md:px-12 md:pb-24 md:pt-16 lg:px-20"
+        className="bg-background px-6 pb-10 pt-12 md:px-12 md:pb-24 md:pt-16 lg:px-20"
       >
         <div className="mx-auto flex max-w-[960px] items-start gap-10 md:gap-12 lg:items-center">
           {/* Left column — text */}
@@ -252,7 +225,7 @@ export default function Home() {
               <div className="hero-btn-bracket">
                 <Link
                   href="/asistente"
-                  className="inline-flex h-12 items-center justify-center bg-tribai-blue px-7 text-[15px] font-semibold text-white transition-colors hover:bg-tribai-blue/90"
+                  className="inline-flex h-12 items-center justify-center bg-tribai-blue px-7 text-[15px] font-semibold text-white transition-colors hover:bg-tribai-blue/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   Preguntarle a la IA
                 </Link>
@@ -260,7 +233,7 @@ export default function Home() {
               <div className="hero-btn-bracket">
                 <Link
                   href="/calculadoras"
-                  className="inline-flex h-12 items-center justify-center border border-border px-7 text-[15px] font-semibold text-foreground transition-colors hover:bg-muted"
+                  className="inline-flex h-12 items-center justify-center border border-border px-7 text-[15px] font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   Ver calculadoras
                 </Link>
@@ -274,7 +247,7 @@ export default function Home() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-tribai-blue" />
               </span>
               <p className="text-xs text-muted-foreground">
-                Lanzamiento próximamente — <span className="font-semibold text-foreground">acceso anticipado disponible</span>
+                Disponible ahora — <span className="font-semibold text-foreground">gratis y sin registro</span>
               </p>
             </div>
           </div>
@@ -289,17 +262,17 @@ export default function Home() {
       {/* ═══════════════════════════════════════════
           SECTION 2: TRUST — Quick proof strip
           ═══════════════════════════════════════════ */}
-      <section className="border-y border-border bg-background px-6 py-8 md:px-12 md:py-10 lg:px-20">
+      <section aria-label="Garantías de la plataforma" className="border-y border-border bg-background px-6 py-8 md:px-12 md:py-10 lg:px-20">
         <div className="mx-auto flex max-w-[960px] flex-wrap items-center justify-center gap-x-10 gap-y-4 md:justify-between">
           {[
-            { value: "1.294", label: "artículos del ET" },
-            { value: "35", label: "calculadoras · 2026" },
-            { value: "841", label: "conceptos DIAN" },
-            { value: "36K", label: "fuentes normativas" },
-          ].map(({ value, label }) => (
-            <div key={label} className="flex items-center gap-2.5">
-              <span className="font-values text-xl font-bold text-foreground">{value}</span>
-              <span className="text-sm text-foreground-body">{label}</span>
+            "Norma vigente 2026",
+            "Gratis · Sin registro",
+            "Citación de fuentes",
+            "UVT $52.374",
+          ].map((item) => (
+            <div key={item} className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-tribai-blue" aria-hidden="true" />
+              <span className="text-sm font-medium text-foreground-body">{item}</span>
             </div>
           ))}
         </div>
@@ -310,7 +283,7 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="pillars-title"
-        className="bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+        className="bg-background px-6 py-10 md:px-12 md:py-24 lg:px-20"
       >
         <Reveal className="mx-auto max-w-[960px]">
           <p className="eyebrow-label">
@@ -327,7 +300,7 @@ export default function Home() {
             {PILLARS.map((pillar, index) => {
               const isFeatured = "featured" in pillar && pillar.featured;
               return (
-                <div
+                <article
                   key={pillar.title}
                   className={`group p-8 ${index < PILLARS.length - 1 ? "border-b border-border md:border-b-0" : ""} ${isFeatured ? "border-l-2 border-l-tribai-blue bg-tribai-blue/[0.06] dark:bg-tribai-blue/[0.08] md:border-l-0 md:border-t-2 md:border-t-tribai-blue" : ""}`}
                 >
@@ -350,12 +323,12 @@ export default function Home() {
                   </p>
                   <Link
                     href={pillar.href}
-                    className={`mt-5 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:underline ${isFeatured ? "rounded-md bg-tribai-blue px-4 py-2 text-white hover:bg-tribai-blue/90 hover:no-underline" : "text-tribai-blue hover:text-tribai-blue"}`}
+                    className={`mt-5 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 hover:underline ${isFeatured ? "rounded-md bg-tribai-blue px-4 py-2 text-white hover:bg-tribai-blue/90 hover:no-underline focus-visible:ring-offset-2" : "min-h-[44px] items-center text-tribai-blue hover:text-tribai-blue"}`}
                   >
                     {pillar.cta}
                     <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                   </Link>
-                </div>
+                </article>
               );
             })}
           </div>
@@ -363,11 +336,16 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 4: PERSONAS — "¿Esto es para mí?"
+          SECTION 4: COMPARISON — Why trust Tribai (early objection handling)
+          ═══════════════════════════════════════════ */}
+      <ComparisonSection />
+
+      {/* ═══════════════════════════════════════════
+          SECTION 5: PERSONAS — "¿Esto es para mí?"
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="personas-title"
-        className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+        className="border-t border-border bg-background px-6 py-10 md:px-12 md:py-24 lg:px-20"
       >
         <Reveal className="mx-auto max-w-[960px]">
           <p className="eyebrow-label">
@@ -390,12 +368,12 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 5: ASISTENTE IA — Live demo (promoted)
+          SECTION 6: ASISTENTE IA — Live demo (promoted)
           ═══════════════════════════════════════════ */}
       <section
         id="asistente"
         aria-labelledby="asistente-title"
-        className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+        className="border-t border-border bg-background px-6 py-10 md:px-12 md:py-24 lg:px-20"
       >
         <Reveal className="mx-auto max-w-[960px]" delay={50}>
           <div className="text-center">
@@ -425,37 +403,40 @@ export default function Home() {
           />
 
           <div className="mt-10 overflow-hidden rounded-lg border border-border bg-card">
-            <div className="border-b border-white/10 bg-tribai-navy px-5 py-4">
+            <div className="border-b border-border bg-tribai-navy px-5 py-4">
               <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-[#22C55E]" />
+                <div className="h-2 w-2 rounded-full bg-success" />
                 <h3 className="text-sm font-semibold text-white/90">
                   Asistente IA — contexto tributario colombiano
                 </h3>
               </div>
             </div>
-            <div className="h-[480px] sm:h-[600px] md:h-[720px]">
+            <div className="h-[360px] sm:h-[500px] md:h-[640px]">
               <LazyChatContainer />
             </div>
           </div>
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Sin registro · Sin costo · Herramienta informativa, no constituye asesoría personalizada.
+          </p>
         </Reveal>
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 6: WORKFLOW — 3 steps
+          SECTION 7: WORKFLOW — 3 steps
           ═══════════════════════════════════════════ */}
       <WorkflowSteps />
 
       {/* ═══════════════════════════════════════════
-          SECTION 7: BRAIN GRAPH — Knowledge graph WOW
+          SECTION 8: BRAIN GRAPH — Knowledge graph
           ═══════════════════════════════════════════ */}
       <BrainGraphSection />
 
       {/* ═══════════════════════════════════════════
-          SECTION 8: TOOLS GRID — "¿Qué más tiene?"
+          SECTION 9: TOOLS + METRICS
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="tools-title"
-        className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
+        className="border-t border-border bg-background px-6 py-10 md:px-12 md:py-24 lg:px-20"
       >
         <Reveal className="mx-auto max-w-[960px]">
           <p className="eyebrow-label">
@@ -495,42 +476,30 @@ export default function Home() {
               ))}
             </div>
           </div>
+
+          {/* Metrics — integrated into tools section */}
+          <div className="mt-16">
+            <MetricsSection />
+          </div>
         </Reveal>
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 9: METRICS — Hard numbers
-          ═══════════════════════════════════════════ */}
-      <section
-        aria-labelledby="metrics-title"
-        className="border-t border-border bg-background px-6 py-16 md:px-12 md:py-24 lg:px-20"
-      >
-        <Reveal className="mx-auto max-w-[960px]" delay={50}>
-          <MetricsSection />
-        </Reveal>
-      </section>
-
-      {/* ═══════════════════════════════════════════
-          SECTION 10: COMPARISON — Rigor
-          ═══════════════════════════════════════════ */}
-      <ComparisonSection />
-
-      {/* ═══════════════════════════════════════════
-          SECTION 11: APP PREVIEW — iPhone mockup
+          SECTION 10: APP PREVIEW — iPhone mockup
           ═══════════════════════════════════════════ */}
       <PhoneMockupSection />
 
       {/* ═══════════════════════════════════════════
-          SECTION 12: FAQ
+          SECTION 11: FAQ
           ═══════════════════════════════════════════ */}
       <FaqSection items={FAQ_ENTRIES} />
 
       {/* ═══════════════════════════════════════════
-          SECTION 13: FINAL CTA
+          SECTION 12: FINAL CTA
           ═══════════════════════════════════════════ */}
       <section
         aria-labelledby="cta-final-title"
-        className="section-navy px-6 py-16 md:px-12 md:py-24 lg:px-20"
+        className="section-navy px-6 py-10 md:px-12 md:py-24 lg:px-20"
       >
         <Reveal className="mx-auto max-w-3xl text-center" delay={50}>
           <h2
@@ -547,18 +516,18 @@ export default function Home() {
               href="/asistente"
               className="btn-primary h-12 px-6"
             >
-              Preguntarle a la IA
+              Empezar ahora — es gratis
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
             </Link>
             <Link
               href="/calculadoras"
               className="btn-secondary h-12 border-white/20 px-6 text-white hover:border-white/40 hover:bg-white/10"
             >
-              Explorar calculadoras
+              Ver calculadoras
             </Link>
           </div>
           <p className="mt-4 text-xs text-white/50">
-            Hecho en Colombia para contadores colombianos.
+            Herramienta de apoyo tributario. No constituye asesoría legal personalizada.
           </p>
         </Reveal>
       </section>
@@ -566,7 +535,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════
           FOOTER
           ═══════════════════════════════════════════ */}
-      <section className="section-navy px-6 pb-20 pt-14 md:px-12 md:pt-16 lg:px-20">
+      <section aria-label="Pie de página" className="section-navy px-6 pb-20 pt-14 md:px-12 md:pt-16 lg:px-20">
         <div className="mx-auto max-w-[960px]">
           <FooterLinks />
         </div>

@@ -53,15 +53,20 @@ export async function runRAGPipeline(
     totalPipeline: 0,
   };
 
-  // 1. Enhance query
+  // 1. Enhance query (with 8s timeout to prevent blocking)
   let enhancedQuery;
   const enhanceStart = performance.now();
   try {
-    enhancedQuery = await enhanceQuery(query, {
-      useHyDE: options.useHyDE ?? RAG_CONFIG.useHyDE,
-      useQueryExpansion: options.useQueryExpansion ?? RAG_CONFIG.useQueryExpansion,
-      pageContext: options.pageContext,
-    });
+    enhancedQuery = await Promise.race([
+      enhanceQuery(query, {
+        useHyDE: options.useHyDE ?? RAG_CONFIG.useHyDE,
+        useQueryExpansion: options.useQueryExpansion ?? RAG_CONFIG.useQueryExpansion,
+        pageContext: options.pageContext,
+      }),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Query enhancement timed out")), 8000)
+      ),
+    ]);
   } catch (error) {
     console.error("[rag-pipeline] Query enhancement failed, using raw query:", error);
     enhancedQuery = {
@@ -69,7 +74,9 @@ export async function runRAGPipeline(
       rewritten: query,
       detectedArticles: [],
       degraded: true,
-      degradedReason: "enhancement_error",
+      degradedReason: error instanceof Error && error.message.includes("timed out")
+        ? "enhancement_timeout"
+        : "enhancement_error",
     };
   }
   timings.queryEnhancement = performance.now() - enhanceStart;

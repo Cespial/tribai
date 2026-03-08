@@ -6,6 +6,8 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var sizeClass
 
+    @Binding var deepLinkDestination: DeepLinkRouter.Destination?
+
     @State private var conversationListVM = ConversationListViewModel()
     @State private var chatVM: ChatViewModel?
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
@@ -75,6 +77,18 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingSearch) {
             GlobalSearchView()
+        }
+        .onChange(of: deepLinkDestination) { _, destination in
+            guard let destination else { return }
+            switch destination {
+            case .home: selectedTab = .home
+            case .chat: selectedTab = .chat
+            case .calculators: selectedTab = .calculators
+            case .calculator: selectedTab = .calculators
+            case .et, .article: selectedTab = .et
+            case .calendar, .more: selectedTab = .more
+            }
+            deepLinkDestination = nil
         }
     }
 
@@ -189,7 +203,7 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(deepLinkDestination: .constant(nil))
         .environment(AppEnvironment())
         .modelContainer(for: ConversationEntity.self, inMemory: true)
 }

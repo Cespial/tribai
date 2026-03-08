@@ -41,6 +41,7 @@ export function AppCalculatorsTab() {
           <input
             type="text"
             placeholder="Buscar calculadora..."
+            aria-label="Buscar calculadora"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
@@ -73,9 +74,9 @@ export function AppCalculatorsTab() {
             </p>
           )}
           {filtered.map((calc) => (
-            <div
+            <button
               key={calc.title}
-              className="flex flex-col gap-1.5 rounded-lg border border-border bg-card p-3 transition-colors active:bg-muted"
+              className="flex flex-col gap-1.5 rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted active:bg-muted"
             >
               <calc.icon className="h-5 w-5 text-foreground" strokeWidth={1.6} />
               <p className="text-[13px] font-semibold leading-tight text-foreground">
@@ -84,7 +85,7 @@ export function AppCalculatorsTab() {
               <p className="text-[11px] leading-tight text-muted-foreground">
                 {calc.desc}
               </p>
-            </div>
+            </button>
           ))}
         </div>
       </div>

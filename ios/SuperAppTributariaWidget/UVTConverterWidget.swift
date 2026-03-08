@@ -8,21 +8,35 @@ struct UVTEntry: TimelineEntry {
 }
 
 struct UVTProvider: TimelineProvider {
+    private static let suiteName = "group.com.superapp-tributaria.SuperAppTributaria"
+
     func placeholder(in context: Context) -> UVTEntry {
         UVTEntry(date: Date(), uvtValue: 52_374, year: 2026)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (UVTEntry) -> Void) {
-        let entry = UVTEntry(date: Date(), uvtValue: 52_374, year: 2026)
-        completion(entry)
+        completion(loadEntry())
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<UVTEntry>) -> Void) {
-        let entry = UVTEntry(date: Date(), uvtValue: 52_374, year: 2026)
+        let entry = loadEntry()
         let nextUpdate = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
         let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
         completion(timeline)
     }
+
+    private func loadEntry() -> UVTEntry {
+        if let data = UserDefaults(suiteName: Self.suiteName)?.data(forKey: "uvtData"),
+           let decoded = try? JSONDecoder().decode(SharedUVTDTO.self, from: data) {
+            return UVTEntry(date: Date(), uvtValue: Decimal(decoded.value), year: decoded.year)
+        }
+        return UVTEntry(date: Date(), uvtValue: 52_374, year: 2026)
+    }
+}
+
+private struct SharedUVTDTO: Codable {
+    let value: Double
+    let year: Int
 }
 
 struct UVTConverterWidgetView: View {
