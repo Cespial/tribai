@@ -3,16 +3,14 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useCallback, useMemo, FormEvent, useEffect, useRef } from "react";
-import { Scale, BookOpen } from "lucide-react";
+import { Scale, Send, Loader2, ArrowRight } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { MessageList } from "./message-list";
 import { ChatInput } from "./chat-input";
-import { SuggestedQuestions } from "./suggested-questions";
 import { FilterChips } from "./filter-chips";
 import { CalculatorSuggestions } from "./calculator-suggestions";
 import { suggestCalculators } from "@/lib/chat/calculator-context";
 import type { SourceCitation } from "@/types/rag";
-import { UI_COPY } from "@/config/ui-copy";
 import { getContextualQuestions, getPageModule } from "@/lib/chat/contextual-questions";
 import { useChatHistory } from "@/hooks/useChatHistory";
 import { ChatConversation, ChatPageContext } from "@/types/chat-history";
@@ -86,10 +84,11 @@ export function ChatContainer() {
   const [activeView, setActiveView] = useState<"chat" | "graph">("chat");
   const [detectedArticles, setDetectedArticles] = useState<string[]>([]);
   const [input, setInput] = useState(prefilledInput);
-  const [selectedConversationId, setSelectedConversationId] = useState("");
+  const [selectedConversationId, setSelectedConversationId] = useState(() => createConversationId());
   const [typingLabel, setTypingLabel] = useState("Buscando en el Estatuto Tributario...");
   const [exporting, setExporting] = useState(false);
   const [copiedAll, setCopiedAll] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
   const persistKeyRef = useRef("");
 
   const {
@@ -117,10 +116,20 @@ export function ChatContainer() {
     [libroFilter, pageContext, selectedConversationId]
   );
 
-  const { messages, setMessages, sendMessage, status } = useChat({
+  const { messages, setMessages, sendMessage, status, error } = useChat({
     id: "superapp-chat-ui",
     transport,
     messages: currentConversation?.messages || [],
+    onError: (err) => {
+      const msg = err.message || "Error al procesar la consulta";
+      if (msg.includes("429") || msg.includes("rate")) {
+        setChatError("Ha excedido el límite de consultas. Espere un momento e intente de nuevo.");
+      } else if (msg.includes("timeout") || msg.includes("504")) {
+        setChatError("La consulta tardó demasiado. Intente con una pregunta más específica.");
+      } else {
+        setChatError("Ocurrió un error al procesar su consulta. Intente de nuevo.");
+      }
+    },
   });
 
   const isLoading = status === "submitted" || status === "streaming";
@@ -202,8 +211,9 @@ export function ChatContainer() {
     });
   }, [currentConversation, setMessages]);
 
+  // Only persist conversations that have actual messages (fixes ghost "Nueva conversación" entries)
   useEffect(() => {
-    if (!selectedConversationId) return;
+    if (!selectedConversationId || messages.length === 0) return;
     const existing = currentConversation;
     const compactMessages = messages.map((message) => ({
       id: message.id,
@@ -244,6 +254,7 @@ export function ChatContainer() {
       if (!input.trim() || isLoading) return;
       const text = input.trim();
       setInput("");
+      setChatError(null);
       sendMessage({ text });
     },
     [input, isLoading, sendMessage]
@@ -263,16 +274,10 @@ export function ChatContainer() {
     setMessages([]);
     setInput("");
     setLibroFilter(undefined);
-    saveConversation({
-      id,
-      title: "Nueva conversación",
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      messages: [],
-      pageContext,
-      libroFilter: undefined,
-    });
-  }, [pageContext, saveConversation, setMessages]);
+    setChatError(null);
+    persistKeyRef.current = "";
+    // Don't persist until user sends first message — avoids ghost entries in sidebar
+  }, [setMessages]);
 
   const handleDeleteConversation = useCallback(
     (conversationId: string) => {
@@ -334,92 +339,139 @@ export function ChatContainer() {
       <div className="min-w-0 flex-1">
         <ChatBottomSheet>
           <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between border-b border-border/40 px-4 py-2">
-              <div className="flex items-center gap-4 flex-1">
-                <div className="max-w-md">
+            {/* Toolbar — only show when conversation has messages */}
+            {!isEmpty && (
+              <div className="flex flex-wrap items-center gap-2 border-b border-border/40 px-4 py-2">
+                <div className="min-w-0 flex-1">
                   <FilterChips selected={libroFilter} onChange={setLibroFilter} />
                 </div>
-                
-                {/* Tab Selector - Always visible if not in landing or after first interaction */}
-                <div className="flex bg-muted p-0.5 rounded-lg border border-border/50">
-                  <button
-                    onClick={() => setActiveView("chat")}
-                    className={clsx(
-                      "flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium rounded-md transition-all",
-                      activeView === "chat" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+
+                <div className="flex items-center gap-2">
+                  {/* Tab Selector */}
+                  <div className="flex rounded-lg border border-border/50 bg-muted p-0.5">
+                    <button
+                      onClick={() => setActiveView("chat")}
+                      className={clsx(
+                        "flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-all",
+                        activeView === "chat" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <MessageSquare className="h-3 w-3" />
+                      <span className="hidden sm:inline">Chat</span>
+                    </button>
+                    <button
+                      onClick={() => setActiveView("graph")}
+                      className={clsx(
+                        "flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-all",
+                        activeView === "graph" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <Network className="h-3 w-3" />
+                      <span className="hidden sm:inline">Mapa</span>
+                    </button>
+                  </div>
+
+                  {/* Export */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setExporting(!exporting)}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background/50 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Exportar</span>
+                    </button>
+
+                    {exporting && (
+                      <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-md border border-border bg-card p-1 shadow-lg animate-in fade-in zoom-in-95">
+                        <button
+                          onClick={handleExportJSON}
+                          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-xs transition-colors hover:bg-muted"
+                        >
+                          <FileJson className="h-3.5 w-3.5" />
+                          Descargar JSON
+                        </button>
+                        <button
+                          onClick={handleCopyAll}
+                          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-xs transition-colors hover:bg-muted"
+                        >
+                          {copiedAll ? <Check className="h-3.5 w-3.5 text-success" /> : <CopyIcon className="h-3.5 w-3.5" />}
+                          Copiar todo el chat
+                        </button>
+                      </div>
                     )}
-                  >
-                    <MessageSquare className="h-3 w-3" />
-                    Chat
-                  </button>
-                  <button
-                    onClick={() => setActiveView("graph")}
-                    className={clsx(
-                      "flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium rounded-md transition-all",
-                      activeView === "graph" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <Network className="h-3 w-3" />
-                    Mapa Legal
-                  </button>
+                  </div>
                 </div>
               </div>
-              
-              {!isEmpty && (
-                <div className="relative">
-                  <button
-                    onClick={() => setExporting(!exporting)}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background/50 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    Exportar
-                  </button>
-                  
-                  {exporting && (
-                    <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-md border border-border bg-popover p-1 shadow-lg animate-in fade-in zoom-in-95">
-                      <button
-                        onClick={handleExportJSON}
-                        className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-xs transition-colors hover:bg-muted"
-                      >
-                        <FileJson className="h-3.5 w-3.5" />
-                        Descargar JSON
-                      </button>
-                      <button
-                        onClick={handleCopyAll}
-                        className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-xs transition-colors hover:bg-muted"
-                      >
-                        {copiedAll ? <Check className="h-3.5 w-3.5 text-green-500" /> : <CopyIcon className="h-3.5 w-3.5" />}
-                        Copiar todo el chat
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+            )}
 
             {isEmpty ? (
-              <div className="flex flex-1 flex-col items-center justify-center p-4">
-                <div className="mb-8 max-w-2xl text-center">
-                  <div className="mb-4 flex justify-center">
-                    <div className="rounded-lg bg-muted p-4">
-                      <Scale className="h-10 w-10 text-foreground" />
-                    </div>
+              <div className="flex flex-1 flex-col items-center justify-center px-4 pb-8">
+                {/* Hero welcome */}
+                <div className="mb-6 text-center">
+                  <div className="mb-4 inline-flex rounded-2xl bg-muted/60 p-4">
+                    <Scale className="h-8 w-8 text-foreground" />
                   </div>
-                  <h2 className="mb-2 heading-serif text-2xl">Su asesor tributario colombiano</h2>
-                  <p className="mb-3 flex items-center justify-center gap-1.5 text-muted-foreground">
-                    <BookOpen className="h-4 w-4" />
-                    Consulta los {UI_COPY.stats.articlesCount} artículos indexados
-                  </p>
-                  <p className="mx-auto max-w-xl text-sm text-muted-foreground">
-                    {UI_COPY.chat.onboarding}
+                  <h2 className="heading-serif text-2xl sm:text-3xl text-foreground">
+                    ¿En qué le puedo ayudar?
+                  </h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Consulte el Estatuto Tributario, calcule impuestos y resuelva dudas fiscales
                   </p>
                 </div>
-                <div className="w-full max-w-2xl">
-                  <SuggestedQuestions
-                    onSelect={handleQuestionSelect}
-                    questions={contextualQuestions}
-                    title="Preguntas sugeridas para esta página"
-                  />
+
+                {/* Centered hero input */}
+                <form
+                  onSubmit={handleSubmit}
+                  className="w-full max-w-2xl"
+                >
+                  <div className="relative">
+                    <textarea
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          if (input.trim() && !isLoading) handleSubmit();
+                        }
+                      }}
+                      placeholder="Escriba su pregunta tributaria aquí..."
+                      rows={1}
+                      autoFocus
+                      className="w-full resize-none rounded-2xl border border-border bg-card px-5 py-4 pr-14 text-[15px] shadow-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-foreground/30 focus:shadow-md focus:ring-1 focus:ring-foreground/10"
+                      style={{ minHeight: "56px", maxHeight: "120px" }}
+                      onInput={(e) => {
+                        const el = e.currentTarget;
+                        el.style.height = "auto";
+                        el.style.height = Math.min(el.scrollHeight, 120) + "px";
+                      }}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!input.trim() || isLoading}
+                      className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-xl bg-foreground text-background transition-all hover:opacity-90 disabled:opacity-30"
+                      aria-label="Enviar"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+                {/* Suggested questions as subtle chips */}
+                <div className="mt-5 flex w-full max-w-2xl flex-wrap justify-center gap-2">
+                  {contextualQuestions.slice(0, 4).map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => handleQuestionSelect(q)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-card/50 px-3.5 py-2 text-xs text-muted-foreground transition-all hover:border-foreground/30 hover:bg-card hover:text-foreground hover:shadow-sm"
+                    >
+                      <ArrowRight className="h-3 w-3" />
+                      <span className="line-clamp-1">{q}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             ) : (
@@ -461,18 +513,35 @@ export function ChatContainer() {
               </div>
             )}
 
+            {/* Error state */}
+            {chatError && (
+              <div className="mx-4 flex items-start gap-2.5 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
+                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-destructive/20 text-destructive text-[10px] font-bold">!</span>
+                <div className="flex-1">
+                  <p className="text-sm text-foreground">{chatError}</p>
+                  <button
+                    onClick={() => setChatError(null)}
+                    className="mt-1 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            )}
+
             {messages.length > 0 && suggestions.length > 0 && activeView === "chat" && (
               <CalculatorSuggestions suggestions={suggestions} />
             )}
 
-            <ChatInput
-              input={input}
-              setInput={setInput}
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-              onNewConversation={handleNewConversation}
-              contextLabel={`Contexto actual: ${pageContext.pathname}`}
-            />
+            {/* Bottom input — only when conversation has messages (empty state has centered hero input) */}
+            {!isEmpty && (
+              <ChatInput
+                input={input}
+                setInput={setInput}
+                onSubmit={handleSubmit}
+                isLoading={isLoading}
+              />
+            )}
           </div>
         </ChatBottomSheet>
       </div>

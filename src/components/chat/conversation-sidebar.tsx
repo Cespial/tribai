@@ -1,7 +1,7 @@
 "use client";
 
 import { ChatConversation } from "@/types/chat-history";
-import { MessageSquarePlus, Trash2, Search } from "lucide-react";
+import { MessageSquarePlus, Trash2, Search, MessageCircle } from "lucide-react";
 import { clsx } from "clsx";
 import { useState, useMemo } from "react";
 
@@ -21,11 +21,14 @@ export function ConversationSidebar({
   onDeleteConversation,
 }: ConversationSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const filteredConversations = useMemo(() => {
-    if (!searchQuery.trim()) return conversations;
+    // Filter out empty conversations (no messages = ghost entries)
+    const nonEmpty = conversations.filter((c) => c.messages.length > 0);
+    if (!searchQuery.trim()) return nonEmpty;
     const lowerQuery = searchQuery.toLowerCase();
-    return conversations.filter((c) => {
+    return nonEmpty.filter((c) => {
       const titleMatch = c.title.toLowerCase().includes(lowerQuery);
       const contentMatch = c.messages.some((m) => {
         const text = m.parts
@@ -37,6 +40,17 @@ export function ConversationSidebar({
       return titleMatch || contentMatch;
     });
   }, [conversations, searchQuery]);
+
+  const handleDelete = (conversationId: string) => {
+    if (confirmDeleteId === conversationId) {
+      onDeleteConversation(conversationId);
+      setConfirmDeleteId(null);
+    } else {
+      setConfirmDeleteId(conversationId);
+      // Auto-cancel after 3 seconds
+      setTimeout(() => setConfirmDeleteId((prev) => prev === conversationId ? null : prev), 3000);
+    }
+  };
 
   return (
     <aside className="hidden h-full w-72 shrink-0 border-r border-border/40 bg-card/50 md:flex md:flex-col">
@@ -68,9 +82,17 @@ export function ConversationSidebar({
 
       <div className="flex-1 space-y-1 overflow-y-auto p-2">
         {filteredConversations.length === 0 ? (
-          <p className="px-2 py-3 text-sm text-muted-foreground">
-            {searchQuery ? "No se encontraron coincidencias." : "Sin conversaciones guardadas."}
-          </p>
+          <div className="flex flex-col items-center px-4 py-8 text-center">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+              <MessageCircle className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-muted-foreground">
+              {searchQuery ? "Sin resultados" : "Sin conversaciones"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground/70">
+              {searchQuery ? "Intente con otros términos" : "Haga su primera consulta tributaria"}
+            </p>
+          </div>
         ) : (
           filteredConversations.map((conversation) => (
             <div
@@ -93,11 +115,20 @@ export function ConversationSidebar({
               </button>
               <div className="mt-1 flex justify-end opacity-0 transition-opacity group-hover:opacity-100">
                 <button
-                  onClick={() => onDeleteConversation(conversation.id)}
-                  className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-                  title="Eliminar conversación"
+                  onClick={() => handleDelete(conversation.id)}
+                  className={clsx(
+                    "rounded px-1.5 py-1 text-xs transition-colors",
+                    confirmDeleteId === conversation.id
+                      ? "bg-destructive/10 text-destructive"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                  title={confirmDeleteId === conversation.id ? "Click para confirmar" : "Eliminar conversación"}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  {confirmDeleteId === conversation.id ? (
+                    <span className="text-[10px] font-medium">¿Eliminar?</span>
+                  ) : (
+                    <Trash2 className="h-3.5 w-3.5" />
+                  )}
                 </button>
               </div>
             </div>

@@ -1,15 +1,13 @@
 "use client";
 
 import { FormEvent, useRef, useEffect, useCallback } from "react";
-import { MessageSquarePlus, Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 
 interface ChatInputProps {
   input: string;
   setInput: (value: string) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
-  onNewConversation?: () => void;
-  contextLabel?: string;
 }
 
 export function ChatInput({
@@ -17,8 +15,6 @@ export function ChatInput({
   setInput,
   onSubmit,
   isLoading,
-  onNewConversation,
-  contextLabel,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -30,6 +26,21 @@ export function ChatInput({
         Math.min(textareaRef.current.scrollHeight, 120) + "px";
     }
   }, [input]);
+
+  // Cmd/Ctrl+K shortcut to focus input
+  useEffect(() => {
+    function handleGlobalKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }
+      if (e.key === "Escape" && document.activeElement === textareaRef.current) {
+        textareaRef.current?.blur();
+      }
+    }
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -44,22 +55,7 @@ export function ChatInput({
   );
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="border-t border-border/40 p-4">
-      <div className="mx-auto mb-2 flex max-w-4xl items-center justify-between gap-2">
-        <p className="text-[11px] text-muted-foreground">
-          {contextLabel || "Asistente IA del Estatuto Tributario"}
-        </p>
-        {onNewConversation && (
-          <button
-            type="button"
-            onClick={onNewConversation}
-            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <MessageSquarePlus className="h-3.5 w-3.5" />
-            Nueva conversación
-          </button>
-        )}
-      </div>
+    <form ref={formRef} onSubmit={onSubmit} className="border-t border-border/40 px-4 py-3">
       <div className="mx-auto flex max-w-4xl items-end gap-2">
         <div className="relative flex-1">
           <label htmlFor="chat-input" className="sr-only">
@@ -71,19 +67,23 @@ export function ChatInput({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Pregunta sobre el Estatuto Tributario..."
+            placeholder={isLoading ? "Procesando respuesta..." : "Escriba su pregunta..."}
             rows={1}
-            className="w-full resize-none rounded-lg border border-border/60 bg-card px-4 py-3 pr-12 text-sm outline-none transition-colors focus:border-foreground focus-visible:ring-1 focus-visible:ring-foreground/20"
+            className="w-full resize-none rounded-xl border border-border/60 bg-card px-4 py-3 pr-12 text-sm outline-none transition-all focus:border-foreground/30 focus:shadow-sm focus-visible:ring-1 focus-visible:ring-foreground/10 disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isLoading}
           />
         </div>
         <button
           type="submit"
           disabled={!input.trim() || isLoading}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-foreground text-background transition-opacity disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:outline-none"
-          aria-label="Enviar mensaje"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-foreground text-background transition-all hover:opacity-90 disabled:opacity-30 focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:outline-none"
+          aria-label={isLoading ? "Procesando" : "Enviar mensaje"}
         >
-          <Send className="h-4 w-4" />
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
         </button>
       </div>
     </form>
