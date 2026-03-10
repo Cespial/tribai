@@ -1,15 +1,15 @@
 import { z } from "zod/v4";
 
 const MessagePartSchema = z.object({
-  type: z.enum(["text"]),
+  type: z.string(),
   text: z.string().optional(),
-});
+}).passthrough();
 
 const UIMessageSchema = z.object({
   id: z.string(),
   role: z.enum(["user", "assistant", "system"]),
   parts: z.array(MessagePartSchema),
-});
+}).passthrough();
 
 const PageContextSchema = z.object({
   pathname: z.string().max(500),

@@ -12,6 +12,7 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 
+import { warmupConnections } from "./warmup";
 import { enhanceQuery } from "../src/lib/rag/query-enhancer";
 import { retrieve } from "../src/lib/rag/retriever";
 import { heuristicRerank, heuristicRerankMultiSource } from "../src/lib/rag/reranker";
@@ -241,7 +242,11 @@ async function runSmokeTest(test: SmokeTest): Promise<TestResult> {
 
 async function main() {
   console.log("=== SMOKE TEST SUITE — Fase 9 ===\n");
-  console.log(`Running ${SMOKE_TESTS.length} smoke tests...\n`);
+
+  // Warm up cold connections (Pinecone + Anthropic) to avoid flaky latency on test #1
+  await warmupConnections();
+
+  console.log(`\n  Running ${SMOKE_TESTS.length} smoke tests...\n`);
 
   const results: TestResult[] = [];
 

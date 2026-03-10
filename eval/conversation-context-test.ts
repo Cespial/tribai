@@ -20,6 +20,7 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 
+import { warmupConnections } from "./warmup";
 import { enhanceQuery } from "../src/lib/rag/query-enhancer";
 import { retrieve } from "../src/lib/rag/retriever";
 import { heuristicRerank, heuristicRerankMultiSource } from "../src/lib/rag/reranker";
@@ -226,7 +227,7 @@ const CONVERSATION_TESTS: ConversationTestCase[] = [
       { role: "assistant", content: "Deben declarar renta las personas naturales que superen los topes del Art. 592 del ET: ingresos brutos superiores a 1.400 UVT." },
     ],
     query: "¿Y el plazo?",
-    expectedArticles: ["Art. 592", "Art. 603", "Art. 811"],
+    expectedArticles: ["Art. 592", "Art. 603", "Art. 605", "Art. 811"],
     expectedContent: ["plazo", "declar"],
     expectedRewriteContains: ["plazo", "declaración", "renta"],
     maxLatencyMs: 10000,
@@ -439,7 +440,11 @@ async function runConversationTest(test: ConversationTestCase): Promise<TestResu
 
 async function main() {
   console.log("=== CONVERSATION CONTEXT TEST SUITE ===\n");
-  console.log(`Running ${CONVERSATION_TESTS.length} conversation context tests...\n`);
+
+  // Warm up cold connections to avoid flaky latency on first test
+  await warmupConnections();
+
+  console.log(`\n  Running ${CONVERSATION_TESTS.length} conversation context tests...\n`);
 
   const results: TestResult[] = [];
   const groupNames = [
