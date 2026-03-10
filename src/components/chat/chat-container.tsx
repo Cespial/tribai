@@ -69,6 +69,7 @@ export function ChatContainer() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isLanding = pathname === "/";
+  const heroInputRef = useRef<HTMLTextAreaElement>(null);
   const pageContext = useMemo(() => parsePageContext(pathname), [pathname]);
   const contextualQuestions = useMemo(() => getContextualQuestions(pathname), [pathname]);
   const prefilledInput = useMemo(() => {
@@ -133,6 +134,13 @@ export function ChatContainer() {
   });
 
   const isLoading = status === "submitted" || status === "streaming";
+
+  // Focus the hero input only on /asistente (never on landing — prevents scroll hijack)
+  useEffect(() => {
+    if (!isLanding && heroInputRef.current) {
+      heroInputRef.current.focus({ preventScroll: true });
+    }
+  }, [isLanding]);
 
   // Detect articles from assistant sources to sync with the graph
   useEffect(() => {
@@ -426,6 +434,7 @@ export function ChatContainer() {
                 >
                   <div className="relative">
                     <textarea
+                      ref={heroInputRef}
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={(e) => {
@@ -436,7 +445,6 @@ export function ChatContainer() {
                       }}
                       placeholder="Escriba su pregunta tributaria aquí..."
                       rows={1}
-                      autoFocus={!isLanding}
                       className="w-full resize-none rounded-2xl border border-border bg-card px-5 py-4 pr-14 text-[15px] shadow-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-foreground/30 focus:shadow-md focus:ring-1 focus:ring-foreground/10"
                       style={{ minHeight: "56px", maxHeight: "120px" }}
                       onInput={(e) => {
