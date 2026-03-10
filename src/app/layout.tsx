@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, DM_Serif_Display } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { Analytics } from "@vercel/analytics/next";
 import { ArticlePanelProvider } from "@/contexts/article-panel-context";
 import { SlideOutPanel } from "@/components/article/slide-out-panel";
 import { QuickAddFab } from "@/components/workspace/quick-add-fab";
@@ -102,6 +103,7 @@ export default function RootLayout({
             <QuickAddFab />
           </ArticlePanelProvider>
         </ThemeProvider>
+        <Analytics />
         <script
           dangerouslySetInnerHTML={{
             __html: `
