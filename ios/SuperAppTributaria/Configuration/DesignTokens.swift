@@ -75,9 +75,9 @@ extension Color {
 // MARK: - Typography
 
 enum AppTypography {
-    static let heroDisplay = Font.custom("PlayfairDisplay-Regular", size: 56)
-    static let pageHeading = Font.custom("PlayfairDisplay-Bold", size: 32)
-    static let sectionHeading = Font.custom("PlayfairDisplay-SemiBold", size: 24)
+    static let heroDisplay = Font.system(size: 56, weight: .regular, design: .serif)
+    static let pageHeading = Font.system(size: 32, weight: .regular, design: .serif)
+    static let sectionHeading = Font.system(size: 24, weight: .regular, design: .serif)
     static let cardHeading = Font.system(size: 20, weight: .semibold)
     static let bodyLarge = Font.system(size: 18)
     static let bodyDefault = Font.system(size: 16)

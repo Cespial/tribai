@@ -95,6 +95,7 @@ export async function enhanceQuery(
     useHyDE?: boolean;
     useQueryExpansion?: boolean;
     pageContext?: ChatPageContext;
+    conversationHistory?: string;
   } = {}
 ): Promise<EnhancedQuery> {
   const detectedArticles = extractArticleRefs(query).map(articleNumberToId);
@@ -122,9 +123,9 @@ export async function enhanceQuery(
   }
 
   const [rewritten, hyde, subQueries] = await Promise.all([
-    rewriteQuery(expanded),
+    rewriteQuery(expanded, options.conversationHistory),
     shouldUseHyDE(query, detectedArticles, options.useHyDE)
-      ? generateHyDE(query)
+      ? generateHyDE(query, disambiguationHint, options.conversationHistory)
       : Promise.resolve(undefined),
     isComplexQuery(query) ? decomposeQuery(query) : Promise.resolve(undefined),
   ]);
@@ -162,8 +163,17 @@ function applyPageContextHint(query: string, pageContext?: ChatPageContext): str
   return query;
 }
 
-async function rewriteQuery(query: string): Promise<string> {
+async function rewriteQuery(query: string, conversationHistory?: string): Promise<string> {
   try {
+    const contextInstruction = conversationHistory
+      ? "\n\nIMPORTANTE: Si la consulta es una pregunta de seguimiento que hace referencia a temas de mensajes anteriores " +
+        "(por ejemplo '¿Y las excepciones?', '¿Cuánto es?', '¿Y para personas naturales?'), " +
+        "reescríbela incorporando el contexto necesario para que sea autocontenida y busque correctamente en el Estatuto Tributario. " +
+        "Ejemplo: si antes se habló del IVA y el usuario pregunta '¿Y las excepciones?', reescribe como " +
+        "'bienes y servicios excluidos y exentos del impuesto sobre las ventas IVA Arts. 424 y 476 ET'.\n\n" +
+        `Conversación reciente:\n${conversationHistory}`
+      : "";
+
     const { text } = await generateText({
       model: getEnhancerModel(),
       maxOutputTokens: 300,
@@ -172,7 +182,8 @@ async function rewriteQuery(query: string): Promise<string> {
         "Reescribe la consulta del usuario usando terminología legal precisa del Estatuto Tributario. " +
         "Ejemplos de terminología: 'renta líquida gravable', 'retención en la fuente', 'hecho generador', " +
         "'base gravable', 'tarifa impositiva', 'período gravable', 'contribuyente', 'responsable del impuesto'. " +
-        "Responde SOLO con la consulta reescrita, sin explicaciones.",
+        "Responde SOLO con la consulta reescrita, sin explicaciones." +
+        contextInstruction,
       prompt: query,
     });
     return text.trim() || query;
@@ -204,10 +215,14 @@ function shouldUseHyDE(
   return true;
 }
 
-async function generateHyDE(query: string, disambiguationHint?: string): Promise<string> {
+async function generateHyDE(query: string, disambiguationHint?: string, conversationHistory?: string): Promise<string> {
   try {
     const disambiguationCtx = disambiguationHint
       ? `\n\nNota de desambiguación: ${disambiguationHint}\nGenera el párrafo cubriendo las interpretaciones más relevantes.`
+      : "";
+
+    const conversationCtx = conversationHistory
+      ? `\n\nContexto de la conversación (usa para resolver referencias implícitas):\n${conversationHistory}`
       : "";
 
     const { text } = await generateText({
@@ -215,7 +230,8 @@ async function generateHyDE(query: string, disambiguationHint?: string): Promise
       maxOutputTokens: 200,
       system:
         "Eres un experto en el Estatuto Tributario colombiano. Genera un párrafo hipotético que podría ser el texto de un artículo del Estatuto Tributario que respondería esta pregunta. Escribe SOLO el párrafo, sin preámbulos." +
-        disambiguationCtx,
+        disambiguationCtx +
+        conversationCtx,
       prompt: query,
     });
     return text.trim();

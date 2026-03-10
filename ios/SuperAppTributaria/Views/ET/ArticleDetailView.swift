@@ -44,11 +44,16 @@ struct ArticleDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
+                    Haptics.impact()
                     BookmarkService.shared.toggleArticleBookmark(slug)
                 } label: {
                     Image(systemName: BookmarkService.shared.isArticleBookmarked(slug) ? "bookmark.fill" : "bookmark")
                         .foregroundStyle(Color.appForeground)
                 }
+                .accessibilityLabel(BookmarkService.shared.isArticleBookmarked(slug)
+                    ? "Quitar marcador"
+                    : "Agregar marcador")
+                .accessibilityHint("Guarda este articulo en tus favoritos")
             }
         }
         .navigationDestination(for: String.self) { ref in
@@ -69,7 +74,7 @@ struct ArticleDetailView: View {
             articleHeader(article)
 
             // Tab picker
-            Picker("", selection: $viewModel.selectedTab) {
+            Picker("Seccion del articulo", selection: $viewModel.selectedTab) {
                 ForEach(ArticleDetailViewModel.Tab.allCases, id: \.self) { tab in
                     Text(tab.rawValue).tag(tab)
                 }

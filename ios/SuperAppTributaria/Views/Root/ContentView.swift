@@ -64,6 +64,15 @@ struct ContentView: View {
         .task {
             setupRepository()
             await conversationListVM.loadConversations()
+            environment.analyticsService.track(event: AnalyticsEvent.Name.appLaunched)
+            environment.analyticsService.trackScreenView(name: screenName(for: selectedTab))
+        }
+        .onChange(of: selectedTab) { _, newTab in
+            environment.analyticsService.trackScreenView(name: screenName(for: newTab))
+            environment.analyticsService.track(
+                event: AnalyticsEvent.Name.tabChanged,
+                properties: [AnalyticsEvent.PropertyKey.tabName: newTab.rawValue]
+            )
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -73,6 +82,8 @@ struct ContentView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(Color.appForeground)
                 }
+                .accessibilityLabel("Buscar")
+                .accessibilityHint("Abre la busqueda global")
             }
         }
         .sheet(isPresented: $showingSearch) {
@@ -166,6 +177,16 @@ struct ContentView: View {
         conversationListVM.filteredConversations
             .first { $0.id == conversationListVM.selectedConversationId }?
             .title ?? "Nueva conversación"
+    }
+
+    private func screenName(for tab: AppTab) -> String {
+        switch tab {
+        case .home: "Inicio"
+        case .chat: "Asistente"
+        case .calculators: "Calculadoras"
+        case .et: "Estatuto Tributario"
+        case .more: "Mas"
+        }
     }
 
     private func setupRepository() {

@@ -122,7 +122,7 @@ export function AppChatTab() {
       </div>
 
       {/* Messages area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4">
+      <div ref={scrollRef} className="phone-scroll-area flex-1 overflow-y-auto px-4 py-4">
         {showSuggestions && messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center px-2">
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-tribai-blue/10">

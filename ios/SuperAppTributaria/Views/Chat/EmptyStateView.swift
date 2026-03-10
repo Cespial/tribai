@@ -11,6 +11,7 @@ struct EmptyStateView: View {
                 Image(systemName: "building.columns")
                     .font(.system(size: 48))
                     .foregroundStyle(Color.appMutedForeground)
+                    .accessibilityHidden(true)
 
                 Text("Asistente Tributario Colombia")
                     .font(AppTypography.sectionHeading)
@@ -40,6 +41,7 @@ struct AIDisclaimerBanner: View {
         HStack(spacing: 8) {
             Image(systemName: "info.circle")
                 .font(.system(size: 14))
+                .accessibilityHidden(true)
             Text("Este asistente utiliza inteligencia artificial generativa. Las respuestas son informativas y no constituyen asesoria tributaria profesional. Verifique siempre con un contador publico certificado.")
                 .font(AppTypography.caption)
         }
@@ -49,6 +51,7 @@ struct AIDisclaimerBanner: View {
         .background(Color.appMuted.opacity(0.6))
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
         .padding(.horizontal, AppSpacing.sm)
+        .accessibilityElement(children: .combine)
     }
 }
 

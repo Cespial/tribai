@@ -20,6 +20,11 @@ enum AppConstants {
         static let pollingInterval: TimeInterval = 300 // 5 minutes
     }
 
+    enum Analytics {
+        static let maxStoredEvents = 1000
+        static let flushBatchSize = 100
+    }
+
     static let suggestedQuestions = [
         "Debo declarar renta por ingresos de 2026?",
         "Cómo calculo retención en la fuente por salarios?",

@@ -36,7 +36,7 @@ function getClientIP(req: Request): string {
 export async function POST(req: Request) {
   // Rate limiting
   const ip = getClientIP(req);
-  const { allowed, retryAfter } = checkRateLimitWithHeaders(req);
+  const { allowed, retryAfter } = await checkRateLimitWithHeaders(req);
   if (!allowed) {
     return new Response(
       JSON.stringify({ error: "Demasiadas solicitudes. Intenta de nuevo en unos segundos." }),
@@ -195,12 +195,39 @@ export async function POST(req: Request) {
     },
   });
 
+  // Build multi-turn messages so the LLM has natural conversational context.
+  // Previous turns let the model understand follow-up references like
+  // "¿Y las excepciones?" after discussing IVA.
+  const MAX_HISTORY_MESSAGES = 10; // Cap at 5 previous turns
+  const MAX_ASSISTANT_CHARS = 2000; // Truncate long assistant responses
+
+  const previousMessages = messages.slice(0, -1).slice(-MAX_HISTORY_MESSAGES);
+  const llmMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
+
+  for (const msg of previousMessages) {
+    if (msg.role !== "user" && msg.role !== "assistant") continue;
+    const text = getTextFromMessage(msg as unknown as UIMessage);
+    if (!text.trim()) continue;
+    // Truncate long assistant responses to manage token budget
+    const content = msg.role === "assistant" && text.length > MAX_ASSISTANT_CHARS
+      ? text.slice(0, MAX_ASSISTANT_CHARS) + "…"
+      : text;
+    llmMessages.push({
+      role: msg.role as "user" | "assistant",
+      content,
+    });
+  }
+
+  // Last message: RAG context block (includes user query, evidence, articles)
+  llmMessages.push({
+    role: "user" as const,
+    content: contextBlock,
+  });
+
   const result = streamText({
     model: getChatModel(),
     system,
-    messages: [
-      { role: "user" as const, content: contextBlock },
-    ],
+    messages: llmMessages,
   });
 
   return result.toUIMessageStreamResponse({

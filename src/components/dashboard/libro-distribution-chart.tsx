@@ -7,6 +7,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useTheme } from "next-themes";
+import { useSyncExternalStore } from "react";
 
 interface LibroEntry {
   name: string;
@@ -17,12 +19,21 @@ interface LibroDistributionChartProps {
   data: LibroEntry[];
 }
 
-const COLORS = [
+const COLORS_LIGHT = [
   "hsl(0, 0%, 15%)", "hsl(0, 0%, 30%)", "hsl(0, 0%, 45%)", "hsl(0, 0%, 55%)",
   "hsl(0, 0%, 65%)", "hsl(0, 0%, 75%)", "hsl(0, 0%, 85%)",
 ];
+const COLORS_DARK = [
+  "hsl(0, 0%, 90%)", "hsl(0, 0%, 75%)", "hsl(0, 0%, 60%)", "hsl(0, 0%, 50%)",
+  "hsl(0, 0%, 40%)", "hsl(0, 0%, 30%)", "hsl(0, 0%, 20%)",
+];
+
+const sub = () => () => {};
 
 export function LibroDistributionChart({ data }: LibroDistributionChartProps) {
+  const { resolvedTheme } = useTheme();
+  const mounted = useSyncExternalStore(sub, () => true, () => false);
+  const COLORS = mounted && resolvedTheme === "dark" ? COLORS_DARK : COLORS_LIGHT;
   return (
     <div className="rounded-lg border border-border/60 bg-card p-4 shadow-sm">
       <h3 className="heading-serif mb-4 text-lg">Distribucion por Libro</h3>

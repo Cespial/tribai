@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useChartColors } from "@/lib/hooks/useChartColors";
 
 interface ThresholdRow {
   name: string;
@@ -25,6 +26,7 @@ interface DeboDeclararThresholdChartProps {
 export function DeboDeclararThresholdChart({
   rows,
 }: DeboDeclararThresholdChartProps) {
+  const colors = useChartColors();
   const data = rows.map((row) => ({
     name: row.name,
     pct: row.limit > 0 ? (row.value / row.limit) * 100 : 0,
@@ -40,8 +42,8 @@ export function DeboDeclararThresholdChart({
             <XAxis type="number" tickFormatter={(v) => `${Math.round(v)}%`} />
             <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 11 }} />
             <Tooltip formatter={(value) => `${Number(value ?? 0).toFixed(1)}% del tope`} />
-            <ReferenceLine x={100} stroke="#1f1d1a" strokeDasharray="5 5" label="Tope legal" />
-            <Bar dataKey="pct" fill="#706d66" radius={[0, 4, 4, 0]}>
+            <ReferenceLine x={100} stroke={colors[0]} strokeDasharray="5 5" label="Tope legal" />
+            <Bar dataKey="pct" fill={colors[1]} radius={[0, 4, 4, 0]}>
               <LabelList dataKey="pct" position="right" formatter={(value) => `${Number(value ?? 0).toFixed(0)}%`} />
             </Bar>
           </BarChart>

@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { formatCOP } from "@/lib/calculators/format";
+import { useChartColors } from "@/lib/hooks/useChartColors";
 
 interface NominaCostChartProps {
   salario: number;
@@ -22,8 +23,6 @@ interface NominaCostChartProps {
   descuentosTrabajador: number;
 }
 
-const PIE_COLORS = ["#1f1d1a", "#d8d6d1"];
-
 export function NominaCostChart({
   salario,
   auxilio,
@@ -32,6 +31,8 @@ export function NominaCostChart({
   netoTrabajador,
   descuentosTrabajador,
 }: NominaCostChartProps) {
+  const colors = useChartColors();
+
   const employerData = [
     {
       name: "Costo mensual",
@@ -57,10 +58,10 @@ export function NominaCostChart({
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis tickFormatter={(v) => `$${Math.round(v / 1_000_000)}M`} tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(value) => formatCOP(Number(value ?? 0))} />
-                <Bar stackId="a" dataKey="salario" fill="#1f1d1a" name="Salario" />
-                <Bar stackId="a" dataKey="auxilio" fill="#706d66" name="Auxilio transporte" />
-                <Bar stackId="a" dataKey="ss" fill="#b4b1aa" name="SS y parafiscales" />
-              <Bar stackId="a" dataKey="prestaciones" fill="#d8d6d1" name="Prestaciones" />
+                <Bar stackId="a" dataKey="salario" fill={colors[0]} name="Salario" />
+                <Bar stackId="a" dataKey="auxilio" fill={colors[1]} name="Auxilio transporte" />
+                <Bar stackId="a" dataKey="ss" fill={colors[2]} name="SS y parafiscales" />
+              <Bar stackId="a" dataKey="prestaciones" fill={colors[3]} name="Prestaciones" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -73,7 +74,7 @@ export function NominaCostChart({
             <PieChart>
               <Pie data={workerData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={88}>
                 {workerData.map((_, index) => (
-                  <Cell key={`nom-cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  <Cell key={`nom-cell-${index}`} fill={index === 0 ? colors[0] : colors[3]} />
                 ))}
               </Pie>
               <Tooltip formatter={(value) => formatCOP(Number(value ?? 0))} />

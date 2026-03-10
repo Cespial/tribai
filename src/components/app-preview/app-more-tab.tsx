@@ -55,7 +55,7 @@ export function AppMoreTab() {
       </div>
 
       {/* Sections */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="phone-scroll-area flex-1 overflow-y-auto">
         {SECTIONS.map((section) => (
           <div key={section.title}>
             <p className="px-4 pb-1 pt-5 text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">

@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { MessageBubble } from "./message-bubble";
 import { SourceCitation } from "./source-citation";
-import { CalculatorSuggestions } from "./calculator-suggestions";
 import { MessageActions } from "./message-actions";
 import { TypingIndicator } from "./typing-indicator";
 import { ConfidenceBadge } from "./confidence-badge";
+import { ArrowDown } from "lucide-react";
 import type { UIMessage } from "ai";
 import type { SourceCitation as SourceType } from "@/types/rag";
-import { CalculatorSuggestion } from "@/lib/chat/calculator-context";
 
 interface RagMetadata {
   confidenceLevel?: "high" | "medium" | "low";
@@ -19,7 +18,7 @@ interface RagMetadata {
 }
 
 interface MessageMetadata {
-  suggestedCalculators?: CalculatorSuggestion[];
+  suggestedCalculators?: { name: string; href: string; description: string }[];
   sources?: SourceType[];
   timestamp?: string;
   ragMetadata?: RagMetadata;
@@ -61,31 +60,28 @@ export function MessageList({
   const isNearBottomRef = useRef(true);
   const prevMessageCountRef = useRef(messages.length);
   const userScrolledUpRef = useRef(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
     isNearBottomRef.current = nearBottom;
+    setShowScrollButton(!nearBottom && messages.length > 2);
 
-    // If the user scrolled away from the bottom, respect their intent
     if (!nearBottom) {
       userScrolledUpRef.current = true;
     } else {
       userScrolledUpRef.current = false;
     }
-  }, []);
+  }, [messages.length]);
 
-  // Scroll to bottom — uses instant scroll during streaming for smoothness,
-  // and smooth scroll for discrete events like new messages.
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     const el = containerRef.current;
     if (!el) return;
-    el.scrollTop = behavior === "instant" ? el.scrollHeight : el.scrollTop;
     if (behavior === "smooth") {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     } else {
-      // Instant: just jump to bottom without animation
       el.scrollTop = el.scrollHeight;
     }
   }, []);
@@ -94,94 +90,107 @@ export function MessageList({
     const isNewMessage = messages.length !== prevMessageCountRef.current;
     prevMessageCountRef.current = messages.length;
 
-    // 1. New message added (user sent) — always scroll, reset flag
     if (isNewMessage) {
       userScrolledUpRef.current = false;
+      setShowScrollButton(false);
       scrollToBottom("smooth");
       return;
     }
 
-    // 2. User scrolled up — respect their intent, never auto-scroll
     if (userScrolledUpRef.current) return;
 
-    // 3. Streaming updates — only scroll if still near bottom
     if (isLoading && isNearBottomRef.current) {
       scrollToBottom("instant");
     }
   }, [messages, isLoading, scrollToBottom]);
 
   return (
-    <div
-      ref={containerRef}
-      onScroll={handleScroll}
-      className="h-full space-y-4 overflow-y-auto p-4"
-    >
-      {messages.map((message, index) => {
-        const metadata = (message.metadata as MessageMetadata | undefined) || {};
-        const suggestedCalculators = metadata.suggestedCalculators || [];
-        const ragMetadata = metadata.ragMetadata;
-        const messageSources = metadata.sources || (index === messages.length - 1 ? sources : []);
-        const isLastMessage = index === messages.length - 1;
-        const text = getMessageText(message);
+    <div className="relative h-full">
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="h-full space-y-4 overflow-y-auto p-4"
+      >
+        {messages.map((message, index) => {
+          const metadata = (message.metadata as MessageMetadata | undefined) || {};
+          const ragMetadata = metadata.ragMetadata;
+          const isLastMessage = index === messages.length - 1;
+          const text = getMessageText(message);
 
-        return (
-          <div key={message.id}>
-            <MessageBubble message={message} timestamp={metadata.timestamp} />
+          // Sources: use per-message metadata, fallback to prop sources for last message
+          const messageSources = metadata.sources || (isLastMessage ? sources : []);
 
-            {message.role === "assistant" && isLastMessage && messageSources.length > 0 && (
-              <div className="ml-11 mt-2 flex flex-wrap gap-1.5">
-                {messageSources.map((source) => (
-                  <SourceCitation
-                    key={`${message.id}-${source.idArticulo}`}
-                    idArticulo={source.idArticulo}
-                    titulo={source.titulo}
-                    url={source.url}
-                    categoriaLibro={source.categoriaLibro}
-                    estado={source.estado}
-                    slug={source.slug}
+          return (
+            <div key={message.id}>
+              <MessageBubble message={message} timestamp={metadata.timestamp} />
+
+              {/* Source citations — shown for ALL assistant messages */}
+              {message.role === "assistant" && messageSources.length > 0 && (
+                <div className="ml-11 mt-2 flex flex-wrap gap-1.5">
+                  {messageSources.map((source) => (
+                    <SourceCitation
+                      key={`${message.id}-${source.idArticulo}`}
+                      idArticulo={source.idArticulo}
+                      titulo={source.titulo}
+                      url={source.url}
+                      categoriaLibro={source.categoriaLibro}
+                      estado={source.estado}
+                      slug={source.slug}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Confidence badge — shown for ALL assistant messages that have it */}
+              {message.role === "assistant" && ragMetadata?.confidenceLevel && (
+                <div className="ml-11 mt-1.5">
+                  <ConfidenceBadge
+                    confidenceLevel={ragMetadata.confidenceLevel}
+                    sourcesCount={messageSources.length}
+                    pipelineMs={ragMetadata.pipelineMs}
+                    degradedMode={ragMetadata.degradedMode}
                   />
-                ))}
-              </div>
-            )}
+                </div>
+              )}
 
-            {message.role === "assistant" && isLastMessage && ragMetadata?.confidenceLevel && (
-              <div className="ml-11 mt-1.5">
-                <ConfidenceBadge
-                  confidenceLevel={ragMetadata.confidenceLevel}
-                  sourcesCount={messageSources.length}
-                  pipelineMs={ragMetadata.pipelineMs}
-                  degradedMode={ragMetadata.degradedMode}
-                />
-              </div>
-            )}
+              {/* Message actions — for ALL assistant messages with text */}
+              {message.role === "assistant" && text && (
+                <div className="ml-11">
+                  <MessageActions
+                    text={text}
+                    onAskAgain={() => onAskAgain(text)}
+                    onDeepen={() => onDeepen(text)}
+                    onShare={() => onShare(text)}
+                    feedback={getFeedback(message.id)}
+                    onFeedback={(value) => onFeedback(message.id, value)}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
 
-            {message.role === "assistant" && text && (
-              <div className="ml-11">
-                <MessageActions
-                  text={text}
-                  onAskAgain={() => onAskAgain(text)}
-                  onDeepen={() => onDeepen(text)}
-                  onShare={() => onShare(text)}
-                  feedback={getFeedback(message.id)}
-                  onFeedback={(value) => onFeedback(message.id, value)}
-                />
-              </div>
-            )}
+        {isLoading && messages[messages.length - 1]?.role === "user" && (
+          <TypingIndicator label={typingLabel} />
+        )}
 
-            {message.role === "assistant" && isLastMessage && suggestedCalculators.length > 0 && (
-              <div className="ml-11">
-                <CalculatorSuggestions suggestions={suggestedCalculators} />
-              </div>
-            )}
-          </div>
-        );
-      })}
+        <div ref={bottomRef} />
+      </div>
 
-      {isLoading && messages[messages.length - 1]?.role === "user" && (
-        <TypingIndicator label={typingLabel} />
+      {/* Scroll to bottom FAB */}
+      {showScrollButton && (
+        <button
+          onClick={() => {
+            userScrolledUpRef.current = false;
+            setShowScrollButton(false);
+            scrollToBottom("smooth");
+          }}
+          className="absolute bottom-4 left-1/2 z-10 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-card shadow-md transition-all hover:bg-muted"
+          aria-label="Ir al final"
+        >
+          <ArrowDown className="h-4 w-4 text-muted-foreground" />
+        </button>
       )}
-
-      <div ref={bottomRef} />
     </div>
   );
 }

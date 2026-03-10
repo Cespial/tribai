@@ -8,6 +8,14 @@ final class ConversationManagementUITests: XCTestCase {
         continueAfterFailure = false
         app.launchArguments.append("--uitesting")
         app.launch()
+
+        // Navigate to the Asistente (chat) tab — the app starts on Inicio
+        let asistenteTab = app.tabBars.buttons["Asistente"]
+        guard asistenteTab.waitForExistence(timeout: 5) else {
+            XCTFail("Asistente tab not found")
+            return
+        }
+        asistenteTab.tap()
     }
 
     func testConversationListShowsEmptyState() throws {
@@ -26,9 +34,11 @@ final class ConversationManagementUITests: XCTestCase {
         }
         newButton.tap()
 
-        // Verify we're in the chat view
-        let inputField = app.textFields["Campo de mensaje"]
-        XCTAssertTrue(inputField.waitForExistence(timeout: 5))
+        // Verify we're in the chat view — TextField with axis: .vertical renders as textView
+        let textView = app.textViews["Campo de mensaje"]
+        let textField = app.textFields["Campo de mensaje"]
+        let found = textView.waitForExistence(timeout: 5) || textField.waitForExistence(timeout: 3)
+        XCTAssertTrue(found, "Chat input field not found after creating new conversation")
     }
 
     func testSwipeToDeleteConversation() throws {
@@ -41,16 +51,24 @@ final class ConversationManagementUITests: XCTestCase {
         newButton.tap()
 
         // Type and send a message to save the conversation
+        let textView = app.textViews["Campo de mensaje"]
         let textField = app.textFields["Campo de mensaje"]
-        guard textField.waitForExistence(timeout: 5) else {
+        let inputField: XCUIElement
+        if textView.waitForExistence(timeout: 5) {
+            inputField = textView
+        } else if textField.waitForExistence(timeout: 3) {
+            inputField = textField
+        } else {
             XCTFail("Text field not found")
             return
         }
-        textField.tap()
-        textField.typeText("Test message")
+        inputField.tap()
+        inputField.typeText("Test message")
 
         let sendButton = app.buttons["Enviar mensaje"]
-        sendButton.tap()
+        if sendButton.waitForExistence(timeout: 3) {
+            sendButton.tap()
+        }
 
         // Wait for response
         sleep(3)

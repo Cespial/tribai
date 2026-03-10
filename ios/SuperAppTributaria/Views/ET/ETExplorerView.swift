@@ -14,6 +14,18 @@ struct ETExplorerView: View {
                         .foregroundStyle(Color.appMutedForeground)
                         .padding(.top, AppSpacing.xs)
                     Spacer()
+                } else if let loadError = viewModel.loadError {
+                    Spacer()
+                    ContentUnavailableView(
+                        "Error al cargar",
+                        systemImage: "exclamationmark.triangle",
+                        description: Text(loadError)
+                    )
+                    Button("Reintentar") {
+                        Task { await viewModel.loadData() }
+                    }
+                    .buttonStyle(.bordered)
+                    Spacer()
                 } else {
                     // Search bar
                     SearchBarView(
@@ -65,6 +77,8 @@ struct ETExplorerView: View {
                                         .foregroundStyle(Color.appDestructive)
                                 }
                                 .buttonStyle(.plain)
+                                .accessibilityLabel("Limpiar filtros")
+                                .accessibilityHint("Elimina todos los filtros y la busqueda")
                             }
                         }
                         .padding(.horizontal, AppSpacing.sm)
@@ -100,6 +114,10 @@ struct ETExplorerView: View {
                             .foregroundStyle(Color.appForeground)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel(viewModel.activeFilterCount > 0
+                            ? "Filtros, \(viewModel.activeFilterCount) activos"
+                            : "Filtros")
+                        .accessibilityHint("Abre el panel de filtros avanzados")
                     }
                     .padding(.horizontal, AppSpacing.sm)
                     .padding(.bottom, AppSpacing.xs)
@@ -116,6 +134,7 @@ struct ETExplorerView: View {
                                 Image(systemName: "doc.text.magnifyingglass")
                                     .font(.system(size: 40))
                                     .foregroundStyle(Color.appMutedForeground)
+                                    .accessibilityHidden(true)
                                 Text("No se encontraron articulos con los filtros seleccionados")
                                     .font(AppTypography.bodySmall)
                                     .foregroundStyle(Color.appMutedForeground)

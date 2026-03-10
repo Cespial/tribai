@@ -62,6 +62,7 @@ export async function runRAGPipeline(
         useHyDE: options.useHyDE ?? RAG_CONFIG.useHyDE,
         useQueryExpansion: options.useQueryExpansion ?? RAG_CONFIG.useQueryExpansion,
         pageContext: options.pageContext,
+        conversationHistory: options.conversationHistory,
       }),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Query enhancement timed out")), 8000)
@@ -204,7 +205,6 @@ export async function runRAGPipeline(
   const { system, contextBlock } = buildMessages(
     query,
     context,
-    options.conversationHistory,
     options.pageContext,
     evidenceResult
   );

@@ -8,7 +8,7 @@ struct UVTEntry: TimelineEntry {
 }
 
 struct UVTProvider: TimelineProvider {
-    private static let suiteName = "group.com.superapp-tributaria.SuperAppTributaria"
+    private static let suiteName = "group.co.tribai.app"
 
     func placeholder(in context: Context) -> UVTEntry {
         UVTEntry(date: Date(), uvtValue: 52_374, year: 2026)

@@ -36,5 +36,9 @@ struct FeatureCardView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title): \(description)")
+        .accessibilityHint("Toca para abrir \(title)")
+        .accessibilityAddTraits(.isButton)
     }
 }

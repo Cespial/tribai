@@ -1,0 +1,202 @@
+# Fastfile -- TribAI iOS
+# Docs: https://docs.fastlane.tools/actions/
+#
+# Prerequisites:
+#   gem install fastlane
+#   or: brew install fastlane
+#
+# Usage:
+#   fastlane tests        # Run unit + UI tests
+#   fastlane beta         # Build and upload to TestFlight
+#   fastlane release      # Build and upload to App Store
+
+default_platform(:ios)
+
+platform :ios do
+
+  # ──────────────────────────────────────────────
+  # Before all lanes
+  # ──────────────────────────────────────────────
+
+  before_all do
+    # Ensure we're on the latest Xcode
+    xcversion(version: "~> 16.0") if is_ci
+  end
+
+  # ──────────────────────────────────────────────
+  # Tests
+  # ──────────────────────────────────────────────
+
+  desc "Run unit and UI tests"
+  lane :tests do
+    scan(
+      project: "SuperAppTributaria.xcodeproj",
+      scheme: "SuperAppTributaria",
+      devices: ["iPhone 16 Pro"],
+      clean: true,
+      code_coverage: true,
+      output_types: "html,junit",
+      output_directory: "./build/test-results"
+    )
+  end
+
+  desc "Run unit tests only (faster)"
+  lane :unit_tests do
+    scan(
+      project: "SuperAppTributaria.xcodeproj",
+      scheme: "SuperAppTributaria",
+      devices: ["iPhone 16 Pro"],
+      clean: false,
+      only_testing: ["SuperAppTributariaTests"],
+      code_coverage: true
+    )
+  end
+
+  # ──────────────────────────────────────────────
+  # Beta (TestFlight)
+  # ──────────────────────────────────────────────
+
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    # Increment build number (uses current timestamp for unique builds)
+    increment_build_number(
+      build_number: Time.now.strftime("%Y%m%d%H%M"),
+      xcodeproj: "SuperAppTributaria.xcodeproj"
+    )
+
+    # Build the app
+    build_app(
+      project: "SuperAppTributaria.xcodeproj",
+      scheme: "SuperAppTributaria",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "TribAI.ipa",
+      clean: true,
+      include_bitcode: false
+    )
+
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      changelog: "Build automatico para testing interno."
+    )
+
+    # Notify (optional -- uncomment and configure)
+    # slack(
+    #   message: "Nueva build de TribAI subida a TestFlight!",
+    #   slack_url: "YOUR_SLACK_WEBHOOK_URL"
+    # )
+  end
+
+  # ──────────────────────────────────────────────
+  # Release (App Store)
+  # ──────────────────────────────────────────────
+
+  desc "Build and upload to App Store for review"
+  lane :release do
+    # Ensure we're on main branch
+    ensure_git_branch(branch: "main")
+
+    # Ensure no uncommitted changes
+    ensure_git_status_clean
+
+    # Run tests first
+    tests
+
+    # Increment build number
+    increment_build_number(
+      build_number: Time.now.strftime("%Y%m%d%H%M"),
+      xcodeproj: "SuperAppTributaria.xcodeproj"
+    )
+
+    # Build the app
+    build_app(
+      project: "SuperAppTributaria.xcodeproj",
+      scheme: "SuperAppTributaria",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "TribAI.ipa",
+      clean: true,
+      include_bitcode: false
+    )
+
+    # Upload to App Store Connect
+    upload_to_app_store(
+      force: true,
+      skip_metadata: false,
+      skip_screenshots: true,  # Upload screenshots manually first time
+      submit_for_review: false, # Set to true to auto-submit
+      automatic_release: false, # Set to true for automatic release after approval
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false
+      }
+    )
+  end
+
+  # ──────────────────────────────────────────────
+  # Certificates & Provisioning
+  # ──────────────────────────────────────────────
+
+  desc "Sync certificates and provisioning profiles (match)"
+  lane :certs do
+    # TODO: Configure match with your git repo for certificates
+    # match(
+    #   type: "appstore",
+    #   app_identifier: "co.tribai.app",
+    #   git_url: "YOUR_CERTIFICATES_REPO_URL",
+    #   readonly: is_ci
+    # )
+    UI.message("TODO: Configure match with your certificates repo.")
+    UI.message("Run: fastlane match init")
+    UI.message("Docs: https://docs.fastlane.tools/actions/match/")
+  end
+
+  # ──────────────────────────────────────────────
+  # Utilities
+  # ──────────────────────────────────────────────
+
+  desc "Register new device for development"
+  lane :register_device do
+    device_name = prompt(text: "Device name: ")
+    device_udid = prompt(text: "Device UDID: ")
+    register_devices(
+      devices: { device_name => device_udid }
+    )
+    # Regenerate profiles after adding device
+    # match(type: "development", force_for_new_devices: true)
+  end
+
+  desc "Take App Store screenshots (using snapshot)"
+  lane :screenshots do
+    # TODO: Configure snapshot with UI tests for automated screenshots
+    # snapshot(
+    #   project: "SuperAppTributaria.xcodeproj",
+    #   scheme: "SuperAppTributariaUITests",
+    #   devices: [
+    #     "iPhone 16 Pro Max",
+    #     "iPhone 15 Pro Max"
+    #   ],
+    #   languages: ["es-CO"],
+    #   output_directory: "./fastlane/screenshots",
+    #   clear_previous_screenshots: true
+    # )
+    UI.message("TODO: Configure snapshot UI tests for automated screenshots.")
+    UI.message("Docs: https://docs.fastlane.tools/actions/snapshot/")
+  end
+
+  # ──────────────────────────────────────────────
+  # Error handling
+  # ──────────────────────────────────────────────
+
+  error do |lane, exception|
+    # Uncomment to send Slack notification on failure
+    # slack(
+    #   message: "Fastlane lane '#{lane}' failed: #{exception.message}",
+    #   slack_url: "YOUR_SLACK_WEBHOOK_URL",
+    #   success: false
+    # )
+    UI.error("Lane '#{lane}' failed: #{exception.message}")
+  end
+
+end

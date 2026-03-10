@@ -1,6 +1,8 @@
 "use client";
 
 import { clsx } from "clsx";
+import { useSyncExternalStore } from "react";
+import { useTheme } from "next-themes";
 import { ResponsiveContainer, Tooltip, Treemap } from "recharts";
 
 interface LibroEntry {
@@ -14,17 +16,22 @@ interface LibroTreemapChartProps {
   onSelect?: (name: string | null) => void;
 }
 
-const COLORS = [
-  "hsl(0,0%,10%)",
-  "hsl(0,0%,18%)",
-  "hsl(0,0%,28%)",
-  "hsl(0,0%,36%)",
-  "hsl(0,0%,46%)",
-  "hsl(0,0%,56%)",
-  "hsl(0,0%,66%)",
+const COLORS_LIGHT = [
+  "hsl(0,0%,10%)", "hsl(0,0%,18%)", "hsl(0,0%,28%)", "hsl(0,0%,36%)",
+  "hsl(0,0%,46%)", "hsl(0,0%,56%)", "hsl(0,0%,66%)",
+];
+const COLORS_DARK = [
+  "hsl(0,0%,90%)", "hsl(0,0%,80%)", "hsl(0,0%,70%)", "hsl(0,0%,60%)",
+  "hsl(0,0%,50%)", "hsl(0,0%,40%)", "hsl(0,0%,30%)",
 ];
 
+const sub = () => () => {};
+
 export function LibroTreemapChart({ data, selectedLibro, onSelect }: LibroTreemapChartProps) {
+  const { resolvedTheme } = useTheme();
+  const mounted = useSyncExternalStore(sub, () => true, () => false);
+  const COLORS = mounted && resolvedTheme === "dark" ? COLORS_DARK : COLORS_LIGHT;
+
   const payload = data.map((entry, index) => ({
     ...entry,
     fill: COLORS[index % COLORS.length],
@@ -50,7 +57,7 @@ export function LibroTreemapChart({ data, selectedLibro, onSelect }: LibroTreema
             dataKey="value"
             aspectRatio={4 / 3}
             stroke="var(--border)"
-            fill="hsl(0,0%,15%)"
+            fill="var(--muted-foreground)"
             onClick={(node) => {
               if (node && node.name) {
                 onSelect?.(node.name === selectedLibro ? null : node.name);

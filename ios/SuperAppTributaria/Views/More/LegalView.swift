@@ -44,7 +44,7 @@ struct LegalView: View {
             legalDate("Ultima actualizacion: marzo 2026")
 
             legalSection("1. Aceptacion de los Terminos") {
-                "Al descargar, instalar o utilizar SuperApp Tributaria Colombia (en adelante \"la Aplicacion\"), usted acepta estos Terminos de Uso en su totalidad. Si no esta de acuerdo, no utilice la Aplicacion."
+                "Al descargar, instalar o utilizar TribAI (en adelante \"la Aplicacion\"), usted acepta estos Terminos de Uso en su totalidad. Si no esta de acuerdo, no utilice la Aplicacion."
             }
 
             legalSection("2. Naturaleza del Servicio") {
@@ -136,7 +136,7 @@ struct LegalView: View {
                     .font(.system(size: 48))
                     .foregroundStyle(Color.appPrimary)
 
-                Text("SuperApp Tributaria")
+                Text("TribAI")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundStyle(Color.appForeground)
 
@@ -187,7 +187,7 @@ struct LegalView: View {
 
             // Credits
             legalSection("Creditos") {
-                "Desarrollado en Colombia.\nPowered by Anthropic Claude y Pinecone.\nDiseño y desarrollo: tribai.co"
+                "Desarrollado en Colombia.\nDiseño y desarrollo: tribai.co\nIngenieria: fourier.dev | inplux.co\nPowered by Anthropic Claude y Pinecone."
             }
         }
     }

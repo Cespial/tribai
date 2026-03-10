@@ -26,7 +26,7 @@ enum TextSummaryBuilder {
         }
 
         lines.append("")
-        lines.append("Generado con SuperApp Tributaria Colombia")
+        lines.append("Generado con TribAI — tribai.co")
 
         return lines.joined(separator: "\n")
     }

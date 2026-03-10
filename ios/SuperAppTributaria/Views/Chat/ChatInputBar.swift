@@ -36,9 +36,11 @@ struct ChatInputBar: View {
                             .foregroundStyle(Color.appDestructive)
                     }
                     .accessibilityLabel("Cancelar respuesta")
+                    .accessibilityHint("Detiene la generacion de la respuesta actual")
                 } else {
                     Button(action: {
                         isFocused = false
+                        Haptics.send()
                         onSend()
                     }) {
                         Image(systemName: "arrow.up.circle.fill")
@@ -47,6 +49,7 @@ struct ChatInputBar: View {
                     }
                     .disabled(!canSend)
                     .accessibilityLabel("Enviar mensaje")
+                    .accessibilityHint("Envia tu consulta al asistente tributario")
                 }
             }
             .padding(.horizontal, 12)
@@ -65,6 +68,7 @@ struct ChatInputBar: View {
                     Text("\(characterCount)/\(AppConstants.Chat.maxMessageLength)")
                         .font(AppTypography.caption)
                         .foregroundStyle(isOverLimit ? Color.appDestructive : Color.appMutedForeground)
+                        .accessibilityLabel("\(characterCount) de \(AppConstants.Chat.maxMessageLength) caracteres\(isOverLimit ? ", limite excedido" : "")")
                 }
                 .padding(.horizontal, 4)
             }

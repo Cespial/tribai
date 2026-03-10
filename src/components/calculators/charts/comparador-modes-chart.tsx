@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { formatCOP } from "@/lib/calculators/format";
+import { useChartColors } from "@/lib/hooks/useChartColors";
 
 interface ComparadorModeChartRow {
   mode: string;
@@ -25,6 +26,8 @@ interface ComparadorModesChartProps {
 }
 
 export function ComparadorModesChart({ rows }: ComparadorModesChartProps) {
+  const colors = useChartColors();
+
   const metricsData = rows.map((row) => ({
     mode: row.mode,
     "Costo empresa": row.costoEmpresa,
@@ -50,9 +53,9 @@ export function ComparadorModesChart({ rows }: ComparadorModesChartProps) {
               <YAxis tickFormatter={(v) => `$${Math.round(v / 1_000_000)}M`} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(value) => formatCOP(Number(value ?? 0))} />
               <Legend />
-              <Bar dataKey="Costo empresa" fill="#1f1d1a" />
-              <Bar dataKey="Neto anual" fill="#706d66" />
-              <Bar dataKey="Impuesto renta" fill="#b4b1aa" />
+              <Bar dataKey="Costo empresa" fill={colors[0]} />
+              <Bar dataKey="Neto anual" fill={colors[1]} />
+              <Bar dataKey="Impuesto renta" fill={colors[2]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -68,8 +71,8 @@ export function ComparadorModesChart({ rows }: ComparadorModesChartProps) {
               <YAxis tickFormatter={(v) => `$${Math.round(v / 1_000_000)}M`} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(value) => formatCOP(Number(value ?? 0))} />
               <Legend />
-              <Bar stackId="a" dataKey="Neto" fill="#706d66" />
-              <Bar stackId="a" dataKey="Descuentos" fill="#d8d6d1" />
+              <Bar stackId="a" dataKey="Neto" fill={colors[1]} />
+              <Bar stackId="a" dataKey="Descuentos" fill={colors[3]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

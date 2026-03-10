@@ -317,7 +317,8 @@ body {
 .prose-chat code { background: var(--muted); padding: 0.15rem 0.3rem; border-radius: 0.25rem; font-size: 0.875rem; }
 .prose-chat pre { background: var(--muted); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.65rem; overflow-x: auto; }
 .prose-chat blockquote { border-left: 3px solid var(--tribai-gold); padding-left: 1rem; margin: 0.5rem 0; color: var(--muted-foreground); }
-.prose-chat table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; }
+.prose-chat .table-wrapper { overflow-x: auto; margin: 0.5rem 0; -webkit-overflow-scrolling: touch; }
+.prose-chat table { width: 100%; border-collapse: collapse; min-width: 360px; }
 .prose-chat th, .prose-chat td { border: 1px solid var(--border); padding: 0.5rem; text-align: left; }
 .prose-chat th { background: var(--muted); font-weight: 600; }
 .prose-chat span, .prose-chat div { line-height: 1.6; }
@@ -553,10 +554,10 @@ body {
 
 .phone-mockup {
   position: relative;
-  width: clamp(240px, 40vw, 280px);
-  height: clamp(490px, 82vw, 572px);
+  width: clamp(260px, 42vw, 300px);
+  height: clamp(530px, 86vw, 612px);
   background: #1C1C1E;
-  border-radius: clamp(38px, 6vw, 44px);
+  border-radius: clamp(40px, 6.5vw, 48px);
   padding: clamp(10px, 1.8vw, 12px);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.12),
@@ -583,6 +584,28 @@ body {
   border-radius: 34px;
   overflow: hidden;
   background: var(--background);
+}
+
+/* Force light-mode tokens inside phone preview regardless of page theme */
+.phone-screen[data-theme="light"] {
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --muted: #F5F5F5;
+  --muted-foreground: #6B7280;
+  --muted-section: #F5F8FA;
+  --foreground-body: #4B5563;
+  --border: #E8E8E8;
+  --primary: #0066FF;
+  --primary-foreground: #ffffff;
+  --ring: #0066FF;
+  --destructive: #dc2626;
+  --success: #16a34a;
+  --tribai-navy: #0A1628;
+  --tribai-blue: #0066FF;
+  --tribai-gold: #C4952A;
+  --tribai-light-blue: #3B82B8;
 }
 
 .phone-home-indicator {
@@ -630,9 +653,57 @@ body {
   animation: app-typing-bounce 1.2s ease-in-out infinite;
 }
 
+/* iOS status bar inside phone mockup */
+.phone-status-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 20px 0;
+  height: 44px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  pointer-events: none;
+}
+.phone-status-bar .status-time {
+  width: 54px;
+  text-align: left;
+}
+.phone-status-bar .status-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 54px;
+  justify-content: flex-end;
+}
+
+/* Tab content transition */
+.phone-tab-content {
+  animation: phone-tab-fade 0.2s ease-out;
+}
+@keyframes phone-tab-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll momentum for phone content */
+.phone-scroll-area {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
 /* Responsive phone mockup — small screen adjustments */
 
 @media (max-width: 480px) {
+  .phone-mockup {
+    width: clamp(240px, 70vw, 280px);
+    height: clamp(490px, 143vw, 572px);
+  }
   .phone-dynamic-island {
     width: 76px;
     height: 22px;
@@ -645,6 +716,11 @@ body {
     bottom: 8px;
     width: 84px;
     height: 3px;
+  }
+  .phone-status-bar {
+    font-size: 11px;
+    padding: 3px 16px 0;
+    height: 38px;
   }
 }
 

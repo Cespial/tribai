@@ -67,6 +67,9 @@ struct ArticleRowView: View {
             }
         }
         .padding(.horizontal, AppSpacing.sm)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(article.id), \(article.tituloCorto), estado: \(article.estado.rawValue)")
+        .accessibilityHint("Toca para ver el articulo completo")
     }
 
     private var estadoBadge: some View {

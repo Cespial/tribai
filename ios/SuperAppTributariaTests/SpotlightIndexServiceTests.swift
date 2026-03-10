@@ -32,10 +32,10 @@ struct SpotlightIndexServiceTests {
     // MARK: - Domain Identifiers
 
     @Test func articleDomainIsCorrect() {
-        #expect(SpotlightIndexService.articleDomainIdentifier == "com.superapp-tributaria.articles")
+        #expect(SpotlightIndexService.articleDomainIdentifier == "co.tribai.app.articles")
     }
 
     @Test func calculatorDomainIsCorrect() {
-        #expect(SpotlightIndexService.calculatorDomainIdentifier == "com.superapp-tributaria.calculators")
+        #expect(SpotlightIndexService.calculatorDomainIdentifier == "co.tribai.app.calculators")
     }
 }

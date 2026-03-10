@@ -23,7 +23,7 @@ struct RentaCalculatorView: View {
                             }
                         CurrencyInputField(label: "Aportes voluntarios a pension", value: $aportesVoluntarios)
 
-                        CalculateButton(title: "Calcular Renta") {
+                        CalculateButton(title: "Calcular Renta", isEnabled: ingresosBrutos > 0) {
                             calculate()
                         }
                     }

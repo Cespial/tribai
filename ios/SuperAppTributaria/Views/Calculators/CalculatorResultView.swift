@@ -20,13 +20,15 @@ struct CalculatorResultView: View {
                     .foregroundStyle(Color.appMutedForeground)
 
                 Text(mainValue)
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(.system(.title, design: .rounded, weight: .bold))
                     .foregroundStyle(Color.appForeground)
             }
             .frame(maxWidth: .infinity)
             .padding(AppSpacing.sm)
             .background(Color.appMuted)
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(mainLabel): \(mainValue)")
 
             // Breakdown rows
             if !rows.isEmpty {
@@ -82,6 +84,7 @@ struct CalculatorResultView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .accessibilityHint("Abre el asistente tributario para consultar sobre este resultado")
             }
 
             // Share button
@@ -104,6 +107,7 @@ struct CalculatorResultView: View {
                 )
             }
             .buttonStyle(.plain)
+            .accessibilityHint("Comparte el resultado del calculo como texto y PDF")
             .sheet(isPresented: $showingShareSheet) {
                 let textSummary = TextSummaryBuilder.buildSummary(
                     title: title,

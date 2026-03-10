@@ -1,6 +1,7 @@
 "use client";
 
 import { clsx } from "clsx";
+import { CALENDARIO_FISCAL_YEAR } from "@/config/calendario-data";
 
 export type CalendarRangeFilter = "semana" | "proximos30" | "mes" | "trimestre" | "anio";
 
@@ -14,7 +15,7 @@ const OPTIONS: Array<{ value: CalendarRangeFilter; label: string }> = [
   { value: "proximos30", label: "Próximos 30 días" },
   { value: "mes", label: "Este mes" },
   { value: "trimestre", label: "Trimestre" },
-  { value: "anio", label: "2026" },
+  { value: "anio", label: String(CALENDARIO_FISCAL_YEAR) },
 ];
 
 export function CalendarRangeTabs({ value, onChange }: CalendarRangeTabsProps) {

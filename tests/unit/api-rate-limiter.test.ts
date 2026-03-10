@@ -28,35 +28,35 @@ function nextIp(prefix = "10.0.0"): string {
 }
 
 describe("api/rate-limiter", () => {
-  it("permite 20 requests y bloquea el 21 dentro de la ventana", () => {
+  it("permite 20 requests y bloquea el 21 dentro de la ventana", async () => {
     mockNow(1_700_000_000_000);
     const ip = nextIp();
 
     for (let i = 0; i < 20; i++) {
-      assert.equal(checkRateLimit(ip).allowed, true);
+      assert.equal((await checkRateLimit(ip)).allowed, true);
     }
 
-    const blocked = checkRateLimit(ip);
+    const blocked = await checkRateLimit(ip);
     assert.equal(blocked.allowed, false);
     assert.ok((blocked.retryAfter ?? 0) > 0);
   });
 
-  it("después de 60s vuelve a permitir requests", () => {
+  it("después de 60s vuelve a permitir requests", async () => {
     const start = 1_700_000_000_000;
     const ip = nextIp();
 
     mockNow(start);
-    for (let i = 0; i < 20; i++) checkRateLimit(ip);
-    assert.equal(checkRateLimit(ip).allowed, false);
+    for (let i = 0; i < 20; i++) await checkRateLimit(ip);
+    assert.equal((await checkRateLimit(ip)).allowed, false);
 
     restoreNow?.();
     restoreNow = undefined;
     mockNow(start + 61_000);
 
-    assert.equal(checkRateLimit(ip).allowed, true);
+    assert.equal((await checkRateLimit(ip)).allowed, true);
   });
 
-  it("usa x-real-ip cuando está presente", () => {
+  it("usa x-real-ip cuando está presente", async () => {
     mockNow(1_700_000_100_000);
     const ip = nextIp("20.0.0");
 
@@ -66,14 +66,14 @@ describe("api/rate-limiter", () => {
       },
     });
 
-    const first = checkRateLimitWithHeaders(req);
+    const first = await checkRateLimitWithHeaders(req);
     assert.equal(first.allowed, true);
 
-    for (let i = 0; i < 19; i++) checkRateLimit(ip);
-    assert.equal(checkRateLimitWithHeaders(req).allowed, false);
+    for (let i = 0; i < 19; i++) await checkRateLimit(ip);
+    assert.equal((await checkRateLimitWithHeaders(req)).allowed, false);
   });
 
-  it("x-forwarded-for usa la primera IP", () => {
+  it("x-forwarded-for usa la primera IP", async () => {
     mockNow(1_700_000_200_000);
     const ip = nextIp("30.0.0");
 
@@ -84,10 +84,10 @@ describe("api/rate-limiter", () => {
     });
 
     for (let i = 0; i < 20; i++) {
-      checkRateLimitWithHeaders(req);
+      await checkRateLimitWithHeaders(req);
     }
 
-    const blocked = checkRateLimitWithHeaders(req);
+    const blocked = await checkRateLimitWithHeaders(req);
     assert.equal(blocked.allowed, false);
   });
 });

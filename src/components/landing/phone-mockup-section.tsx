@@ -109,17 +109,46 @@ export function PhoneMockupSection() {
               {/* Screen content — rendered directly, forced light mode */}
               <div className="phone-screen" data-theme="light">
                 <div className="flex h-full flex-col bg-white text-[#1A1A1A]" style={{ colorScheme: "light" }}>
+                  {/* iOS Status Bar */}
+                  <div className="phone-status-bar">
+                    <span className="status-time">9:41</span>
+                    <div className="status-icons">
+                      {/* Signal */}
+                      <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor" aria-hidden="true">
+                        <rect x="0" y="8" width="3" height="4" rx="0.5" opacity="0.3" />
+                        <rect x="4.5" y="5.5" width="3" height="6.5" rx="0.5" opacity="0.5" />
+                        <rect x="9" y="3" width="3" height="9" rx="0.5" opacity="0.7" />
+                        <rect x="13.5" y="0" width="3" height="12" rx="0.5" />
+                      </svg>
+                      {/* WiFi */}
+                      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true">
+                        <path d="M8 10.8a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Z" />
+                        <path d="M4.94 9.06a4.36 4.36 0 0 1 6.12 0" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                        <path d="M2.46 6.59a7.63 7.63 0 0 1 11.08 0" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                        <path d="M.29 4.12A10.89 10.89 0 0 1 15.71 4.12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                      </svg>
+                      {/* Battery */}
+                      <svg width="27" height="12" viewBox="0 0 27 12" fill="currentColor" aria-hidden="true">
+                        <rect x="0" y="0.5" width="23" height="11" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.35" />
+                        <rect x="24" y="3.5" width="2.5" height="4.5" rx="0.7" opacity="0.4" />
+                        <rect x="1.5" y="2" width="18" height="8" rx="1.2" />
+                      </svg>
+                    </div>
+                  </div>
+
                   {/* Tab content */}
-                  <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                    {activeTab === "home" && <AppHomeTab onNavigate={setActiveTab} />}
-                    {activeTab === "chat" && <AppChatTab />}
-                    {activeTab === "calculators" && <AppCalculatorsTab />}
-                    {activeTab === "et" && <AppETTab />}
-                    {activeTab === "more" && <AppMoreTab />}
+                  <div className="phone-scroll-area flex-1 overflow-y-auto overflow-x-hidden">
+                    <div key={activeTab} className="phone-tab-content">
+                      {activeTab === "home" && <AppHomeTab onNavigate={setActiveTab} />}
+                      {activeTab === "chat" && <AppChatTab />}
+                      {activeTab === "calculators" && <AppCalculatorsTab />}
+                      {activeTab === "et" && <AppETTab />}
+                      {activeTab === "more" && <AppMoreTab />}
+                    </div>
                   </div>
 
                   {/* Tab bar */}
-                  <nav className="flex shrink-0 items-end justify-around border-t border-border bg-card/90 px-1 pb-1 pt-1 backdrop-blur-xl">
+                  <nav className="flex shrink-0 items-end justify-around border-t border-border bg-white/90 px-1 pb-1.5 pt-1 backdrop-blur-xl">
                     {TABS.map(({ id, label, icon: Icon }) => {
                       const isActive = activeTab === id;
                       return (
@@ -131,8 +160,8 @@ export function PhoneMockupSection() {
                             isActive ? "text-tribai-blue" : "text-muted-foreground"
                           }`}
                         >
-                          <Icon className="h-[18px] w-[18px]" strokeWidth={isActive ? 2.2 : 1.6} />
-                          <span className="text-[8px] font-medium leading-tight">{label}</span>
+                          <Icon className="h-5 w-5" strokeWidth={isActive ? 2.2 : 1.6} />
+                          <span className="text-[10px] font-medium leading-tight">{label}</span>
                         </button>
                       );
                     })}

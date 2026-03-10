@@ -13,6 +13,7 @@ struct SearchBarView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(Color.appMutedForeground)
                 .font(.system(size: 16))
+                .accessibilityHidden(true)
 
             TextField(placeholder, text: $text)
                 .font(AppTypography.bodyDefault)
@@ -21,6 +22,7 @@ struct SearchBarView: View {
                 .submitLabel(.search)
                 .onSubmit { onCommit?() }
                 .autocorrectionDisabled()
+                .accessibilityLabel(placeholder)
 
             if !text.isEmpty {
                 Button {

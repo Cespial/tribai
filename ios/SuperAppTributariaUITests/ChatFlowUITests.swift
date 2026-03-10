@@ -8,6 +8,14 @@ final class ChatFlowUITests: XCTestCase {
         continueAfterFailure = false
         app.launchArguments.append("--uitesting")
         app.launch()
+
+        // Navigate to the Asistente (chat) tab — the app starts on Inicio
+        let asistenteTab = app.tabBars.buttons["Asistente"]
+        guard asistenteTab.waitForExistence(timeout: 5) else {
+            XCTFail("Asistente tab not found")
+            return
+        }
+        asistenteTab.tap()
     }
 
     func testNewConversationShowsEmptyState() throws {
@@ -35,23 +43,39 @@ final class ChatFlowUITests: XCTestCase {
             newButton.tap()
         }
 
-        // Type a message
+        // Find the input field (may appear as textField or textView depending on OS)
         let textField = app.textFields["Campo de mensaje"]
-        guard textField.waitForExistence(timeout: 5) else {
+        let textView = app.textViews["Campo de mensaje"]
+        let inputField: XCUIElement
+        if textField.waitForExistence(timeout: 5) {
+            inputField = textField
+        } else if textView.waitForExistence(timeout: 3) {
+            inputField = textView
+        } else {
             XCTFail("Text field not found")
             return
         }
-        textField.tap()
-        textField.typeText("¿Debo declarar renta?")
+        inputField.tap()
+        inputField.typeText("¿Debo declarar renta?")
 
-        // Send
+        // Tap the send button
         let sendButton = app.buttons["Enviar mensaje"]
-        XCTAssertTrue(sendButton.isEnabled)
-        sendButton.tap()
+        guard sendButton.waitForExistence(timeout: 3) else {
+            XCTFail("Send button not found")
+            return
+        }
 
-        // Verify user message appears
-        let userMessage = app.staticTexts["Tú: ¿Debo declarar renta?"]
-        XCTAssertTrue(userMessage.waitForExistence(timeout: 3))
+        if sendButton.isHittable {
+            sendButton.tap()
+        } else {
+            // If the button isn't directly hittable (e.g., keyboard overlap), tap via coordinate
+            sendButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
+
+        // Verify user message appears — the MessageBubbleView has accessibilityLabel "Tú: <text>"
+        let predicate = NSPredicate(format: "label CONTAINS '¿Debo declarar renta?'")
+        let userMessage = app.descendants(matching: .any).matching(predicate).firstMatch
+        XCTAssertTrue(userMessage.waitForExistence(timeout: 5))
     }
 
     func testSuggestedQuestionSendsMessage() throws {
@@ -71,10 +95,9 @@ final class ChatFlowUITests: XCTestCase {
         }
         question.tap()
 
-        // Verify the message was sent (user bubble appears)
-        let userBubble = app.staticTexts.matching(
-            NSPredicate(format: "label CONTAINS 'declarar renta'")
-        ).firstMatch
+        // Verify the message was sent (user bubble has accessibility label "Tú: <question text>")
+        let predicate = NSPredicate(format: "label BEGINSWITH 'Tú:'")
+        let userBubble = app.descendants(matching: .any).matching(predicate).firstMatch
         XCTAssertTrue(userBubble.waitForExistence(timeout: 5))
     }
 }

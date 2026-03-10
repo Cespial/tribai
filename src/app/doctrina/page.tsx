@@ -114,7 +114,7 @@ function DoctrineCard({
         <h3
           className={clsx(
             "heading-serif text-xl text-foreground",
-            doc.vigencia === "revocado" && "line-through decoration-red-400/70"
+            doc.vigencia === "revocado" && "line-through decoration-destructive/50"
           )}
         >
           {doc.tema}
@@ -128,7 +128,7 @@ function DoctrineCard({
           “<InteractiveTaxText text={doc.pregunta} />”
         </p>
 
-        <div className="mt-4 rounded-md border-l-4 border-yellow-300 bg-yellow-50/80 p-3 dark:border-yellow-700 dark:bg-yellow-900/20">
+        <div className="mt-4 rounded-md border-l-4 border-border bg-muted/50 p-3">
           <p className="text-sm font-medium leading-relaxed text-foreground">
             <InteractiveTaxText text={doc.conclusionClave} />
           </p>
@@ -158,7 +158,7 @@ function DoctrineCard({
         )}
 
         {doc.revocadoPor && (
-          <p className="mt-3 text-xs text-red-700 dark:text-red-300">
+          <p className="mt-3 text-xs text-destructive">
             Documento revocado por: {doc.revocadoPor}
           </p>
         )}

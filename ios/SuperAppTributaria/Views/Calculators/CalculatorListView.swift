@@ -80,6 +80,9 @@ struct CalculatorListView: View {
             RoundedRectangle(cornerRadius: AppRadius.card)
                 .stroke(Color.appBorder, lineWidth: 1)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(calc.title): \(calc.description)")
+        .accessibilityHint("Toca para abrir esta calculadora")
     }
 
     @ViewBuilder

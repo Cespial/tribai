@@ -97,7 +97,7 @@ export function AppETTab() {
       </div>
 
       {/* Article list */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="phone-scroll-area flex-1 overflow-y-auto">
         <p className="px-4 py-2 text-[12px] text-muted-foreground">
           {filtered.length} artículos
         </p>

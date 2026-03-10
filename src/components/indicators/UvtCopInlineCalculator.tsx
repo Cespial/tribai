@@ -76,6 +76,7 @@ export function UvtCopInlineCalculator({ uvtValue }: UvtCopInlineCalculatorProps
           </label>
           <input
             type="text"
+            inputMode="decimal"
             value={input}
             onChange={(event) => setInput(event.target.value)}
             placeholder={mode === "uvt-to-cop" ? "Ej: 120" : "Ej: 1500000"}

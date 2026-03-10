@@ -157,7 +157,7 @@ export default function IndicadoresPage() {
         </div>
       </section>
 
-      <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-4 text-xs text-amber-900 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-200">
+      <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-xs text-muted-foreground">
         <p className="flex items-center gap-2">
           <Info className="h-4 w-4 shrink-0" />
           <span>

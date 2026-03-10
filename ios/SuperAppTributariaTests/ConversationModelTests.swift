@@ -87,8 +87,16 @@ struct ConversationModelTests {
     // MARK: - Equality
 
     @Test func conversationsEqualById() {
-        let conv1 = Conversation(id: "conv-abc")
-        let conv2 = Conversation(id: "conv-abc")
+        let date = Date(timeIntervalSince1970: 1000)
+        let conv1 = Conversation(id: "conv-abc", createdAt: date, updatedAt: date)
+        let conv2 = Conversation(id: "conv-abc", createdAt: date, updatedAt: date)
         #expect(conv1 == conv2)
+    }
+
+    @Test func conversationsNotEqualByDifferentId() {
+        let date = Date(timeIntervalSince1970: 1000)
+        let conv1 = Conversation(id: "conv-abc", createdAt: date, updatedAt: date)
+        let conv2 = Conversation(id: "conv-xyz", createdAt: date, updatedAt: date)
+        #expect(conv1 != conv2)
     }
 }

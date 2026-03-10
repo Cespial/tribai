@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ChatView: View {
     @Bindable var viewModel: ChatViewModel
+    @Environment(AppEnvironment.self) private var environment
     @State private var showSourcesPanel = false
     @State private var selectedSource: SourceCitation?
     @State private var showCopiedFeedback = false
@@ -9,8 +10,16 @@ struct ChatView: View {
     var body: some View {
         VStack(spacing: 0) {
             if viewModel.messages.isEmpty {
-                EmptyStateView { question in
-                    viewModel.sendSuggestedQuestion(question)
+                ScrollView {
+                    EmptyStateView { question in
+                        viewModel.sendSuggestedQuestion(question)
+                    }
+                }
+                .scrollDismissesKeyboard(.interactively)
+                .overlay(alignment: .top) {
+                    if !environment.networkMonitor.isConnected {
+                        offlineBanner
+                    }
                 }
             } else {
                 messageList
@@ -84,6 +93,23 @@ struct ChatView: View {
                 scrollToBottom(proxy: proxy)
             }
         }
+    }
+
+    private var offlineBanner: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "wifi.slash")
+                .font(.system(size: 14))
+                .accessibilityHidden(true)
+            Text("Sin conexion. El asistente tributario requiere internet.")
+                .font(AppTypography.bodySmall)
+        }
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, AppSpacing.sm)
+        .background(Color.appDestructive)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Sin conexion a internet. El asistente tributario requiere internet para funcionar.")
     }
 
     private func showCopiedToast() {

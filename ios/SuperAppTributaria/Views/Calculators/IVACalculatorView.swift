@@ -43,7 +43,7 @@ struct IVACalculatorView: View {
                             .pickerStyle(.segmented)
                         }
 
-                        CalculateButton(title: "Calcular") {
+                        CalculateButton(title: "Calcular", isEnabled: monto > 0) {
                             calculate()
                         }
                     }

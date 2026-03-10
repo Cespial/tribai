@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Search, Calendar, Filter, Table2, CalendarDays, ExternalLink, Newspaper } from "lucide-react";
 import { clsx } from "clsx";
-import { OBLIGACIONES, CALENDARIO_DISCLAIMER, CALENDARIO_LAST_UPDATE } from "@/config/calendario-data";
+import { OBLIGACIONES, CALENDARIO_DISCLAIMER, CALENDARIO_LAST_UPDATE, CALENDARIO_FISCAL_YEAR } from "@/config/calendario-data";
 import { NOVEDADES_ENRIQUECIDAS } from "@/config/novedades-data";
 import { getRelacionObligacion } from "@/config/relaciones-tributarias";
 import { ReferencePageLayout } from "@/components/layout/ReferencePageLayout";
@@ -45,7 +45,7 @@ function isWithinSelectedRange(fechaIso: string, range: CalendarRangeFilter): bo
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   if (range === "anio") {
-    return target.getFullYear() === 2026;
+    return target.getFullYear() === CALENDARIO_FISCAL_YEAR;
   }
 
   if (range === "semana") {
@@ -77,7 +77,7 @@ function getVisibleMonths(range: CalendarRangeFilter): Date[] {
   const year = now.getFullYear();
 
   if (range === "anio") {
-    return Array.from({ length: 12 }, (_, index) => new Date(2026, index, 1));
+    return Array.from({ length: 12 }, (_, index) => new Date(CALENDARIO_FISCAL_YEAR, index, 1));
   }
 
   if (range === "mes" || range === "semana" || range === "proximos30") {
@@ -200,8 +200,8 @@ function CalendarioPageContent() {
   };
 
   const recentCalendarNews = useMemo(() => {
-    const threshold = new Date("2026-02-19");
-    threshold.setDate(threshold.getDate() - 60);
+    const now = new Date();
+    const threshold = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 60);
     return NOVEDADES_ENRIQUECIDAS.filter(
       (n) => n.cambiaCalendario && new Date(n.fecha) >= threshold
     ).slice(0, 1);
@@ -209,7 +209,7 @@ function CalendarioPageContent() {
 
   return (
     <ReferencePageLayout
-      title="Calendario Tributario 2026"
+      title={`Calendario Tributario ${CALENDARIO_FISCAL_YEAR}`}
       description="Visualiza tus vencimientos críticos por NIT, exporta tus fechas y prioriza obligaciones para evitar sanciones."
       icon={Calendar}
       updatedAt={CALENDARIO_LAST_UPDATE}
@@ -217,7 +217,7 @@ function CalendarioPageContent() {
       <UpcomingDeadlinesPanel items={upcomingItems} />
 
       {!novedadParam && recentCalendarNews.length > 0 && (
-        <div className="rounded-lg border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900 shadow-sm dark:border-sky-900/40 dark:bg-sky-900/20 dark:text-sky-100">
+        <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm text-foreground shadow-sm">
           <div className="flex items-center gap-2 font-medium">
             <Newspaper className="h-4 w-4" />
             Novedad normativa reciente: {recentCalendarNews[0].titulo}
@@ -226,7 +226,7 @@ function CalendarioPageContent() {
             Esta resolución puede afectar tus plazos.
             <Link
               href={`/calendario?novedad=${recentCalendarNews[0].id}`}
-              className="ml-2 font-semibold underline underline-offset-2 decoration-sky-400 hover:decoration-current"
+              className="ml-2 font-semibold underline underline-offset-2 decoration-primary hover:decoration-current"
             >
               Filtrar calendario por esta novedad
             </Link>
@@ -235,11 +235,11 @@ function CalendarioPageContent() {
       )}
 
       {novedadParam && (
-        <div className="rounded-lg border border-border/60 bg-amber-50/70 p-4 text-sm text-amber-900 shadow-sm dark:bg-amber-900/30 dark:text-amber-100">
+        <div className="rounded-lg border border-border/60 bg-muted/50 p-4 text-sm text-foreground shadow-sm">
           Mostrando obligaciones impactadas por la novedad <strong>{novedadParam}</strong>.
           <Link
             href="/calendario"
-            className="ml-2 font-medium underline underline-offset-2 decoration-amber-400 hover:decoration-current"
+            className="ml-2 font-medium underline underline-offset-2 decoration-foreground/40 hover:decoration-current"
           >
             Ver calendario completo
           </Link>
@@ -378,7 +378,7 @@ function CalendarioPageContent() {
                       className={clsx(
                         "hover:bg-muted/30 transition-colors",
                         item.status === "vencido" && "bg-muted/10",
-                        novedadParam && item.relatedNovedadIds.includes(novedadParam) && "bg-amber-50/40 dark:bg-amber-900/10"
+                        novedadParam && item.relatedNovedadIds.includes(novedadParam) && "bg-primary/5"
                       )}
                     >
                       <td className="px-4 py-3">
@@ -402,7 +402,7 @@ function CalendarioPageContent() {
                         <span
                           className={clsx(
                             "font-mono text-sm",
-                            nitFilters.length > 0 && "rounded bg-amber-100 px-1.5 py-0.5 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+                            nitFilters.length > 0 && "rounded bg-primary/10 px-1.5 py-0.5 text-primary"
                           )}
                         >
                           {item.ultimoDigito}

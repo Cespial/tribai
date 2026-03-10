@@ -20,11 +20,12 @@ protocol AuthServiceProtocol {
     func signInWithApple(credential: ASAuthorizationAppleIDCredential) async throws
     func signOut()
     func continueWithoutAccount()
+    func deleteAccount()
 }
 
 final class AuthService: AuthServiceProtocol {
     private(set) var currentUser: AuthUser?
-    private let keychainService = "com.superapp-tributaria.auth"
+    private let keychainService = "co.tribai.app.auth"
 
     var isAuthenticated: Bool { currentUser != nil }
 
@@ -64,6 +65,30 @@ final class AuthService: AuthServiceProtocol {
         )
         try? saveUser(user)
         currentUser = user
+    }
+
+    /// Deletes keychain credentials, clears UserDefaults, and signs out.
+    /// MainActor-isolated services (bookmarks, biometrics, analytics, SwiftData)
+    /// must be cleared by the caller on the main actor.
+    func deleteAccount() {
+        // 1. Clear keychain auth data
+        try? KeychainManager.delete(service: keychainService, account: "user")
+
+        // 2. Reset onboarding state
+        OnboardingService.reset()
+
+        // 3. Clear shared data (widget data)
+        if let sharedDefaults = UserDefaults(suiteName: "group.co.tribai.app") {
+            sharedDefaults.removePersistentDomain(forName: "group.co.tribai.app")
+        }
+
+        // 4. Clear standard UserDefaults for this app
+        if let bundleId = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleId)
+        }
+
+        // 5. Sign out
+        currentUser = nil
     }
 
     // MARK: - Persistence

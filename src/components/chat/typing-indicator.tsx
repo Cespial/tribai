@@ -18,7 +18,9 @@ export function TypingIndicator({ label = "Analizando artículos y redactando re
           <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
           <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground" />
         </div>
-        <p className="mt-1 text-[11px] text-muted-foreground">{label}</p>
+        <p className="mt-1 text-[11px] text-muted-foreground transition-opacity duration-300">
+          {label}
+        </p>
       </div>
     </div>
   );

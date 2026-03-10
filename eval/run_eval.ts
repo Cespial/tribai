@@ -471,7 +471,7 @@ async function runExperiment(
         const allScores = chunks.map((c) => c.score).sort((a, b) => b - a);
         const evidenceResult = checkEvidence(context, allScores[0] ?? 0, allScores[Math.floor(allScores.length / 2)] ?? 0);
 
-        const { system, contextBlock } = buildMessages(q.question, context, "", undefined, evidenceResult);
+        const { system, contextBlock } = buildMessages(q.question, context, undefined, evidenceResult);
 
         // Generate answer (non-streaming)
         const { text: answer } = await generateText({

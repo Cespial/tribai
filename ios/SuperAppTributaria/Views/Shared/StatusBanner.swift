@@ -30,6 +30,7 @@ struct StatusBanner: View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.system(size: 14))
+                .accessibilityHidden(true)
             Text(message)
                 .font(AppTypography.bodySmall)
         }
@@ -38,6 +39,8 @@ struct StatusBanner: View {
         .padding(.vertical, 8)
         .padding(.horizontal, AppSpacing.sm)
         .background(color)
+        .accessibilityElement(children: .combine)
         .accessibilityLabel(message)
+        .accessibilityAddTraits(.isStaticText)
     }
 }

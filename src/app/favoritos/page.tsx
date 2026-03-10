@@ -111,6 +111,8 @@ export default function FavoritosPage() {
     trackEvent("workspace_created", { name: name.trim() });
   };
 
+  const isSearchActive = search.trim().length > 0;
+
   const handleDragEnd = () => {
     if (!draggingId || !dragOverId || draggingId === dragOverId) {
       setDraggingId(null);
@@ -118,7 +120,8 @@ export default function FavoritosPage() {
       return;
     }
 
-    const ids = filteredBookmarks.map((item) => item.id);
+    // Use full (unfiltered) list to preserve items outside the current filter
+    const ids = workspaceBookmarks.map((item) => item.id);
     const from = ids.indexOf(draggingId);
     const to = ids.indexOf(dragOverId);
     if (from < 0 || to < 0) {
@@ -299,10 +302,10 @@ export default function FavoritosPage() {
                     <WorkspaceCard
                       key={item.id}
                       item={item}
-                      isDragging={draggingId === item.id}
-                      onDragStart={(id) => setDraggingId(id)}
-                      onDragOver={(id) => setDragOverId(id)}
-                      onDragEnd={handleDragEnd}
+                      isDragging={!isSearchActive && draggingId === item.id}
+                      onDragStart={isSearchActive ? undefined : (id) => setDraggingId(id)}
+                      onDragOver={isSearchActive ? undefined : (id) => setDragOverId(id)}
+                      onDragEnd={isSearchActive ? undefined : handleDragEnd}
                       onRemove={removeBookmark}
                     />
                   ))}

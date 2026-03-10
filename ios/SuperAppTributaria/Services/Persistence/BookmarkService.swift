@@ -57,6 +57,13 @@ final class BookmarkService {
         }
     }
 
+    func clearAll() {
+        bookmarkedArticleSlugs.removeAll()
+        bookmarkedCalculatorIds.removeAll()
+        UserDefaults.standard.removeObject(forKey: articleKey)
+        UserDefaults.standard.removeObject(forKey: calculatorKey)
+    }
+
     private func saveArticles() {
         UserDefaults.standard.set(Array(bookmarkedArticleSlugs), forKey: articleKey)
     }

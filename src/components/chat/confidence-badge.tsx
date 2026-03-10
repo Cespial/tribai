@@ -11,9 +11,9 @@ interface ConfidenceBadgeProps {
 }
 
 const CONFIDENCE_DOT: Record<string, string> = {
-  high: "bg-green-500",
+  high: "bg-success",
   medium: "bg-yellow-500",
-  low: "bg-red-500",
+  low: "bg-destructive",
 };
 
 const CONFIDENCE_LABEL: Record<string, string> = {

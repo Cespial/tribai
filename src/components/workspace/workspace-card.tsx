@@ -9,9 +9,9 @@ interface WorkspaceCardProps {
   item: BookmarkItem;
   isDragging?: boolean;
   onRemove: (id: string) => void;
-  onDragStart: (id: string) => void;
-  onDragOver: (id: string) => void;
-  onDragEnd: () => void;
+  onDragStart?: (id: string) => void;
+  onDragOver?: (id: string) => void;
+  onDragEnd?: () => void;
 }
 
 export function WorkspaceCard({
@@ -22,14 +22,16 @@ export function WorkspaceCard({
   onDragOver,
   onDragEnd,
 }: WorkspaceCardProps) {
+  const draggable = Boolean(onDragStart);
+
   return (
     <div
-      draggable
-      onDragStart={() => onDragStart(item.id)}
-      onDragOver={(e) => {
+      draggable={draggable}
+      onDragStart={onDragStart ? () => onDragStart(item.id) : undefined}
+      onDragOver={onDragOver ? (e) => {
         e.preventDefault();
         onDragOver(item.id);
-      }}
+      } : undefined}
       onDragEnd={onDragEnd}
       className={clsx(
         "group relative rounded-lg border border-border/60 bg-card p-4 shadow-sm transition-all hover:border-border hover:shadow-md",
@@ -40,7 +42,7 @@ export function WorkspaceCard({
         <Link href={item.href} className="min-w-0 flex-1">
           <h3 className="line-clamp-2 text-sm font-semibold text-foreground">{item.title}</h3>
         </Link>
-        <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+        {draggable && <GripVertical className="mt-0.5 h-4 w-4 shrink-0 cursor-grab text-muted-foreground" />}
       </div>
 
       {item.preview ? (

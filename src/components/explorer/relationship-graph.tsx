@@ -148,7 +148,8 @@ export function RelationshipGraph({ data, maxNodes = 220 }: RelationshipGraphPro
 
       if (globalScale > 2.2) {
         ctx.font = `${10 / globalScale}px sans-serif`;
-        ctx.fillStyle = "#7a7771";
+        const textColor = getComputedStyle(document.documentElement).getPropertyValue("--muted-foreground").trim() || "#7a7771";
+        ctx.fillStyle = textColor;
         ctx.textAlign = "center";
         ctx.fillText(node.label, node.x, node.y + size + 8 / globalScale);
       }
@@ -182,24 +183,24 @@ export function RelationshipGraph({ data, maxNodes = 220 }: RelationshipGraphPro
         <div className="flex items-center gap-1">
           <button
             onClick={zoomIn}
-            className="rounded border border-border p-1 text-muted-foreground hover:text-foreground"
+            className="rounded border border-border p-2 text-muted-foreground hover:text-foreground"
             aria-label="Acercar"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-4 w-4" />
           </button>
           <button
             onClick={zoomOut}
-            className="rounded border border-border p-1 text-muted-foreground hover:text-foreground"
+            className="rounded border border-border p-2 text-muted-foreground hover:text-foreground"
             aria-label="Alejar"
           >
-            <Minus className="h-3.5 w-3.5" />
+            <Minus className="h-4 w-4" />
           </button>
           <button
             onClick={zoomToFit}
-            className="rounded border border-border p-1 text-muted-foreground hover:text-foreground"
+            className="rounded border border-border p-2 text-muted-foreground hover:text-foreground"
             aria-label="Ajustar a pantalla"
           >
-            <Maximize2 className="h-3.5 w-3.5" />
+            <Maximize2 className="h-4 w-4" />
           </button>
           <button
             onClick={() => {
@@ -208,10 +209,10 @@ export function RelationshipGraph({ data, maxNodes = 220 }: RelationshipGraphPro
               setVisibleNodes(maxNodes);
               zoomToFit();
             }}
-            className="rounded border border-border p-1 text-muted-foreground hover:text-foreground"
+            className="rounded border border-border p-2 text-muted-foreground hover:text-foreground"
             aria-label="Reiniciar filtros"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
+            <RotateCcw className="h-4 w-4" />
           </button>
         </div>
 

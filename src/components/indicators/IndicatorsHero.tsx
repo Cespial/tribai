@@ -45,8 +45,8 @@ export function IndicatorsHero({ indicators, liveOverrides }: IndicatorsHeroProp
                 {indicator.nombre}
               </h3>
               {live && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
                   En vivo
                 </span>
               )}
@@ -56,7 +56,7 @@ export function IndicatorsHero({ indicators, liveOverrides }: IndicatorsHeroProp
               <div className="pointer-events-none absolute right-0 top-5 z-20 w-56 rounded-md border border-border bg-card p-2 text-xs text-muted-foreground opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                 {indicator.paraQueSirve}
                 {live && (
-                  <span className="mt-1 block text-emerald-600 dark:text-emerald-400">
+                  <span className="mt-1 block text-success">
                     Fuente: datos.gov.co — {new Date(live.fetchedAt).toLocaleString("es-CO")}
                   </span>
                 )}

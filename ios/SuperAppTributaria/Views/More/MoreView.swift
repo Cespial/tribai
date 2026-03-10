@@ -1,7 +1,9 @@
 import SwiftUI
+import UIKit
 
 struct MoreView: View {
     var onNavigateToCalculators: () -> Void = {}
+    @State private var appearanceService = AppearanceService.shared
 
     var body: some View {
         NavigationStack {
@@ -76,6 +78,23 @@ struct MoreView: View {
                     }
                 }
 
+                Section("Apariencia") {
+                    Picker("Modo", selection: $appearanceService.mode) {
+                        ForEach(AppearanceMode.allCases, id: \.self) { mode in
+                            Text(mode.label).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                Section("Soporte") {
+                    Button {
+                        openSupportEmail()
+                    } label: {
+                        moreRow(icon: "envelope", title: "Soporte y comentarios", subtitle: "Escribenos a soporte@tribai.co")
+                    }
+                }
+
                 Section("Legal") {
                     NavigationLink {
                         LegalView(page: .terms)
@@ -100,7 +119,7 @@ struct MoreView: View {
                     HStack {
                         Spacer()
                         VStack(spacing: 4) {
-                            Text("SuperApp Tributaria Colombia")
+                            Text("TribAI")
                                 .font(AppTypography.caption)
                                 .foregroundStyle(Color.appMutedForeground)
                             Text("v1.0.0")
@@ -116,6 +135,29 @@ struct MoreView: View {
             }
             .navigationTitle("Mas")
             .navigationBarTitleDisplayMode(.large)
+        }
+    }
+
+    private func openSupportEmail() {
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        let iosVersion = UIDevice.current.systemVersion
+        let deviceModel = UIDevice.current.model
+
+        let subject = "TribAI iOS v\(appVersion) - Feedback"
+        let body = """
+
+        ---
+        Dispositivo: \(deviceModel)
+        iOS: \(iosVersion)
+        App: v\(appVersion) (\(buildNumber))
+        """
+
+        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+        if let url = URL(string: "mailto:soporte@tribai.co?subject=\(encodedSubject)&body=\(encodedBody)") {
+            UIApplication.shared.open(url)
         }
     }
 

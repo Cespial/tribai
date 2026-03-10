@@ -65,6 +65,7 @@ export function MessageActions({
       </button>
       <button
         onClick={() => onFeedback("up")}
+        title="Respuesta útil"
         className={clsx(
           "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px]",
           feedback === "up"
@@ -76,6 +77,7 @@ export function MessageActions({
       </button>
       <button
         onClick={() => onFeedback("down")}
+        title="Respuesta mejorable"
         className={clsx(
           "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px]",
           feedback === "down"

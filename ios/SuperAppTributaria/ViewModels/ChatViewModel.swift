@@ -203,9 +203,14 @@ final class ChatViewModel {
         error = apiError
         showError = true
 
-        // Remove empty assistant message
-        if assistantIndex < messages.count && messages[assistantIndex].text.isEmpty {
-            messages.remove(at: assistantIndex)
+        if assistantIndex < messages.count {
+            if messages[assistantIndex].text.isEmpty {
+                // No content received — remove empty placeholder
+                messages.remove(at: assistantIndex)
+            } else {
+                // Partial content received — append error indicator so user sees what arrived
+                messages[assistantIndex].text += "\n\n⚠️ _Respuesta incompleta — ocurrió un error._"
+            }
         }
 
         Haptics.error()

@@ -38,7 +38,7 @@ struct HomeView: View {
                 .padding(.bottom, AppSpacing.md)
             }
             .background(Color.appBackground)
-            .navigationTitle("SuperApp Tributaria")
+            .navigationTitle("TribAI")
             .navigationBarTitleDisplayMode(.large)
         }
     }
@@ -124,7 +124,6 @@ struct HomeView: View {
                         handleFeatureTap(feature)
                     }
                 )
-                .accessibilityLabel("\(feature.title): \(feature.description)")
             }
         }
     }

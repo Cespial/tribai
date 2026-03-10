@@ -11,6 +11,7 @@ final class ETExplorerViewModel {
     var displayedCount = 60
     var showingFilterSheet = false
     var isLoading = false
+    var loadError: String?
 
     private(set) var allArticles: [ArticleIndexItem] = []
     private(set) var facets: ExplorerFacets?
@@ -42,9 +43,19 @@ final class ETExplorerViewModel {
 
     func loadData() async {
         isLoading = true
-        allArticles = await ArticleIndexService.loadIndex()
-        facets = ArticleIndexService.loadFacets()
-        recomputeFiltered()
+        loadError = nil
+
+        let articles = await ArticleIndexService.loadIndex()
+        let loadedFacets = ArticleIndexService.loadFacets()
+
+        if articles.isEmpty && loadedFacets == nil {
+            loadError = "No se pudo cargar el índice de artículos. Verifica que los datos estén incluidos en la app."
+        } else {
+            allArticles = articles
+            facets = loadedFacets
+            recomputeFiltered()
+        }
+
         isLoading = false
     }
 

@@ -436,7 +436,7 @@ export function ChatContainer() {
                       }}
                       placeholder="Escriba su pregunta tributaria aquí..."
                       rows={1}
-                      autoFocus
+                      autoFocus={!isLanding}
                       className="w-full resize-none rounded-2xl border border-border bg-card px-5 py-4 pr-14 text-[15px] shadow-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-foreground/30 focus:shadow-md focus:ring-1 focus:ring-foreground/10"
                       style={{ minHeight: "56px", maxHeight: "120px" }}
                       onInput={(e) => {

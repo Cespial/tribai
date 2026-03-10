@@ -14,7 +14,7 @@ struct SignInView: View {
                     .font(.system(size: 64))
                     .foregroundStyle(Color.appForeground)
 
-                Text("SuperApp Tributaria")
+                Text("TribAI")
                     .font(AppTypography.pageHeading)
                     .foregroundStyle(Color.appForeground)
 

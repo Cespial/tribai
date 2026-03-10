@@ -46,4 +46,21 @@ final class AuthViewModel {
         currentUser = nil
         isAuthenticated = false
     }
+
+    /// Permanently deletes the user account and all associated data.
+    /// Clears keychain, UserDefaults, bookmarks, biometric preferences, and onboarding state.
+    /// SwiftData (conversations) and analytics must be cleared by the caller
+    /// since those services require external dependencies (ModelContext, AnalyticsService).
+    @MainActor
+    func deleteAccount() {
+        // Clear MainActor-isolated services
+        BookmarkService.shared.clearAll()
+        BiometricLockService.shared.isEnabled = false
+
+        // Clear non-isolated data (keychain, UserDefaults, onboarding)
+        authService.deleteAccount()
+
+        currentUser = nil
+        isAuthenticated = false
+    }
 }

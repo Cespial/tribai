@@ -159,7 +159,7 @@ const webApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "tribai.co",
-  url: "https://superapp-tributaria-colombia.vercel.app/",
+  url: "https://tribai.co/",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   inLanguage: "es-CO",
@@ -250,6 +250,14 @@ export default function Home() {
                 Disponible ahora — <span className="font-semibold text-foreground">gratis y sin registro</span>
               </p>
             </div>
+
+            {/* Credits */}
+            <p className="mt-3 text-[11px] text-muted-foreground/70">
+              Un desarrollo de{" "}
+              <a href="https://inplux.co/" target="_blank" rel="noopener noreferrer" className="underline decoration-muted-foreground/30 underline-offset-2 transition-colors hover:text-muted-foreground">inplux.co</a>,{" "}
+              <a href="https://fourier.dev/" target="_blank" rel="noopener noreferrer" className="underline decoration-muted-foreground/30 underline-offset-2 transition-colors hover:text-muted-foreground">fourier.dev</a> y{" "}
+              <a href="https://gobia.co/" target="_blank" rel="noopener noreferrer" className="underline decoration-muted-foreground/30 underline-offset-2 transition-colors hover:text-muted-foreground">gobia.co</a>
+            </p>
           </div>
 
           {/* Right column — constellation diagram, tablet+ */}
@@ -460,8 +468,8 @@ export default function Home() {
                   } ${
                     index % 3 !== 2 ? "lg:border-r lg:border-border" : ""
                   } ${
-                    index % 2 === 0 ? "sm:border-r sm:border-border" : ""
-                  } sm:last:border-b-0`}
+                    index % 2 === 0 ? "sm:max-lg:border-r sm:max-lg:border-border" : ""
+                  }`}
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-md border border-border">
                     <tool.icon className="h-5 w-5 text-tribai-blue" />

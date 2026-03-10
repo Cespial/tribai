@@ -3,6 +3,9 @@
 // Note: These are approximate dates based on typical DIAN patterns.
 // Real dates should be verified against the official DIAN resolution for 2026.
 
+/** Single source of truth for the fiscal year this calendar covers. */
+export const CALENDARIO_FISCAL_YEAR = 2026;
+
 export const CALENDARIO_LAST_UPDATE = "2026-02-15";
 
 export interface DeadlineEntry {

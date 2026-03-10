@@ -10,7 +10,7 @@ struct DeadlineEntry: TimelineEntry {
 }
 
 struct DeadlineProvider: TimelineProvider {
-    private static let suiteName = "group.com.superapp-tributaria.SuperAppTributaria"
+    private static let suiteName = "group.co.tribai.app"
 
     func placeholder(in context: Context) -> DeadlineEntry {
         DeadlineEntry(date: Date(), obligacion: "Declaracion de Renta", fechaVencimiento: "15 Mar 2026", diasRestantes: 5, isPlaceholder: true)

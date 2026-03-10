@@ -1,0 +1,15 @@
+# Fastlane Appfile -- TribAI
+# Docs: https://docs.fastlane.tools/advanced/Appfile/
+
+app_identifier("co.tribai.app")
+
+# TODO: Replace with your Apple ID email
+apple_id("YOUR_APPLE_ID@example.com")
+
+# TODO: Replace with your App Store Connect Team ID
+# Find it at: https://appstoreconnect.apple.com -> Users and Access -> Team ID
+itc_team_id("YOUR_ITC_TEAM_ID")
+
+# TODO: Replace with your Apple Developer Portal Team ID
+# Find it at: https://developer.apple.com/account -> Membership -> Team ID
+team_id("YOUR_TEAM_ID")

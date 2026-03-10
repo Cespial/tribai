@@ -6,11 +6,25 @@ import CoreSpotlight
 struct SuperAppTributariaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var environment = AppEnvironment()
-    @State private var authViewModel = AuthViewModel()
+    @State private var authViewModel: AuthViewModel
     @State private var biometricService = BiometricLockService.shared
-    @State private var showOnboarding = !OnboardingService.hasSeenOnboarding
+    @State private var appearanceService = AppearanceService.shared
+    @State private var showOnboarding: Bool
 
     @State private var deepLinkDestination: DeepLinkRouter.Destination?
+
+    private static var isUITesting: Bool {
+        CommandLine.arguments.contains("--uitesting")
+    }
+
+    init() {
+        let authVM = AuthViewModel()
+        if Self.isUITesting {
+            authVM.continueWithoutAccount()
+        }
+        _authViewModel = State(initialValue: authVM)
+        _showOnboarding = State(initialValue: Self.isUITesting ? false : !OnboardingService.hasSeenOnboarding)
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -57,6 +71,7 @@ struct SuperAppTributariaApp: App {
                     handleDeepLink(destination)
                 }
             }
+            .preferredColorScheme(appearanceService.colorScheme)
         }
         .modelContainer(for: [ConversationEntity.self, CachedArticleEntity.self])
     }

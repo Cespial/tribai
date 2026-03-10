@@ -2,7 +2,7 @@ import Foundation
 
 /// Shared data container for App Group communication between main app and widgets.
 enum SharedDataService {
-    private static let suiteName = "group.com.superapp-tributaria.SuperAppTributaria"
+    private static let suiteName = "group.co.tribai.app"
 
     private static var defaults: UserDefaults? {
         UserDefaults(suiteName: suiteName)

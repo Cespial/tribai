@@ -66,7 +66,7 @@ export function AppCalculatorsTab() {
       </div>
 
       {/* Grid */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div className="phone-scroll-area flex-1 overflow-y-auto px-4 py-4">
         <div className="grid grid-cols-2 gap-2">
           {filtered.length === 0 && (
             <p className="col-span-2 py-8 text-center text-[13px] text-muted-foreground">

@@ -101,7 +101,7 @@ enum PDFExportService {
                 .font: UIFont.systemFont(ofSize: 8, weight: .light),
                 .foregroundColor: UIColor.quaternaryLabel,
             ]
-            let footerStr = NSAttributedString(string: "SuperApp Tributaria Colombia — superapp-tributaria-colombia.vercel.app", attributes: footerAttrs)
+            let footerStr = NSAttributedString(string: "TribAI — tribai.co", attributes: footerAttrs)
             footerStr.draw(in: CGRect(x: margin, y: pageHeight - margin + 10, width: contentWidth, height: 15))
         }
     }

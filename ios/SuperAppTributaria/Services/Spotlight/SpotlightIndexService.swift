@@ -3,8 +3,8 @@ import MobileCoreServices
 
 enum SpotlightIndexService {
 
-    static let articleDomainIdentifier = "com.superapp-tributaria.articles"
-    static let calculatorDomainIdentifier = "com.superapp-tributaria.calculators"
+    static let articleDomainIdentifier = "co.tribai.app.articles"
+    static let calculatorDomainIdentifier = "co.tribai.app.calculators"
 
     // MARK: - Index All
 

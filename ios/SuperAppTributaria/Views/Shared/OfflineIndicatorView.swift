@@ -8,6 +8,7 @@ struct OfflineIndicatorView: View {
             HStack(spacing: 6) {
                 Image(systemName: "arrow.down.circle.fill")
                     .font(.system(size: 12))
+                    .accessibilityHidden(true)
                 Text("Contenido offline")
                     .font(AppTypography.caption)
             }
@@ -16,6 +17,8 @@ struct OfflineIndicatorView: View {
             .padding(.vertical, 6)
             .background(Color.orange.gradient)
             .clipShape(Capsule())
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Contenido cargado desde cache offline")
         }
     }
 }

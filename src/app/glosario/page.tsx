@@ -75,8 +75,10 @@ function computeAndPersistStreakDays(): number {
   let nextStreak = 1;
   if (lastSeen) {
     const lastDate = new Date(`${lastSeen}T00:00:00`);
-    const dayDiff = Math.floor((today.getTime() - lastDate.getTime()) / 86_400_000);
-    nextStreak = dayDiff === 1 ? previousStreak + 1 : 1;
+    if (!isNaN(lastDate.getTime())) {
+      const dayDiff = Math.floor((today.getTime() - lastDate.getTime()) / 86_400_000);
+      nextStreak = dayDiff === 1 ? previousStreak + 1 : 1;
+    }
   }
 
   localStorage.setItem("tc_glosario_last_seen_date", todayKey);
@@ -276,7 +278,7 @@ function TermCard({ term, search }: { term: GlosarioTermEnriched; search: string
               <span className="font-semibold text-foreground">Qué hacer:</span> {term.ejemploPractico.solucion}
             </p>
             {term.ejemploPractico.errorComun && (
-              <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Error común: {term.ejemploPractico.errorComun}
               </p>
             )}
@@ -375,7 +377,7 @@ function GlosarioPageContent() {
           <p className="mt-1 heading-serif text-xl text-foreground">{termOfTheDay.termino}</p>
           <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{termOfTheDay.explicacionSimple}</p>
           <div className="mt-3 flex items-center gap-2">
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-[10px] font-bold text-amber-600 dark:bg-amber-900/30">
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-tribai-gold/15 text-[10px] font-bold text-tribai-gold">
               {streakDays}
             </div>
             <p className="text-[11px] font-medium text-muted-foreground">
@@ -423,7 +425,7 @@ function GlosarioPageContent() {
                 onClick={() => hasItems && scrollToLetter(letter)}
                 title={hasItems ? `Ir a la letra ${letter}` : "No hay términos con esta letra"}
                 className={clsx(
-                  "flex h-7 w-7 items-center justify-center rounded-md text-[11px] font-bold transition-all",
+                  "flex h-8 w-8 items-center justify-center rounded-md text-[11px] font-bold transition-all sm:h-7 sm:w-7",
                   hasItems
                     ? "cursor-pointer bg-muted text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground"
                     : "cursor-default bg-muted/30 text-muted-foreground/40 opacity-50"

@@ -104,7 +104,7 @@ function MetricItem({
 
   return (
     <div className={`p-4 sm:p-6 md:p-8 ${index < 2 ? "border-b border-border md:border-b-0" : ""}`}>
-      <p className="font-values text-2xl font-bold text-foreground sm:text-3xl md:text-5xl">
+      <p className="font-values text-2xl font-bold text-foreground sm:text-3xl md:text-4xl">
         {metric.value === 0 ? metric.display : formatNumber(count, metric)}
       </p>
       <p className="mt-2 text-sm font-semibold text-foreground">{metric.label}</p>

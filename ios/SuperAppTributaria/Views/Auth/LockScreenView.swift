@@ -13,7 +13,7 @@ struct LockScreenView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(Color.appPrimary)
 
-            Text("SuperApp Tributaria")
+            Text("TribAI")
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(Color.appForeground)
 

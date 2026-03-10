@@ -63,8 +63,8 @@ export function ReformDrilldownChart({
                   key={entry.year}
                   fill={
                     selectedYear === entry.year
-                      ? "hsl(0,0%,8%)"
-                      : "hsl(0,0%,20%)"
+                      ? "var(--foreground)"
+                      : "var(--muted-foreground)"
                   }
                   className="cursor-pointer"
                 />
@@ -107,7 +107,7 @@ export function ReformDrilldownChart({
                   }}
                   formatter={(value) => [String(value ?? 0), "Impactos"]}
                 />
-                <Bar dataKey="count" fill="hsl(0,0%,20%)" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="count" fill="var(--foreground)" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

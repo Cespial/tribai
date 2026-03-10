@@ -29,7 +29,6 @@ Prioriza doctrina vigente sobre revocada, y sentencias de unificación (SU-) sob
 export function buildMessages(
   userQuery: string,
   context: AssembledContext,
-  conversationHistory: string = "",
   pageContext?: ChatPageContext,
   evidenceCheck?: EvidenceCheckResult
 ): { system: string; contextBlock: string } {
@@ -97,14 +96,12 @@ INSTRUCCIONES OBLIGATORIAS — No se encontraron fuentes relevantes para esta co
   const systemPrompt = buildSystemPrompt(userQuery);
   const system = `${systemPrompt}${CITATION_INSTRUCTIONS}`;
 
-  // Conversation history goes in the context block (not system prompt) to prevent
-  // cross-turn prompt injection via prior user messages
-  const historyBlock = conversationHistory
-    ? `\n<conversation_history>\n${escapeXml(conversationHistory)}\n</conversation_history>\n`
-    : "";
+  // Conversation history is now passed as actual multi-turn messages to the LLM
+  // (handled in route.ts) instead of being compressed into the context block.
+  // This gives the model natural conversational context for follow-up questions.
 
   return {
     system,
-    contextBlock: `${historyBlock}${contextBlock}`,
+    contextBlock,
   };
 }

@@ -24,13 +24,13 @@ export function IndicatorCard({ item, onCopy, liveValue }: IndicatorCardProps) {
           <div className="flex items-center gap-1.5">
             <h4 className="text-sm font-medium text-foreground">{item.nombre}</h4>
             {liveValue && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
                 En vivo
               </span>
             )}
             {stale && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                 Pendiente
               </span>
             )}
@@ -39,7 +39,7 @@ export function IndicatorCard({ item, onCopy, liveValue }: IndicatorCardProps) {
               <div className="pointer-events-none absolute left-0 top-5 z-20 w-56 rounded-md border border-border bg-card p-2 text-xs text-muted-foreground opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                 {item.paraQueSirve}
                 {liveValue && (
-                  <span className="mt-1 block text-emerald-600 dark:text-emerald-400">
+                  <span className="mt-1 block text-success">
                     Fuente: datos.gov.co — {new Date(liveValue.fetchedAt).toLocaleString("es-CO")}
                   </span>
                 )}
@@ -52,7 +52,7 @@ export function IndicatorCard({ item, onCopy, liveValue }: IndicatorCardProps) {
         <button
           type="button"
           onClick={() => onCopy(liveValue ? { ...item, valor: liveValue.valor, valorNumerico: liveValue.valorNumerico } : item)}
-          className="inline-flex h-8 w-8 items-center justify-center rounded border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="inline-flex h-9 w-9 items-center justify-center rounded border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           title="Copiar valor"
         >
           <Copy className="h-3.5 w-3.5" />

@@ -49,4 +49,36 @@ struct BookmarkServiceTests {
         _ = service.bookmarkedArticleSlugs
         _ = service.bookmarkedCalculatorIds
     }
+
+    // MARK: - clearAll
+
+    @Test @MainActor func clearAllEmptiesBookmarks() {
+        let service = BookmarkService.shared
+        let slug = "clearall-test-\(UUID().uuidString)"
+        let calcId = "clearall-calc-\(UUID().uuidString)"
+
+        // Add some bookmarks
+        service.toggleArticleBookmark(slug)
+        service.toggleCalculatorBookmark(calcId)
+        #expect(service.isArticleBookmarked(slug) == true)
+        #expect(service.isCalculatorBookmarked(calcId) == true)
+
+        // Clear all
+        service.clearAll()
+        #expect(service.bookmarkedArticleSlugs.isEmpty)
+        #expect(service.bookmarkedCalculatorIds.isEmpty)
+        #expect(service.isArticleBookmarked(slug) == false)
+        #expect(service.isCalculatorBookmarked(calcId) == false)
+    }
+
+    @Test @MainActor func clearAllOnEmptyIsNoOp() {
+        let service = BookmarkService.shared
+        // Ensure clean state
+        service.clearAll()
+
+        // Should not crash on empty
+        service.clearAll()
+        #expect(service.bookmarkedArticleSlugs.isEmpty)
+        #expect(service.bookmarkedCalculatorIds.isEmpty)
+    }
 }

@@ -6,8 +6,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        CrashReportingService.shared.initialize()
+
         UNUserNotificationCenter.current().delegate = self
-        registerForPushNotifications()
+        if !CommandLine.arguments.contains("--uitesting") {
+            registerForPushNotifications()
+        }
         return true
     }
 

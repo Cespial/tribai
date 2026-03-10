@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { formatCOP } from "@/lib/calculators/format";
+import { useChartColors } from "@/lib/hooks/useChartColors";
 
 interface RetencionBreakdownChartProps {
   monto: number;
@@ -21,8 +22,6 @@ interface RetencionBreakdownChartProps {
   isSalarios: boolean;
 }
 
-const PIE_COLORS = ["#1f1d1a", "#d8d6d1"];
-
 export function RetencionBreakdownChart({
   monto,
   baseDepurada,
@@ -30,6 +29,8 @@ export function RetencionBreakdownChart({
   neto,
   isSalarios,
 }: RetencionBreakdownChartProps) {
+  const colors = useChartColors();
+
   const pieData = [
     { name: "Retencion", value: Math.max(0, retencion) },
     { name: "Neto", value: Math.max(0, neto) },
@@ -53,7 +54,7 @@ export function RetencionBreakdownChart({
             <PieChart>
               <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={88}>
                 {pieData.map((_, index) => (
-                  <Cell key={`ret-cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  <Cell key={`ret-cell-${index}`} fill={index === 0 ? colors[0] : colors[3]} />
                 ))}
               </Pie>
               <Tooltip formatter={(value) => formatCOP(Number(value ?? 0))} />
@@ -70,9 +71,9 @@ export function RetencionBreakdownChart({
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis tickFormatter={(v) => `$${Math.round(v / 1_000_000)}M`} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(value) => formatCOP(Number(value ?? 0))} />
-              <Bar stackId="a" dataKey="resto" fill="#d8d6d1" name="Parte no depurada" />
-              <Bar stackId="a" dataKey="base" fill="#b4b1aa" name="Base depurada" />
-              <Bar stackId="a" dataKey="retencion" fill="#1f1d1a" name="Retencion" />
+              <Bar stackId="a" dataKey="resto" fill={colors[3]} name="Parte no depurada" />
+              <Bar stackId="a" dataKey="base" fill={colors[2]} name="Base depurada" />
+              <Bar stackId="a" dataKey="retencion" fill={colors[0]} name="Retencion" />
             </BarChart>
           </ResponsiveContainer>
         </div>

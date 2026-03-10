@@ -64,7 +64,7 @@ final class BiometricLockService {
         do {
             let success = try await context.evaluatePolicy(
                 .deviceOwnerAuthenticationWithBiometrics,
-                localizedReason: "Desbloquear SuperApp Tributaria"
+                localizedReason: "Desbloquear TribAI"
             )
             if success {
                 isLocked = false

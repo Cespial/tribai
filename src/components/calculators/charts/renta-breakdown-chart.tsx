@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { formatCOP } from "@/lib/calculators/format";
+import { useChartColors } from "@/lib/hooks/useChartColors";
 
 interface RentaSegment {
   name: string;
@@ -25,14 +26,13 @@ interface RentaBreakdownChartProps {
   impuesto: number;
 }
 
-const PIE_COLORS = ["#1f1d1a", "#706d66", "#b4b1aa", "#d8d6d1", "#0f0e0d"];
-
 export function RentaBreakdownChart({
   segments,
   ingresoBruto,
   deduccionesAplicadas,
   impuesto,
 }: RentaBreakdownChartProps) {
+  const colors = useChartColors();
   const stackedData = [
     {
       name: "Desglose",
@@ -51,7 +51,7 @@ export function RentaBreakdownChart({
             <PieChart>
               <Pie data={segments} dataKey="value" nameKey="name" innerRadius={50} outerRadius={90}>
                 {segments.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                 ))}
               </Pie>
               <Tooltip formatter={(value) => formatCOP(Number(value ?? 0))} />
@@ -68,9 +68,9 @@ export function RentaBreakdownChart({
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis tickFormatter={(v) => `$${Math.round(v / 1_000_000)}M`} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(value) => formatCOP(Number(value ?? 0))} />
-              <Bar stackId="a" dataKey="disponible" fill="#d8d6d1" name="Ingreso disponible" />
-              <Bar stackId="a" dataKey="deducciones" fill="#b4b1aa" name="Deducciones + exentas" />
-              <Bar stackId="a" dataKey="impuesto" fill="#1f1d1a" name="Impuesto" />
+              <Bar stackId="a" dataKey="disponible" fill={colors[3]} name="Ingreso disponible" />
+              <Bar stackId="a" dataKey="deducciones" fill={colors[2]} name="Deducciones + exentas" />
+              <Bar stackId="a" dataKey="impuesto" fill={colors[0]} name="Impuesto" />
             </BarChart>
           </ResponsiveContainer>
         </div>

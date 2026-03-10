@@ -7,7 +7,7 @@ struct OnboardingView: View {
     private let pages: [(icon: String, title: String, description: String)] = [
         (
             "building.columns",
-            "Bienvenido a SuperApp Tributaria",
+            "Bienvenido a TribAI",
             "La plataforma tributaria mas completa de Colombia. Todo el Estatuto Tributario, calculadoras fiscales y asistente IA en tu bolsillo."
         ),
         (

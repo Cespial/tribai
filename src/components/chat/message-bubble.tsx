@@ -44,7 +44,7 @@ function MessageBubbleInner({ message, timestamp }: MessageBubbleProps) {
       >
         {isUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4 text-foreground" />}
       </div>
-      <div className="relative max-w-xs sm:max-w-sm md:max-w-md lg:max-w-2xl">
+      <div className="relative min-w-0 max-w-[85%] sm:max-w-[80%] md:max-w-xl lg:max-w-2xl">
         <div
           className={`rounded-lg px-4 py-3 ${
             isUser ? "bg-foreground text-background" : "bg-muted"
@@ -62,6 +62,11 @@ function MessageBubbleInner({ message, timestamp }: MessageBubbleProps) {
                       {children}
                     </a>
                   ),
+                  table: ({ children }) => (
+                    <div className="table-wrapper">
+                      <table>{children}</table>
+                    </div>
+                  ),
                 }}
               >
                 {text}
@@ -69,11 +74,11 @@ function MessageBubbleInner({ message, timestamp }: MessageBubbleProps) {
             </div>
           )}
         </div>
-        {/* Copy button for assistant messages */}
+        {/* Copy button — always visible on mobile (no hover), hover-reveal on desktop */}
         {!isUser && text && (
           <button
             onClick={handleCopy}
-            className="absolute -bottom-1 right-1 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted hover:text-foreground group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:outline-none"
+            className="absolute -bottom-1 right-1 rounded-md p-1 text-muted-foreground opacity-100 transition-opacity hover:bg-muted hover:text-foreground sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:outline-none"
             aria-label="Copiar respuesta"
           >
             {copied ? (

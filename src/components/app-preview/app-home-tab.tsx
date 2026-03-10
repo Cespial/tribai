@@ -116,7 +116,7 @@ export function AppHomeTab({ onNavigate }: Props) {
             </button>
           ))}
         </div>
-        <div className="pointer-events-none absolute right-0 top-8 h-10 w-6 bg-gradient-to-l from-background to-transparent" />
+        <div className="pointer-events-none absolute right-0 top-8 h-10 w-6 bg-gradient-to-l from-white to-transparent" />
       </div>
 
       {/* Key indicators */}

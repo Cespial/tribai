@@ -7,7 +7,7 @@ enum CalendarioData {
     // MARK: - Metadata
 
     static let disclaimer = "Fechas basadas en patrones historicos de la DIAN. Verifique contra la Resolucion oficial de la DIAN para 2026."
-    static let lastUpdate = "2026-02-15"
+    static let lastUpdate = "2026-03-08"
 
     // MARK: - Unique Obligation Names
 

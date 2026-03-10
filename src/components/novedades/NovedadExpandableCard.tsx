@@ -81,7 +81,7 @@ export function NovedadExpandableCard({ novedad, expanded, highlighted, onToggle
           className="inline-flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors"
           title="Copiar resumen para enviar a clientes"
         >
-          {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+          {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
           {copied ? "Copiado" : "Copiar resumen"}
         </button>
       </div>

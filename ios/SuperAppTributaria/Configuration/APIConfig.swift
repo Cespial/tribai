@@ -27,4 +27,19 @@ enum APIConfig {
         static let resource: TimeInterval = 120
         static let healthCheck: TimeInterval = 10
     }
+
+    enum Sentry {
+        /// Replace with your actual Sentry DSN from https://sentry.io
+        /// Or set the SENTRY_DSN environment variable / Info.plist key.
+        static var dsn: String {
+            if let envDSN = ProcessInfo.processInfo.environment["SENTRY_DSN"], !envDSN.isEmpty {
+                return envDSN
+            }
+            if let plistDSN = Bundle.main.object(forInfoDictionaryKey: "SENTRY_DSN") as? String, !plistDSN.isEmpty {
+                return plistDSN
+            }
+            // Placeholder — replace before shipping to production
+            return "https://examplePublicKey@o0.ingest.sentry.io/0"
+        }
+    }
 }

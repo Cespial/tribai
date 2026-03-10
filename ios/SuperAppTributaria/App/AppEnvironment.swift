@@ -8,6 +8,7 @@ final class AppEnvironment {
     let healthService: HealthServiceProtocol
     let networkMonitor: NetworkMonitor
     let rateLimiter: RateLimiter
+    let analyticsService: AnalyticsService
 
     var healthStatus: HealthStatus = .healthy
 
@@ -17,13 +18,15 @@ final class AppEnvironment {
         chatService: ChatServiceProtocol? = nil,
         healthService: HealthServiceProtocol? = nil,
         networkMonitor: NetworkMonitor? = nil,
-        rateLimiter: RateLimiter? = nil
+        rateLimiter: RateLimiter? = nil,
+        analyticsService: AnalyticsService? = nil
     ) {
         let limiter = rateLimiter ?? RateLimiter()
         self.rateLimiter = limiter
         self.chatService = chatService ?? ChatService(rateLimiter: limiter)
         self.healthService = healthService ?? HealthService()
         self.networkMonitor = networkMonitor ?? NetworkMonitor()
+        self.analyticsService = analyticsService ?? AnalyticsService()
     }
 
     func startHealthPolling() {
