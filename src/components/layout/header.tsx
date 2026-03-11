@@ -8,17 +8,15 @@ import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 
 const MAIN_NAV = [
+  { href: "/planificacion", label: "Planificador" },
   { href: "/asistente", label: "Asistente IA" },
   { href: "/calculadoras", label: "Calculadoras" },
   { href: "/explorador", label: "Estatuto" },
 ];
 
-const DECLARACION_NAV = [
-  { href: "/declaracion-renta", label: "Personas Naturales (F210)" },
-  { href: "/declaracion-renta-juridicas", label: "Personas Jurídicas (F110)" },
-];
-
 const MORE_NAV = [
+  { href: "/declaracion-renta", label: "Declaración PN (F210)" },
+  { href: "/declaracion-renta-juridicas", label: "Declaración PJ (F110)" },
   { href: "/calendario", label: "Calendario fiscal" },
   { href: "/doctrina", label: "Doctrina DIAN" },
   { href: "/dashboard", label: "Dashboard" },
@@ -34,7 +32,6 @@ const MORE_NAV = [
 const ALL_NAV = [
   { href: "/", label: "Inicio" },
   ...MAIN_NAV,
-  ...DECLARACION_NAV,
   ...MORE_NAV,
 ];
 
@@ -80,24 +77,19 @@ export function Header() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [declOpen, setDeclOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
-  const declRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns on outside click
+  // Close dropdown on outside click
   useEffect(() => {
-    if (!moreOpen && !declOpen) return;
+    if (!moreOpen) return;
     const handleClick = (e: MouseEvent) => {
-      if (moreOpen && moreRef.current && !moreRef.current.contains(e.target as Node)) {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
         setMoreOpen(false);
-      }
-      if (declOpen && declRef.current && !declRef.current.contains(e.target as Node)) {
-        setDeclOpen(false);
       }
     };
     document.addEventListener("click", handleClick);
     return () => document.removeEventListener("click", handleClick);
-  }, [moreOpen, declOpen]);
+  }, [moreOpen]);
 
   return (
     <header
@@ -136,50 +128,10 @@ export function Header() {
             );
           })}
 
-          {/* Declaración dropdown */}
-          <div ref={declRef} className="relative">
-            <button
-              onClick={() => { setDeclOpen(!declOpen); setMoreOpen(false); }}
-              className={clsx(
-                "relative flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors",
-                pathname.startsWith("/declaracion-renta")
-                  ? "text-foreground font-semibold"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              aria-expanded={declOpen}
-            >
-              Declaración
-              <ChevronDown className={clsx("h-3 w-3 transition-transform", declOpen && "rotate-180")} />
-              {pathname.startsWith("/declaracion-renta") && (
-                <span className="absolute inset-x-3 -bottom-[7px] h-[2px] rounded-full bg-tribai-blue" />
-              )}
-            </button>
-
-            {declOpen && (
-              <div className="absolute left-0 top-full mt-2 w-64 rounded-lg border border-border bg-card p-1.5 shadow-sm">
-                {DECLARACION_NAV.map(({ href, label }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setDeclOpen(false)}
-                    className={clsx(
-                      "block rounded-md px-3 py-2 text-sm transition-colors",
-                      pathname === href
-                        ? "bg-muted text-foreground font-medium"
-                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                    )}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* More dropdown */}
           <div ref={moreRef} className="relative">
             <button
-              onClick={() => { setMoreOpen(!moreOpen); setDeclOpen(false); }}
+              onClick={() => setMoreOpen(!moreOpen)}
               className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
               aria-expanded={moreOpen}
             >
