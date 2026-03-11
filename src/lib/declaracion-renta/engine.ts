@@ -204,22 +204,18 @@ function calcDeduccionesComunes(
 
   // --- Deducciones sujetas al 40%/1340 UVT ---
 
-  // Intereses vivienda (shared 1,200 UVT)
+  // Intereses vivienda (shared 1,200 UVT cap; global amount consumed sequentially)
   const topeVivienda = r3(LEY_2277_LIMITS.interesesViviendaUVT * uvt);
-  const viviendaDisp = clamp0(topeVivienda - acum.vivienda);
-  const viviendaAplicada = Math.min(clamp0(ded.interesesVivienda - acum.vivienda), viviendaDisp);
+  const viviendaRestante = clamp0(ded.interesesVivienda - acum.vivienda);
+  const viviendaAplicada = Math.min(viviendaRestante, clamp0(topeVivienda - acum.vivienda));
 
-  // Medicina prepagada (shared 192 UVT/año)
+  // Medicina prepagada (shared 192 UVT/año cap; global amount consumed sequentially)
   const topeMedicina = r3(LEY_2277_LIMITS.medicinaPrepagadaUVTMes * 12 * uvt);
-  const medicinaDisp = clamp0(topeMedicina - acum.medicina);
-  const medicinaAplicada = Math.min(clamp0(ded.medicinaPrepagada - acum.medicina), medicinaDisp);
+  const medicinaRestante = clamp0(ded.medicinaPrepagada - acum.medicina);
+  const medicinaAplicada = Math.min(medicinaRestante, clamp0(topeMedicina - acum.medicina));
 
-  // Dependientes 10% (per subcédula: 10% of own ingresosBrutos, max 32 UVT/mes)
+  // Dependientes 10%: only trabajo (it's 10% of ingreso bruto laboral, ET 387)
   const topeDep10 = Math.min(ingresosBrutos * 0.10, r3(32 * 12 * uvt));
-  const dep10Aplicada = Math.min(clamp0(ded.dependientes10Pct - acum.vivienda * 0), topeDep10);
-  // dep10 is global user input, first subcédula claims all
-  const dep10Global = clamp0(ded.dependientes10Pct - acum.GMF * 0); // dep10 is not accumulated, first subcédula claims it
-  // Simpler: dep10 only applies to trabajo (it's 10% of ingreso bruto laboral)
   const dep10Final = subcedula === "trabajo"
     ? Math.min(ded.dependientes10Pct, topeDep10) : 0;
 
@@ -324,17 +320,23 @@ function calcDeduccionesComunes(
     fueraLimite = depExtraValor + facturaElectronica;
   }
 
+  // Only accumulate what was actually usable (capped by subcédula's rentaLiquida).
+  // If subcédula has 0 income, deductions pass through to next subcédula.
+  const rawTotal = totalDeduccionesSujetas + totalExencionesSujetas;
+  const usable = Math.min(rawTotal, rentaLiquida);
+  const scale = rawTotal > 0 ? usable / rawTotal : 0;
+
   const nextAcum: AcumCaps = {
     volObligatorio: acum.volObligatorio, // updated by caller (subcédula-specific INCRGO)
-    vivienda: acum.vivienda + viviendaAplicada,
-    medicina: acum.medicina + medicinaAplicada,
-    ICETEX: acum.ICETEX + icetexAplicada,
-    cesantiasIndep: acum.cesantiasIndep + cesIndepAplicada,
-    volPensionAFC: acum.volPensionAFC + volPensionAFCAplicado,
-    GMF: acum.GMF + gmfAplicada,
-    donaciones: acum.donaciones + donacionesAplicada,
-    otrasDeducciones: acum.otrasDeducciones + otrasAplicada,
-    energiaRenovable: acum.energiaRenovable + energiaAplicada,
+    vivienda: acum.vivienda + viviendaAplicada * scale,
+    medicina: acum.medicina + medicinaAplicada * scale,
+    ICETEX: acum.ICETEX + icetexAplicada * scale,
+    cesantiasIndep: acum.cesantiasIndep + cesIndepAplicada * scale,
+    volPensionAFC: acum.volPensionAFC + volPensionAFCAplicado * scale,
+    GMF: acum.GMF + gmfAplicada * scale,
+    donaciones: acum.donaciones + donacionesAplicada * scale,
+    otrasDeducciones: acum.otrasDeducciones + otrasAplicada * scale,
+    energiaRenovable: acum.energiaRenovable + energiaAplicada * scale,
     depExtra: acum.depExtra,
     facturaElectronica: acum.facturaElectronica,
   };

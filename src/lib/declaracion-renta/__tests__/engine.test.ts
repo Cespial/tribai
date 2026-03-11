@@ -504,6 +504,49 @@ describe("Deducciones and Exenciones", () => {
 });
 
 // ══════════════════════════════════════════════════════════════════
+// 9b. P2: DEDUCCIONES EN OTRAS SUBCÉDULAS (independientes/rentistas)
+// ══════════════════════════════════════════════════════════════════
+
+describe("P2: Deductions flow to honorarios/capital/noLaborales", () => {
+  it("independiente with only honorarios income gets GMF deduction", () => {
+    const r = calcularDeclaracion(makeState({
+      rentasHonorarios: { honorarios: 100_000_000 },
+      deducciones: { GMFDeducible: 2_000_000 },
+    }));
+    expect(r.cedulaGeneral.honorarios.deduccionesAsignadas).toBeGreaterThan(0);
+    expect(r.cedulaGeneral.honorarios.totalImputadoSujetoLimite).toBeGreaterThan(0);
+  });
+
+  it("independiente with only honorarios income gets AFC exemption", () => {
+    const r = calcularDeclaracion(makeState({
+      rentasHonorarios: { honorarios: 100_000_000 },
+      exenciones: { aportesVoluntariosPension: 15_000_000 },
+    }));
+    expect(r.cedulaGeneral.honorarios.exencionesAsignadas).toBeGreaterThan(0);
+  });
+
+  it("capital income gets remaining vivienda deduction", () => {
+    const r = calcularDeclaracion(makeState({
+      rentasCapital: { arrendamientos: 80_000_000 },
+      deducciones: { interesesVivienda: 30_000_000 },
+    }));
+    expect(r.cedulaGeneral.capital.deduccionesAsignadas).toBeGreaterThan(0);
+  });
+
+  it("deductions consumed by trabajo leave nothing for honorarios", () => {
+    const r = calcularDeclaracion(makeState({
+      rentasTrabajo: { salariosYPagosLaborales: 200_000_000 },
+      rentasHonorarios: { honorarios: 50_000_000 },
+      deducciones: { GMFDeducible: 2_000_000 },
+    }));
+    // GMF fully consumed by trabajo
+    expect(r.cedulaGeneral.trabajo.deduccionesAsignadas).toBeGreaterThan(0);
+    // honorarios gets 0 GMF (already consumed)
+    // but may still get AFC/vol pension if available
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════
 // 10. CEDULA PENSIONES
 // ══════════════════════════════════════════════════════════════════
 

@@ -204,7 +204,7 @@ export function Step14Resumen({ resultado }: StepProps) {
       )}
 
       {/* Filing deadline */}
-      {state.perfil.anoGravable === 2025 && state.perfil.numeroDocumento && (() => {
+      {state.perfil.numeroDocumento && (() => {
         const digits = state.perfil.numeroDocumento.slice(-2);
         const d = parseInt(digits, 10);
         const fecha = !isNaN(d) ? getVencimientoPN(d) : undefined;
