@@ -158,26 +158,202 @@ interface SubcedulaCalc {
   imputablesNoSujetas: number;
 }
 
+/** Accumulated shared caps across subcédulas */
+interface AcumCaps {
+  volObligatorio: number;
+  vivienda: number;
+  medicina: number;
+  ICETEX: number;
+  cesantiasIndep: number;
+  volPensionAFC: number;
+  GMF: number;
+  donaciones: number;
+  otrasDeducciones: number;
+  energiaRenovable: number;
+  depExtra: number;       // dependientes extra (fuera límite)
+  facturaElectronica: number; // factura electrónica (fuera límite)
+}
+
+const ACUM_ZERO: AcumCaps = {
+  volObligatorio: 0, vivienda: 0, medicina: 0, ICETEX: 0,
+  cesantiasIndep: 0, volPensionAFC: 0, GMF: 0, donaciones: 0,
+  otrasDeducciones: 0, energiaRenovable: 0, depExtra: 0, facturaElectronica: 0,
+};
+
+type SubcedulaName = "trabajo" | "honorarios" | "capital" | "noLaborales";
+
+/** Shared deduction/exemption calculator for all subcédulas */
+function calcDeduccionesComunes(
+  state: DeclaracionState,
+  uvt: number,
+  acum: AcumCaps,
+  ingresosBrutos: number,
+  totalINCRGO: number,
+  rentaLiquida: number,
+  subcedula: SubcedulaName,
+): {
+  dedSujetas: number;
+  exSujetas: number;
+  noSujetas: number;
+  fueraLimite: number;
+  nextAcum: AcumCaps;
+} {
+  const ded = state.deducciones;
+  const ex = state.exenciones;
+  const rt = state.rentasTrabajo;
+
+  // --- Deducciones sujetas al 40%/1340 UVT ---
+
+  // Intereses vivienda (shared 1,200 UVT)
+  const topeVivienda = r3(LEY_2277_LIMITS.interesesViviendaUVT * uvt);
+  const viviendaDisp = clamp0(topeVivienda - acum.vivienda);
+  const viviendaAplicada = Math.min(clamp0(ded.interesesVivienda - acum.vivienda), viviendaDisp);
+
+  // Medicina prepagada (shared 192 UVT/año)
+  const topeMedicina = r3(LEY_2277_LIMITS.medicinaPrepagadaUVTMes * 12 * uvt);
+  const medicinaDisp = clamp0(topeMedicina - acum.medicina);
+  const medicinaAplicada = Math.min(clamp0(ded.medicinaPrepagada - acum.medicina), medicinaDisp);
+
+  // Dependientes 10% (per subcédula: 10% of own ingresosBrutos, max 32 UVT/mes)
+  const topeDep10 = Math.min(ingresosBrutos * 0.10, r3(32 * 12 * uvt));
+  const dep10Aplicada = Math.min(clamp0(ded.dependientes10Pct - acum.vivienda * 0), topeDep10);
+  // dep10 is global user input, first subcédula claims all
+  const dep10Global = clamp0(ded.dependientes10Pct - acum.GMF * 0); // dep10 is not accumulated, first subcédula claims it
+  // Simpler: dep10 only applies to trabajo (it's 10% of ingreso bruto laboral)
+  const dep10Final = subcedula === "trabajo"
+    ? Math.min(ded.dependientes10Pct, topeDep10) : 0;
+
+  // GMF (global, first available subcédula claims remaining)
+  const gmfAplicada = clamp0(ded.GMFDeducible - acum.GMF);
+
+  // ICETEX (shared 100 UVT)
+  const topeICETEX = r3(LEY_2277_LIMITS.icetexUVT * uvt);
+  const icetexAplicada = Math.min(clamp0(ded.interesesICETEX - acum.ICETEX), clamp0(topeICETEX - acum.ICETEX));
+
+  // Cesantías independientes (shared 2,500 UVT) — only trabajo
+  let cesIndepAplicada = 0;
+  if (subcedula === "trabajo" && ded.cesantiasIndependientes > 0) {
+    const topeCesIndep = r3(LEY_2277_LIMITS.cesantiasIndepUVT * uvt);
+    const cesIndepDisp = clamp0(topeCesIndep - acum.cesantiasIndep);
+    const basePromedioMensual = clamp0(
+      rt.salariosYPagosLaborales + rt.honorariosServicios + rt.otrosIngresosTrabajo +
+      rt.prestacionesSociales + rt.viaticos + rt.gastosRepresentacion +
+      rt.compensacionesTrabajo + rt.alimentacionNoSalarial - totalINCRGO
+    ) / 12;
+    cesIndepAplicada = Math.min(ded.cesantiasIndependientes, cesIndepDisp, topeCesIndep, basePromedioMensual);
+  }
+
+  // Inversión energía renovable (global, first available)
+  const energiaAplicada = clamp0(ded.inversionEnergiaRenovable - acum.energiaRenovable);
+
+  // Donaciones (global, first available)
+  const donacionesAplicada = clamp0(ded.donaciones - acum.donaciones);
+
+  // Otras deducciones (global, first available)
+  const otrasAplicada = clamp0(ded.otrasDeducciones - acum.otrasDeducciones);
+
+  const totalDeduccionesSujetas =
+    viviendaAplicada + medicinaAplicada + dep10Final + gmfAplicada +
+    icetexAplicada + cesIndepAplicada + energiaAplicada +
+    donacionesAplicada + otrasAplicada;
+
+  // --- Exenciones sujetas al 40%/1340 UVT ---
+
+  // Cesantías exentas — only trabajo
+  let cesantiasFondoExentas = 0;
+  let interesesCesantiasExentos = 0;
+  if (subcedula === "trabajo") {
+    const pctCesantias = porcentajeExencionCesantias(rt.ingresoMensualPromedio6m, uvt);
+    cesantiasFondoExentas = rt.cesantiasFondo > 0 && rt.ingresoMensualPromedio6m > 0
+      ? r(rt.cesantiasFondo * pctCesantias) : 0;
+    interesesCesantiasExentos = rt.interesesCesantias > 0 && rt.ingresoMensualPromedio6m > 0
+      ? r(rt.interesesCesantias * pctCesantias) : 0;
+  }
+
+  // Aportes voluntarios pensión/AFC (30%/3,800 UVT shared across all cédulas)
+  const topeVolPensionAFC = r3(LEY_2277_LIMITS.volPensionAFCTopeUVT * uvt);
+  const volPensionAFCDisp = clamp0(topeVolPensionAFC - acum.volPensionAFC);
+  const tope30Pct = ingresosBrutos * LEY_2277_LIMITS.volPensionAFCPct;
+  const totalVolPension = ex.aportesVoluntariosPension + ex.aportesAFC + ex.aportesFVP;
+  const volPensionAFCAplicado = Math.min(
+    clamp0(totalVolPension - acum.volPensionAFC),
+    tope30Pct,
+    volPensionAFCDisp
+  );
+
+  // 25% exemption — only trabajo (ET 206 Num. 10: rentas de trabajo)
+  let exenta25 = 0;
+  if (subcedula === "trabajo" && ex.aplicar25PctLaboral) {
+    const ingresosBase25 = rt.salariosYPagosLaborales + rt.honorariosServicios +
+      rt.otrosIngresosTrabajo + rt.prestacionesSociales + rt.viaticos +
+      rt.gastosRepresentacion + rt.compensacionesTrabajo + rt.alimentacionNoSalarial;
+    const base25 = clamp0(
+      ingresosBase25 - totalINCRGO - totalDeduccionesSujetas -
+      (ex.indemnizacionMilitar + ex.primaEspecialServicios + ex.gastosReprMagistrados50Pct +
+       ex.gastosReprJueces25Pct + ex.seguroInvalMuerteFP + ex.gastosReprUnivPublicas50Pct +
+       ex.otrasExentasEspecificas + volPensionAFCAplicado)
+    );
+    exenta25 = Math.min(base25 * 0.25, r3(LEY_2277_LIMITS.rentasExentasMaxUVT * uvt));
+  }
+
+  const totalExencionesSujetas =
+    cesantiasFondoExentas + interesesCesantiasExentos +
+    volPensionAFCAplicado + exenta25;
+
+  // --- Imputables NO sujetas al 40% (only trabajo) ---
+  let noSujetas = 0;
+  if (subcedula === "trabajo") {
+    noSujetas = Math.min(
+      ex.indemnizacionMilitar + ex.primaEspecialServicios +
+      ex.gastosReprMagistrados50Pct + ex.gastosReprJueces25Pct +
+      ex.seguroInvalMuerteFP + ex.gastosReprUnivPublicas50Pct +
+      ex.otrasExentasEspecificas + ex.ingresosCANExentos +
+      ex.cesantiasReembolsoExentas,
+      rentaLiquida
+    );
+  }
+
+  // --- Fuera del límite 40% (ET 336 Num. 3 y 5) ---
+  let fueraLimite = 0;
+  if (subcedula === "trabajo") {
+    // dependientes extra (fuera del límite, max 4)
+    const depExtraTope = Math.min(ded.dependientesExtra, LEY_2277_LIMITS.maxDependientes);
+    const depExtraValor = depExtraTope > 0
+      ? Math.min(depExtraTope * r3(LEY_2277_LIMITS.dependienteUVT * uvt), ingresosBrutos) : 0;
+    const facturaElectronica = Math.min(ded.comprasFacturaElectronica, ingresosBrutos);
+    fueraLimite = depExtraValor + facturaElectronica;
+  }
+
+  const nextAcum: AcumCaps = {
+    volObligatorio: acum.volObligatorio, // updated by caller (subcédula-specific INCRGO)
+    vivienda: acum.vivienda + viviendaAplicada,
+    medicina: acum.medicina + medicinaAplicada,
+    ICETEX: acum.ICETEX + icetexAplicada,
+    cesantiasIndep: acum.cesantiasIndep + cesIndepAplicada,
+    volPensionAFC: acum.volPensionAFC + volPensionAFCAplicado,
+    GMF: acum.GMF + gmfAplicada,
+    donaciones: acum.donaciones + donacionesAplicada,
+    otrasDeducciones: acum.otrasDeducciones + otrasAplicada,
+    energiaRenovable: acum.energiaRenovable + energiaAplicada,
+    depExtra: acum.depExtra,
+    facturaElectronica: acum.facturaElectronica,
+  };
+
+  return {
+    dedSujetas: totalDeduccionesSujetas,
+    exSujetas: totalExencionesSujetas,
+    noSujetas,
+    fueraLimite,
+    nextAcum,
+  };
+}
+
 function calcSubcedulaTrabajo(
   state: DeclaracionState,
   uvt: number,
-  _acumVolObligatorio: number,
-  _acumVivienda: number,
-  _acumMedicina: number,
-  _acumICETEX: number,
-  _acumCesantiasIndep: number,
-  _acumVolPensionAFC: number,
-): SubcedulaCalc & {
-  acumVolObligatorio: number;
-  acumVivienda: number;
-  acumMedicina: number;
-  acumICETEX: number;
-  acumCesantiasIndep: number;
-  acumVolPensionAFC: number;
-} {
+  acum: AcumCaps,
+): SubcedulaCalc & { acum: AcumCaps } {
   const rt = state.rentasTrabajo;
-  const ded = state.deducciones;
-  const ex = state.exenciones;
 
   // Ingresos brutos
   const ingresosBrutos =
@@ -212,101 +388,11 @@ function calcSubcedulaTrabajo(
   const rentaLiquida = clamp0(ingresosBrutos - totalINCRGO);
 
   // --- Deducciones sujetas al 40%/1340 UVT ---
-
-  // Intereses vivienda (shared 1,200 UVT)
-  const topeVivienda = r3(LEY_2277_LIMITS.interesesViviendaUVT * uvt);
-  const viviendaDisponible = clamp0(topeVivienda - _acumVivienda);
-  const viviendaAplicada = Math.min(ded.interesesVivienda, viviendaDisponible);
-
-  // Medicina prepagada (shared 192 UVT/año)
-  const topeMedicina = r3(LEY_2277_LIMITS.medicinaPrepagadaUVTMes * 12 * uvt);
-  const medicinaDisponible = clamp0(topeMedicina - _acumMedicina);
-  const medicinaAplicada = Math.min(ded.medicinaPrepagada, medicinaDisponible);
-
-  // Dependientes 10% (per subcédula)
-  const topeDep10 = Math.min(ingresosBrutos * 0.10, r3(32 * 12 * uvt));
-  const dep10Aplicada = Math.min(ded.dependientes10Pct, topeDep10);
-
-  // GMF
-  const gmfAplicada = ded.GMFDeducible;
-
-  // ICETEX (shared 100 UVT)
-  const topeICETEX = r3(LEY_2277_LIMITS.icetexUVT * uvt);
-  const icetexDisponible = clamp0(topeICETEX - _acumICETEX);
-  const icetexAplicada = Math.min(ded.interesesICETEX, icetexDisponible);
-
-  // Cesantías independientes (shared 2,500 UVT)
-  const topeCesIndep = r3(LEY_2277_LIMITS.cesantiasIndepUVT * uvt);
-  const cesIndepDisponible = clamp0(topeCesIndep - _acumCesantiasIndep);
-  const basePromedioMensual = clamp0(
-    rt.salariosYPagosLaborales + rt.honorariosServicios + rt.otrosIngresosTrabajo +
-    rt.prestacionesSociales + rt.viaticos + rt.gastosRepresentacion +
-    rt.compensacionesTrabajo + rt.alimentacionNoSalarial - totalINCRGO
-  ) / 12;
-  const cesIndepAplicada = ded.cesantiasIndependientes > 0
-    ? Math.min(ded.cesantiasIndependientes, cesIndepDisponible, topeCesIndep, basePromedioMensual)
-    : 0;
-
-  const totalDeduccionesSujetas =
-    viviendaAplicada + medicinaAplicada + dep10Aplicada + gmfAplicada +
-    icetexAplicada + cesIndepAplicada + ded.inversionEnergiaRenovable +
-    ded.donaciones + ded.otrasDeducciones;
-
-  // --- Exenciones sujetas al 40%/1340 UVT ---
-
-  // Cesantías exentas (tabla según ingreso mensual promedio)
-  const pctCesantias = porcentajeExencionCesantias(rt.ingresoMensualPromedio6m, uvt);
-  const cesantiasFondoExentas = rt.cesantiasFondo > 0 && rt.ingresoMensualPromedio6m > 0
-    ? r(rt.cesantiasFondo * pctCesantias) : 0;
-  const interesesCesantiasExentos = rt.interesesCesantias > 0 && rt.ingresoMensualPromedio6m > 0
-    ? r(rt.interesesCesantias * pctCesantias) : 0;
-
-  // Aportes voluntarios pensión/AFC (30%/3,800 UVT shared across 5 cédulas)
-  const topeVolPensionAFC = r3(LEY_2277_LIMITS.volPensionAFCTopeUVT * uvt);
-  const volPensionAFCDisp = clamp0(topeVolPensionAFC - _acumVolPensionAFC);
-  const tope30Pct = ingresosBrutos * LEY_2277_LIMITS.volPensionAFCPct;
-  const totalVolPension = ex.aportesVoluntariosPension + ex.aportesAFC + ex.aportesFVP;
-  const volPensionAFCAplicado = Math.min(totalVolPension, tope30Pct, volPensionAFCDisp);
-
-  // Base for 25% (ET 206 Num. 10)
-  const ingresosBase25 = rt.salariosYPagosLaborales + rt.honorariosServicios +
-    rt.otrosIngresosTrabajo + rt.prestacionesSociales + rt.viaticos +
-    rt.gastosRepresentacion + rt.compensacionesTrabajo + rt.alimentacionNoSalarial;
-  const base25 = clamp0(
-    ingresosBase25 - totalINCRGO - totalDeduccionesSujetas -
-    (ex.indemnizacionMilitar + ex.primaEspecialServicios + ex.gastosReprMagistrados50Pct +
-     ex.gastosReprJueces25Pct + ex.seguroInvalMuerteFP + ex.gastosReprUnivPublicas50Pct +
-     ex.otrasExentasEspecificas + volPensionAFCAplicado)
-  );
-  const exenta25 = ex.aplicar25PctLaboral
-    ? Math.min(base25 * 0.25, r3(LEY_2277_LIMITS.rentasExentasMaxUVT * uvt))
-    : 0;
-
-  const totalExencionesSujetas =
-    cesantiasFondoExentas + interesesCesantiasExentos +
-    volPensionAFCAplicado + exenta25;
-
-  const totalSujetoAlLimite = Math.min(
-    totalDeduccionesSujetas + totalExencionesSujetas,
-    rentaLiquida
+  const { dedSujetas, exSujetas, noSujetas, fueraLimite, nextAcum } = calcDeduccionesComunes(
+    state, uvt, acum, ingresosBrutos, totalINCRGO, rentaLiquida, "trabajo"
   );
 
-  // --- Imputables NO sujetas al 40% ---
-  const imputablesNoSujetas = Math.min(
-    ex.indemnizacionMilitar + ex.primaEspecialServicios +
-    ex.gastosReprMagistrados50Pct + ex.gastosReprJueces25Pct +
-    ex.seguroInvalMuerteFP + ex.gastosReprUnivPublicas50Pct +
-    ex.otrasExentasEspecificas + ex.ingresosCANExentos +
-    ex.cesantiasReembolsoExentas,
-    rentaLiquida
-  );
-
-  // --- Fuera del límite 40% (ET 336 Num. 3 y 5) ---
-  const depExtraTope = Math.min(ded.dependientesExtra, LEY_2277_LIMITS.maxDependientes);
-  const depExtraValor = depExtraTope > 0
-    ? Math.min(depExtraTope * r3(LEY_2277_LIMITS.dependienteUVT * uvt), ingresosBrutos) : 0;
-  const facturaElectronica = Math.min(ded.comprasFacturaElectronica, ingresosBrutos);
-  const deduccionesFueraLimite = depExtraValor + facturaElectronica;
+  const totalSujetoAlLimite = Math.min(dedSujetas + exSujetas, rentaLiquida);
 
   return {
     ingresosBrutos,
@@ -314,18 +400,12 @@ function calcSubcedulaTrabajo(
     costosGastos: 0,
     rentaLiquida,
     perdida: 0,
-    deduccionesSujetasAlLimite: totalDeduccionesSujetas,
-    exencionesSujetasAlLimite: totalExencionesSujetas,
+    deduccionesSujetasAlLimite: dedSujetas,
+    exencionesSujetasAlLimite: exSujetas,
     totalSujetoAlLimite,
-    deduccionesFueraLimite,
-    imputablesNoSujetas,
-    // Accumulated caps
-    acumVolObligatorio: _acumVolObligatorio + volObligatorio,
-    acumVivienda: _acumVivienda + viviendaAplicada,
-    acumMedicina: _acumMedicina + medicinaAplicada,
-    acumICETEX: _acumICETEX + icetexAplicada,
-    acumCesantiasIndep: _acumCesantiasIndep + cesIndepAplicada,
-    acumVolPensionAFC: _acumVolPensionAFC + volPensionAFCAplicado,
+    deduccionesFueraLimite: fueraLimite,
+    imputablesNoSujetas: noSujetas,
+    acum: nextAcum,
   };
 }
 
@@ -334,20 +414,8 @@ function calcSubcedulaTrabajo(
 function calcSubcedulaHonorarios(
   state: DeclaracionState,
   uvt: number,
-  acumVolObligatorio: number,
-  acumVivienda: number,
-  acumMedicina: number,
-  acumICETEX: number,
-  acumCesantiasIndep: number,
-  acumVolPensionAFC: number,
-): SubcedulaCalc & {
-  acumVolObligatorio: number;
-  acumVivienda: number;
-  acumMedicina: number;
-  acumICETEX: number;
-  acumCesantiasIndep: number;
-  acumVolPensionAFC: number;
-} {
+  acum: AcumCaps,
+): SubcedulaCalc & { acum: AcumCaps } {
   const rh = state.rentasHonorarios;
 
   const ingresosBrutos =
@@ -357,11 +425,10 @@ function calcSubcedulaHonorarios(
 
   // INCRGO
   const volObligatorioTope = ingresosBrutos * LEY_2277_LIMITS.volObligatorioPct;
-  const prevUsed = acumVolObligatorio;
   const volObligatorio = Math.min(
     rh.aportesVoluntariosPensionObligatoria,
     volObligatorioTope,
-    clamp0(ingresosBrutos * LEY_2277_LIMITS.volObligatorioPct - prevUsed)
+    clamp0(ingresosBrutos * LEY_2277_LIMITS.volObligatorioPct - acum.volObligatorio)
   );
 
   const totalINCRGO = Math.min(
@@ -370,40 +437,16 @@ function calcSubcedulaHonorarios(
     ingresosBrutos
   );
 
-  // Costos y gastos
   const costosGastos = rh.costosDirectos + rh.gastosNomina + rh.otrosCostos;
-
   const rentaLiquida = clamp0(ingresosBrutos - totalINCRGO - costosGastos);
   const perdida = clamp0(totalINCRGO + costosGastos - ingresosBrutos);
 
-  // Deducciones (shared caps - subtract what trabajo used)
-  const topeVivienda = r3(LEY_2277_LIMITS.interesesViviendaUVT * uvt);
-  const viviendaAplicada = 0; // Honorarios typically don't use vivienda, engine allows it
-  const topeMedicina = r3(LEY_2277_LIMITS.medicinaPrepagadaUVTMes * 12 * uvt);
-  const medicinaAplicada = 0; // Same - medicine typically claimed in trabajo
+  // P2-FIX: Honorarios now claims remaining global deductions
+  const { dedSujetas, exSujetas, noSujetas, fueraLimite, nextAcum } = calcDeduccionesComunes(
+    state, uvt, acum, ingresosBrutos, totalINCRGO, rentaLiquida, "honorarios"
+  );
 
-  // ICETEX
-  const topeICETEX = r3(LEY_2277_LIMITS.icetexUVT * uvt);
-  const icetexAplicada = 0;
-
-  // Cesantías independientes
-  const topeCesIndep = r3(LEY_2277_LIMITS.cesantiasIndepUVT * uvt);
-  const cesIndepDisp = clamp0(topeCesIndep - acumCesantiasIndep);
-  const cesIndepAplicada = 0; // Typically in trabajo
-
-  // Vol pension/AFC
-  const topeVolPensionAFC = r3(LEY_2277_LIMITS.volPensionAFCTopeUVT * uvt);
-  const volPensionAFCDisp = clamp0(topeVolPensionAFC - acumVolPensionAFC);
-  const volPensionAFCAplicado = 0; // Typically in trabajo
-
-  const totalDeduccionesSujetas = 0;
-  const totalExencionesSujetas = 0;
-  const totalSujetoAlLimite = 0;
-
-  const depExtraValor = 0; // Already used in trabajo if applicable
-  const facturaElectronica = 0;
-  const deduccionesFueraLimite = 0;
-  const imputablesNoSujetas = 0;
+  const totalSujetoAlLimite = Math.min(dedSujetas + exSujetas, rentaLiquida);
 
   return {
     ingresosBrutos,
@@ -411,17 +454,12 @@ function calcSubcedulaHonorarios(
     costosGastos,
     rentaLiquida,
     perdida,
-    deduccionesSujetasAlLimite: totalDeduccionesSujetas,
-    exencionesSujetasAlLimite: totalExencionesSujetas,
+    deduccionesSujetasAlLimite: dedSujetas,
+    exencionesSujetasAlLimite: exSujetas,
     totalSujetoAlLimite,
-    deduccionesFueraLimite,
-    imputablesNoSujetas,
-    acumVolObligatorio: acumVolObligatorio + volObligatorio,
-    acumVivienda: acumVivienda + viviendaAplicada,
-    acumMedicina: acumMedicina + medicinaAplicada,
-    acumICETEX: acumICETEX + icetexAplicada,
-    acumCesantiasIndep: acumCesantiasIndep + cesIndepAplicada,
-    acumVolPensionAFC: acumVolPensionAFC + volPensionAFCAplicado,
+    deduccionesFueraLimite: fueraLimite,
+    imputablesNoSujetas: noSujetas,
+    acum: { ...nextAcum, volObligatorio: acum.volObligatorio + volObligatorio },
   };
 }
 
@@ -430,19 +468,8 @@ function calcSubcedulaHonorarios(
 function calcSubcedulaCapital(
   state: DeclaracionState,
   uvt: number,
-  acumVolObligatorio: number,
-  acumVivienda: number,
-  _acumMedicina: number,
-  acumICETEX: number,
-  acumCesantiasIndep: number,
-  acumVolPensionAFC: number,
-): SubcedulaCalc & {
-  acumVolObligatorio: number;
-  acumVivienda: number;
-  acumICETEX: number;
-  acumCesantiasIndep: number;
-  acumVolPensionAFC: number;
-} {
+  acum: AcumCaps,
+): SubcedulaCalc & { acum: AcumCaps } {
   const rc = state.rentasCapital;
 
   const ingresosBrutos =
@@ -454,7 +481,7 @@ function calcSubcedulaCapital(
   const volObligatorio = Math.min(
     rc.aportesVoluntariosPensionObligatoria,
     volObligatorioTope,
-    clamp0(ingresosBrutos * LEY_2277_LIMITS.volObligatorioPct - acumVolObligatorio)
+    clamp0(ingresosBrutos * LEY_2277_LIMITS.volObligatorioPct - acum.volObligatorio)
   );
 
   const componenteInfl = Math.min(rc.componenteInflacionario, rc.interesesRendimientos);
@@ -470,25 +497,12 @@ function calcSubcedulaCapital(
   const rentaLiquida = clamp0(ingresosBrutos - totalINCRGO - costosGastos);
   const perdida = clamp0(totalINCRGO + costosGastos - ingresosBrutos);
 
-  // Deducciones (remaining shared caps)
-  const topeVivienda = r3(LEY_2277_LIMITS.interesesViviendaUVT * uvt);
-  const viviendaDisp = clamp0(topeVivienda - acumVivienda);
-  // Capital can also claim vivienda for arrendamiento properties
-  const viviendaAplicada = 0; // Default 0, user doesn't typically split
+  // P2-FIX: Capital now claims remaining global deductions
+  const { dedSujetas, exSujetas, noSujetas, fueraLimite, nextAcum } = calcDeduccionesComunes(
+    state, uvt, acum, ingresosBrutos, totalINCRGO, rentaLiquida, "capital"
+  );
 
-  const topeICETEX = r3(LEY_2277_LIMITS.icetexUVT * uvt);
-  const icetexDisp = clamp0(topeICETEX - acumICETEX);
-  const icetexAplicada = 0;
-
-  const topeCesIndep = r3(LEY_2277_LIMITS.cesantiasIndepUVT * uvt);
-  const cesIndepDisp = clamp0(topeCesIndep - acumCesantiasIndep);
-  const cesIndepAplicada = 0;
-
-  // Vol pension/AFC for capital
-  const topeVolPensionAFC = r3(LEY_2277_LIMITS.volPensionAFCTopeUVT * uvt);
-  const volPensionAFCDisp = clamp0(topeVolPensionAFC - acumVolPensionAFC);
-  const tope30Pct = ingresosBrutos * LEY_2277_LIMITS.volPensionAFCPct;
-  const volPensionAFCAplicado = 0; // Typically in trabajo
+  const totalSujetoAlLimite = Math.min(dedSujetas + exSujetas, rentaLiquida);
 
   return {
     ingresosBrutos,
@@ -496,16 +510,12 @@ function calcSubcedulaCapital(
     costosGastos,
     rentaLiquida,
     perdida,
-    deduccionesSujetasAlLimite: 0,
-    exencionesSujetasAlLimite: 0,
-    totalSujetoAlLimite: 0,
-    deduccionesFueraLimite: 0,
-    imputablesNoSujetas: 0,
-    acumVolObligatorio: acumVolObligatorio + volObligatorio,
-    acumVivienda: acumVivienda + viviendaAplicada,
-    acumICETEX: acumICETEX + icetexAplicada,
-    acumCesantiasIndep: acumCesantiasIndep + cesIndepAplicada,
-    acumVolPensionAFC: acumVolPensionAFC + volPensionAFCAplicado,
+    deduccionesSujetasAlLimite: dedSujetas,
+    exencionesSujetasAlLimite: exSujetas,
+    totalSujetoAlLimite,
+    deduccionesFueraLimite: fueraLimite,
+    imputablesNoSujetas: noSujetas,
+    acum: { ...nextAcum, volObligatorio: acum.volObligatorio + volObligatorio },
   };
 }
 
@@ -514,19 +524,8 @@ function calcSubcedulaCapital(
 function calcSubcedulaNoLaborales(
   state: DeclaracionState,
   uvt: number,
-  acumVolObligatorio: number,
-  acumVivienda: number,
-  _acumMedicina: number,
-  acumICETEX: number,
-  acumCesantiasIndep: number,
-  acumVolPensionAFC: number,
-): SubcedulaCalc & {
-  acumVolObligatorio: number;
-  acumVivienda: number;
-  acumICETEX: number;
-  acumCesantiasIndep: number;
-  acumVolPensionAFC: number;
-} {
+  acum: AcumCaps,
+): SubcedulaCalc & { acum: AcumCaps } {
   const rnl = state.rentasNoLaborales;
 
   const ingresosBrutos =
@@ -542,10 +541,10 @@ function calcSubcedulaNoLaborales(
   const volObligatorio = Math.min(
     rnl.aportesVoluntariosPensionObligatoria,
     volObligatorioTope,
-    clamp0(ingresosNetos * LEY_2277_LIMITS.volObligatorioPct - acumVolObligatorio)
+    clamp0(ingresosNetos * LEY_2277_LIMITS.volObligatorioPct - acum.volObligatorio)
   );
 
-  // P6-FIX: Componente inflacionario se limita a rendimientos financieros, no ingresos exterior
+  // P6-FIX: Componente inflacionario se limita a ingresos netos
   const componenteInfl = Math.min(rnl.componenteInflacionario, ingresosNetos);
 
   const totalINCRGO = Math.min(
@@ -561,49 +560,36 @@ function calcSubcedulaNoLaborales(
   const rentaLiquida = clamp0(ingresosNetos - totalINCRGO - costosGastos);
   const perdida = clamp0(totalINCRGO + costosGastos - ingresosNetos);
 
+  // P2-FIX: NoLaborales now claims remaining global deductions
+  const { dedSujetas, exSujetas, noSujetas, fueraLimite, nextAcum } = calcDeduccionesComunes(
+    state, uvt, acum, ingresosBrutos, totalINCRGO, rentaLiquida, "noLaborales"
+  );
+
+  const totalSujetoAlLimite = Math.min(dedSujetas + exSujetas, rentaLiquida);
+
   return {
     ingresosBrutos,
     INCRGO: totalINCRGO,
     costosGastos,
     rentaLiquida,
     perdida,
-    deduccionesSujetasAlLimite: 0,
-    exencionesSujetasAlLimite: 0,
-    totalSujetoAlLimite: 0,
-    deduccionesFueraLimite: 0,
-    imputablesNoSujetas: 0,
-    acumVolObligatorio: acumVolObligatorio + volObligatorio,
-    acumVivienda: acumVivienda,
-    acumICETEX: acumICETEX,
-    acumCesantiasIndep: acumCesantiasIndep,
-    acumVolPensionAFC: acumVolPensionAFC,
+    deduccionesSujetasAlLimite: dedSujetas,
+    exencionesSujetasAlLimite: exSujetas,
+    totalSujetoAlLimite,
+    deduccionesFueraLimite: fueraLimite,
+    imputablesNoSujetas: noSujetas,
+    acum: { ...nextAcum, volObligatorio: acum.volObligatorio + volObligatorio },
   };
 }
 
 // ── Cédula General — Consolidación ──────────────────────
 
 function calcCedulaGeneral(state: DeclaracionState, uvt: number): ResultadoCedulaGeneral {
-  // Calculate each subcédula sequentially (shared caps accumulate)
-  const trabajo = calcSubcedulaTrabajo(state, uvt, 0, 0, 0, 0, 0, 0);
-  const honorarios = calcSubcedulaHonorarios(
-    state, uvt,
-    trabajo.acumVolObligatorio, trabajo.acumVivienda,
-    trabajo.acumMedicina, trabajo.acumICETEX,
-    trabajo.acumCesantiasIndep, trabajo.acumVolPensionAFC,
-  );
-  const capital = calcSubcedulaCapital(
-    state, uvt,
-    honorarios.acumVolObligatorio, honorarios.acumVivienda,
-    honorarios.acumMedicina, honorarios.acumICETEX,
-    honorarios.acumCesantiasIndep, honorarios.acumVolPensionAFC,
-  );
-  const noLaborales = calcSubcedulaNoLaborales(
-    state, uvt,
-    capital.acumVolObligatorio, capital.acumVivienda,
-    0, // medicina not used in capital/nolab
-    capital.acumICETEX, capital.acumCesantiasIndep,
-    capital.acumVolPensionAFC,
-  );
+  // Calculate each subcédula sequentially (shared caps accumulate via AcumCaps)
+  const trabajo = calcSubcedulaTrabajo(state, uvt, ACUM_ZERO);
+  const honorarios = calcSubcedulaHonorarios(state, uvt, trabajo.acum);
+  const capital = calcSubcedulaCapital(state, uvt, honorarios.acum);
+  const noLaborales = calcSubcedulaNoLaborales(state, uvt, capital.acum);
 
   // ── Límite 40% / 1,340 UVT (ET 336 Num. 3) ──
 
@@ -716,7 +702,7 @@ function calcCedulaGeneral(state: DeclaracionState, uvt: number): ResultadoCedul
     limiteExcedido,
     dependientesCapped,
     // P1-FIX: Pass accumulated vol pension/AFC to avoid recalculating subcédulas
-    acumVolPensionAFC: noLaborales.acumVolPensionAFC,
+    acumVolPensionAFC: noLaborales.acum.volPensionAFC,
   };
 }
 
