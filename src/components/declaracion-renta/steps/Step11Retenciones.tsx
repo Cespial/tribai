@@ -9,7 +9,7 @@ interface StepProps {
   resultado: ResultadoDeclaracion;
 }
 
-export function Step11Retenciones({ resultado }: StepProps) {
+export function Step13Retenciones({ resultado }: StepProps) {
   const { state, dispatch } = useDeclaracion();
   const ra = state.retencionesAnticipos;
   const uvt = UVT_VALUES[state.perfil.anoGravable] ?? 49_799;
@@ -60,6 +60,15 @@ export function Step11Retenciones({ resultado }: StepProps) {
             tooltipText="Retención practicada al momento de pagar o abonar dividendos."
             articuloET="242"
           />
+          <DeclaracionCurrencyInput
+            id="ra-retencion-go"
+            label="Retención sobre ganancias ocasionales"
+            value={ra.retencionGananciasOcasionales}
+            onChange={(v) => update({ retencionGananciasOcasionales: v })}
+            uvtEquivalent={ra.retencionGananciasOcasionales / uvt}
+            tooltipText="Retención practicada sobre ganancias ocasionales (loterías, rifas, herencias, etc.)."
+            articuloET="306"
+          />
         </div>
       </div>
 
@@ -96,29 +105,23 @@ export function Step11Retenciones({ resultado }: StepProps) {
         <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
           Resumen retenciones y anticipos
         </h4>
-        <div className="grid grid-cols-2 gap-4 text-center sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 text-center sm:grid-cols-3">
           <div>
             <p className="text-[11px] text-muted-foreground">Total retenciones</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${liq.totalRetenciones.toLocaleString("es-CO")}
+              ${liq.menosRetenciones.toLocaleString("es-CO")}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-muted-foreground">Anticipo anterior</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${liq.anticipoAnterior.toLocaleString("es-CO")}
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] text-muted-foreground">Saldo a favor anterior</p>
-            <p className="font-values text-lg font-semibold text-foreground">
-              ${liq.saldoFavorAnterior.toLocaleString("es-CO")}
+              ${liq.menosAnticipoAnterior.toLocaleString("es-CO")}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-muted-foreground">Total a descontar</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${(liq.totalRetenciones + liq.anticipoAnterior + liq.saldoFavorAnterior).toLocaleString("es-CO")}
+              ${(liq.menosRetenciones + liq.menosAnticipoAnterior).toLocaleString("es-CO")}
             </p>
           </div>
         </div>

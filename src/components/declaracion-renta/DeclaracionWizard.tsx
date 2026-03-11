@@ -11,28 +11,32 @@ import { Step01Perfil } from "./steps/Step01Perfil";
 import { Step02DebeDeclarar } from "./steps/Step02DebeDeclarar";
 import { Step03Patrimonio } from "./steps/Step03Patrimonio";
 import { Step04RentasTrabajo } from "./steps/Step04RentasTrabajo";
-import { Step05RentasCapital } from "./steps/Step05RentasCapital";
-import { Step06RentasNoLaborales } from "./steps/Step06RentasNoLaborales";
-import { Step07Deducciones } from "./steps/Step07Deducciones";
-import { Step08Pensiones } from "./steps/Step08Pensiones";
-import { Step09Dividendos } from "./steps/Step09Dividendos";
-import { Step10GananciasOcasionales } from "./steps/Step10GananciasOcasionales";
-import { Step11Retenciones } from "./steps/Step11Retenciones";
-import { Step12Resumen } from "./steps/Step12Resumen";
+import { Step05Honorarios } from "./steps/Step05Honorarios";
+import { Step06RentasCapital } from "./steps/Step05RentasCapital";
+import { Step07RentasNoLaborales } from "./steps/Step06RentasNoLaborales";
+import { Step08Deducciones } from "./steps/Step07Deducciones";
+import { Step09Pensiones } from "./steps/Step08Pensiones";
+import { Step10Dividendos } from "./steps/Step09Dividendos";
+import { Step11GananciasOcasionales } from "./steps/Step10GananciasOcasionales";
+import { Step12DescuentosTributarios } from "./steps/Step12DescuentosTributarios";
+import { Step13Retenciones } from "./steps/Step11Retenciones";
+import { Step14Resumen } from "./steps/Step12Resumen";
 
 const STEP_COMPONENTS = [
-  Step01Perfil,
-  Step02DebeDeclarar,
-  Step03Patrimonio,
-  Step04RentasTrabajo,
-  Step05RentasCapital,
-  Step06RentasNoLaborales,
-  Step07Deducciones,
-  Step08Pensiones,
-  Step09Dividendos,
-  Step10GananciasOcasionales,
-  Step11Retenciones,
-  Step12Resumen,
+  Step01Perfil,               // 0: perfil
+  Step02DebeDeclarar,         // 1: obligación
+  Step03Patrimonio,           // 2: patrimonio
+  Step04RentasTrabajo,        // 3: trabajo
+  Step05Honorarios,           // 4: honorarios (NEW)
+  Step06RentasCapital,        // 5: capital
+  Step07RentasNoLaborales,    // 6: no laborales
+  Step08Deducciones,          // 7: deducciones
+  Step09Pensiones,            // 8: pensiones
+  Step10Dividendos,           // 9: dividendos
+  Step11GananciasOcasionales, // 10: ganancias ocasionales
+  Step12DescuentosTributarios,// 11: descuentos tributarios (NEW)
+  Step13Retenciones,          // 12: retenciones
+  Step14Resumen,              // 13: resumen
 ];
 
 export function DeclaracionWizard() {
@@ -76,8 +80,8 @@ export function DeclaracionWizard() {
           <p className="text-xs font-medium uppercase tracking-[0.05em] text-muted-foreground">
             Paso {currentStep + 1} de {WIZARD_STEPS.length}
           </p>
-          <h2 className="heading-serif mt-1 text-2xl text-foreground">{stepMeta.label}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{stepMeta.description}</p>
+          <h2 className="heading-serif mt-1 text-2xl text-foreground">{stepMeta?.label}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{stepMeta?.description}</p>
         </div>
 
         {/* Step content */}

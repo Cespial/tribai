@@ -95,9 +95,9 @@ export function Step04RentasTrabajo({ resultado }: StepProps) {
           <DeclaracionCurrencyInput
             id="rt-pension-vol"
             label="Aportes voluntarios a pensión (INCR)"
-            value={rt.aportesVoluntariosPension}
-            onChange={(v) => update({ aportesVoluntariosPension: v })}
-            uvtEquivalent={rt.aportesVoluntariosPension / uvt}
+            value={rt.aportesVoluntariosPensionObligatoria}
+            onChange={(v) => update({ aportesVoluntariosPensionObligatoria: v })}
+            uvtEquivalent={rt.aportesVoluntariosPensionObligatoria / uvt}
             tooltipText="Aportes a fondos de pensiones voluntarias que no excedan el 25% del ingreso laboral."
             articuloET="126-1"
           />
@@ -130,19 +130,19 @@ export function Step04RentasTrabajo({ resultado }: StepProps) {
           <div>
             <p className="text-[11px] text-muted-foreground">Ingresos brutos</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.ingresosBrutosTrabajo.toLocaleString("es-CO")}
+              ${cg.trabajo.ingresosBrutos.toLocaleString("es-CO")}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-muted-foreground">INCR</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.INCRTrabajo.toLocaleString("es-CO")}
+              ${cg.trabajo.INCRGO.toLocaleString("es-CO")}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-muted-foreground">Renta líquida</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.rentaLiquidaTrabajo.toLocaleString("es-CO")}
+              ${cg.trabajo.rentaLiquida.toLocaleString("es-CO")}
             </p>
           </div>
         </div>

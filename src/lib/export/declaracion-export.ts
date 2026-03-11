@@ -56,6 +56,8 @@ function buildCasillasF210(
   const go = r.gananciasOcasionales;
   const liq = r.liquidacion;
 
+  const desc = r.descuentos;
+
   return [
     // Patrimonio
     { casilla: "29", concepto: "Patrimonio bruto", valor: pat.patrimonioBruto },
@@ -63,49 +65,49 @@ function buildCasillasF210(
     { casilla: "31", concepto: "Patrimonio líquido", valor: pat.patrimonioLiquido },
 
     // Cédula General — Ingresos
-    { casilla: "32", concepto: "Ingresos brutos rentas de trabajo", valor: cg.ingresosBrutosTrabajo },
-    { casilla: "33", concepto: "Ingresos no constitutivos de renta (trabajo)", valor: cg.INCRTrabajo },
-    { casilla: "34", concepto: "Rentas de capital brutas", valor: cg.ingresosBrutosCapital },
-    { casilla: "35", concepto: "Rentas no laborales brutas", valor: cg.ingresosBrutosNoLaborales },
-    { casilla: "36", concepto: "INCRNGO capital + no laborales", valor: cg.INCRCapitalTotal + cg.INCRNoLaboralesTotal },
-    { casilla: "37", concepto: "Deducciones aplicadas", valor: cg.deduccionesAplicadas },
+    { casilla: "32", concepto: "Ingresos brutos rentas de trabajo", valor: cg.trabajo.ingresosBrutos + cg.honorarios.ingresosBrutos },
+    { casilla: "33", concepto: "Ingresos no constitutivos de renta (trabajo)", valor: cg.trabajo.INCRGO + cg.honorarios.INCRGO },
+    { casilla: "34", concepto: "Rentas de capital brutas", valor: cg.capital.ingresosBrutos },
+    { casilla: "35", concepto: "Rentas no laborales brutas", valor: cg.noLaborales.ingresosBrutos },
+    { casilla: "36", concepto: "INCRNGO capital + no laborales", valor: cg.capital.INCRGO + cg.noLaborales.INCRGO },
+    { casilla: "37", concepto: "Deducciones aplicadas", valor: cg.trabajo.deduccionesAsignadas + cg.honorarios.deduccionesAsignadas + cg.capital.deduccionesAsignadas + cg.noLaborales.deduccionesAsignadas },
 
     // Cédula General — Depuración
     { casilla: "38", concepto: "Renta líquida cédula general", valor: cg.rentaLiquidaCedulaGeneral },
-    { casilla: "39", concepto: "Rentas exentas aplicadas (cédula general)", valor: cg.rentasExentasAplicadas },
+    { casilla: "39", concepto: "Rentas exentas aplicadas (cédula general)", valor: cg.trabajo.exencionesAsignadas + cg.honorarios.exencionesAsignadas + cg.capital.exencionesAsignadas + cg.noLaborales.exencionesAsignadas },
     { casilla: "40", concepto: "Renta líquida gravable cédula general", valor: cg.rentaLiquidaGravable },
 
     // Pensiones
     { casilla: "41", concepto: "Ingresos brutos pensiones", valor: cp.ingresosBrutosPensiones },
     { casilla: "42", concepto: "INCRNGO pensiones", valor: cp.INCRPensiones },
-    { casilla: "43", concepto: "Renta exenta pensiones", valor: cp.rentaExentaPensiones },
+    { casilla: "43", concepto: "Renta exenta pensiones", valor: cp.totalExenciones },
     { casilla: "44", concepto: "Renta líquida gravable pensiones", valor: cp.rentaLiquidaGravablePensiones },
 
     // Dividendos
-    { casilla: "45", concepto: "Dividendos sub-cédula 1 (total)", valor: cd.subCedula1Total },
-    { casilla: "46", concepto: "Impuesto dividendos sub-cédula 1", valor: cd.subCedula1Impuesto },
-    { casilla: "47", concepto: "Dividendos sub-cédula 2 (total)", valor: cd.subCedula2Total },
-    { casilla: "48", concepto: "Impuesto dividendos sub-cédula 2", valor: cd.subCedula2Impuesto },
+    { casilla: "45", concepto: "Dividendos sub-cédula 1 (no gravados)", valor: cd.subcedula1Total },
+    { casilla: "46", concepto: "Dividendos sub-cédula 2 (gravados)", valor: cd.subcedula2Total },
+    { casilla: "47", concepto: "Impuesto dividendos ET 240 (35%)", valor: cd.impuestoET240 },
+    { casilla: "48", concepto: "Total impuesto dividendos", valor: cd.impuestoTotalDividendos },
 
     // Ganancias Ocasionales
     { casilla: "53", concepto: "Ganancias ocasionales brutas", valor: go.gananciasBrutas },
     { casilla: "54", concepto: "Costos ganancias ocasionales", valor: go.costosGanancias },
-    { casilla: "55", concepto: "Ganancias no gravadas y exentas", valor: go.gananciaExenta },
-    { casilla: "56", concepto: "Ganancias ocasionales gravables", valor: go.gananciaGravable },
+    { casilla: "55", concepto: "Ganancias no gravadas y exentas", valor: go.totalExenciones },
+    { casilla: "56", concepto: "Ganancias ocasionales gravables", valor: go.gananciaGravableGeneral + go.gananciaGravableLoterias },
 
     // Liquidación
-    { casilla: "57", concepto: "Impuesto cédula general (Art. 241)", valor: cg.impuestoCedulaGeneral },
-    { casilla: "58", concepto: "Impuesto cédula pensiones", valor: cp.impuestoCedulaPensiones },
+    { casilla: "57", concepto: "Impuesto base combinada (Art. 241)", valor: liq.impuestoET241 },
+    { casilla: "58", concepto: "Impuesto dividendos ET 240", valor: liq.impuestoET240 },
     { casilla: "59", concepto: "Total impuesto dividendos", valor: cd.impuestoTotalDividendos },
     { casilla: "61", concepto: "Total impuesto sobre renta", valor: liq.impuestoRentaTotal },
     { casilla: "62", concepto: "Descuentos tributarios", valor: liq.descuentosTributarios },
-    { casilla: "63", concepto: "Impuesto neto de renta", valor: liq.impuestoNeto },
-    { casilla: "64", concepto: "Impuesto ganancias ocasionales", valor: go.impuestoGanancias },
-    { casilla: "65", concepto: "Total impuesto a cargo", valor: liq.impuestoNeto + go.impuestoGanancias },
-    { casilla: "67", concepto: "Anticipo renta año siguiente", valor: liq.anticipoSiguienteAno },
-    { casilla: "68", concepto: "Anticipo renta año anterior", valor: liq.anticipoAnterior },
-    { casilla: "69", concepto: "Saldo a favor año anterior", valor: liq.saldoFavorAnterior },
-    { casilla: "70", concepto: "Total retenciones año gravable", valor: liq.totalRetenciones },
+    { casilla: "63", concepto: "Impuesto neto de renta", valor: liq.impuestoNetoRenta },
+    { casilla: "64", concepto: "Impuesto ganancias ocasionales", valor: liq.impuestoGananciaOcasional },
+    { casilla: "65", concepto: "Total impuesto a cargo", valor: liq.totalImpuestoCargo },
+    { casilla: "67", concepto: "Anticipo renta año siguiente", valor: liq.anticipoRecomendado },
+    { casilla: "68", concepto: "Anticipo renta año anterior", valor: liq.menosAnticipoAnterior },
+    { casilla: "69", concepto: "Saldo a favor año anterior", valor: state.retencionesAnticipos.saldoFavorAnterior },
+    { casilla: "70", concepto: "Total retenciones año gravable", valor: liq.menosRetenciones },
     { casilla: "91", concepto: "Total saldo a pagar", valor: liq.saldoPagar },
     { casilla: "92", concepto: "Total saldo a favor", valor: liq.saldoFavor },
   ];

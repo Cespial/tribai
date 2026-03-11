@@ -16,10 +16,12 @@ import {
   Gift,
   Receipt,
   FileCheck,
+  FileText,
   Check,
   ArrowDownUp,
   ShieldCheck,
   Gauge,
+  Tag,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -37,9 +39,11 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Gift,
   Receipt,
   FileCheck,
+  FileText,
   ArrowDownUp,
   ShieldCheck,
   Gauge,
+  Tag,
 };
 
 interface StepMeta {

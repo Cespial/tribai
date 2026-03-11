@@ -9,7 +9,7 @@ interface StepProps {
   resultado: ResultadoDeclaracion;
 }
 
-export function Step08Pensiones({ resultado }: StepProps) {
+export function Step09Pensiones({ resultado }: StepProps) {
   const { state, dispatch } = useDeclaracion();
   const cp = state.cedulaPensiones;
   const uvt = UVT_VALUES[state.perfil.anoGravable] ?? 49_799;
@@ -25,42 +25,36 @@ export function Step08Pensiones({ resultado }: StepProps) {
         <p className="text-sm text-foreground">
           Si recibe pensión de jubilación, invalidez o sobrevivientes, ingrese los valores aquí.
           Las pensiones tienen una exención especial de las primeras{" "}
-          <strong>12.000 UVT anuales</strong> ({(12_000 * uvt).toLocaleString("es-CO")} COP).
+          <strong>1.000 UVT mensuales</strong> ({(1_000 * uvt).toLocaleString("es-CO")} COP).
           Si no recibe pensión, puede saltar este paso.
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <DeclaracionCurrencyInput
-          id="cp-jubilacion"
-          label="Pensión de jubilación o vejez"
-          value={cp.pensionJubilacion}
-          onChange={(v) => update({ pensionJubilacion: v })}
-          uvtEquivalent={cp.pensionJubilacion / uvt}
-          tooltipText="Mesadas pensionales recibidas durante el año por pensión de jubilación, prima media o RAIS."
+          id="cp-nacionales"
+          label="Pensiones nacionales"
+          value={cp.pensionesNacionales}
+          onChange={(v) => update({ pensionesNacionales: v })}
+          uvtEquivalent={cp.pensionesNacionales / uvt}
+          tooltipText="Mesadas pensionales recibidas durante el año por pensión de jubilación, vejez, invalidez o sobrevivientes en Colombia."
           articuloET="206"
         />
         <DeclaracionCurrencyInput
-          id="cp-sobreviviente"
-          label="Pensión de sobrevivientes"
-          value={cp.pensionSobreviviente}
-          onChange={(v) => update({ pensionSobreviviente: v })}
-          uvtEquivalent={cp.pensionSobreviviente / uvt}
+          id="cp-can"
+          label="Pensiones CAN (Comunidad Andina)"
+          value={cp.pensionesCAN}
+          onChange={(v) => update({ pensionesCAN: v })}
+          uvtEquivalent={cp.pensionesCAN / uvt}
+          tooltipText="Pensiones recibidas de países de la Comunidad Andina de Naciones."
         />
         <DeclaracionCurrencyInput
-          id="cp-invalidez"
-          label="Pensión de invalidez"
-          value={cp.pensionInvalidez}
-          onChange={(v) => update({ pensionInvalidez: v })}
-          uvtEquivalent={cp.pensionInvalidez / uvt}
-        />
-        <DeclaracionCurrencyInput
-          id="cp-otras"
-          label="Otras pensiones"
-          value={cp.otrasPensiones}
-          onChange={(v) => update({ otrasPensiones: v })}
-          uvtEquivalent={cp.otrasPensiones / uvt}
-          tooltipText="Pensiones del exterior, rentas vitalicias, u otras asimiladas."
+          id="cp-exterior"
+          label="Pensiones del exterior"
+          value={cp.pensionesExterior}
+          onChange={(v) => update({ pensionesExterior: v })}
+          uvtEquivalent={cp.pensionesExterior / uvt}
+          tooltipText="Pensiones recibidas de países fuera de la CAN."
         />
         <DeclaracionCurrencyInput
           id="cp-salud"
@@ -93,9 +87,9 @@ export function Step08Pensiones({ resultado }: StepProps) {
               </p>
             </div>
             <div>
-              <p className="text-[11px] text-muted-foreground">Exención (12.000 UVT)</p>
+              <p className="text-[11px] text-muted-foreground">Exención (1.000 UVT/mes)</p>
               <p className="font-values text-lg font-semibold text-foreground">
-                ${rp.rentaExentaPensiones.toLocaleString("es-CO")}
+                ${rp.totalExenciones.toLocaleString("es-CO")}
               </p>
             </div>
             <div>

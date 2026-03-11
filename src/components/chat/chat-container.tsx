@@ -123,7 +123,8 @@ export function ChatContainer() {
     messages: currentConversation?.messages || [],
     onError: (err) => {
       const msg = err.message || "Error al procesar la consulta";
-      if (msg.includes("429") || msg.includes("rate")) {
+      console.error("[chat] Error:", msg.slice(0, 300));
+      if (msg.includes("429") || msg.includes("rate") || msg.includes("Demasiadas")) {
         setChatError("Ha excedido el límite de consultas. Espere un momento e intente de nuevo.");
       } else if (msg.includes("timeout") || msg.includes("504")) {
         setChatError("La consulta tardó demasiado. Intente con una pregunta más específica.");

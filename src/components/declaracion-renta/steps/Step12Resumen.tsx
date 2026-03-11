@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ExternalLink, Lightbulb, TrendingDown, FileDown, FileSpreadsheet, FileText } from "lucide-react";
+import { ExternalLink, Lightbulb, TrendingDown, FileDown, FileSpreadsheet, FileText, CalendarClock } from "lucide-react";
 import { clsx } from "clsx";
 import type { ResultadoDeclaracion } from "@/lib/declaracion-renta/types";
 import { useDeclaracion } from "@/lib/declaracion-renta/declaracion-context";
 import { exportF210ToPdf, exportF210ToExcel, exportF210ToCsv } from "@/lib/export/declaracion-export";
+import { getVencimientoPN } from "@/config/tax-data";
 
 interface StepProps {
   resultado: ResultadoDeclaracion;
@@ -19,7 +20,7 @@ function formatPercent(value: number): string {
   return (value * 100).toFixed(2) + "%";
 }
 
-export function Step12Resumen({ resultado }: StepProps) {
+export function Step14Resumen({ resultado }: StepProps) {
   const { state } = useDeclaracion();
   const liq = resultado.liquidacion;
   const cg = resultado.cedulaGeneral;
@@ -51,40 +52,42 @@ export function Step12Resumen({ resultado }: StepProps) {
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.05em] text-foreground">
           Desglose por cédula
         </h3>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Base combinada ET 241 = Cédula General + Pensiones + Subcédula 1 Div + Exceso
+        </p>
         <div className="space-y-3">
           <ResultRow
-            label="Cédula General (trabajo + capital + no laborales)"
-            sublabel={`Base gravable: ${formatCOP(cg.rentaLiquidaGravable)} (${cg.rentaLiquidaGravableUVT.toFixed(1)} UVT)`}
-            value={cg.impuestoCedulaGeneral}
+            label="Base combinada ET 241"
+            sublabel={`Cédula General gravable: ${formatCOP(cg.rentaLiquidaGravable)} (${cg.rentaLiquidaGravableUVT.toFixed(1)} UVT)`}
+            value={liq.impuestoET241}
           />
           <ResultRow
             label="Cédula Pensiones"
-            sublabel={`Gravable: ${formatCOP(resultado.cedulaPensiones.rentaLiquidaGravablePensiones)}`}
-            value={resultado.cedulaPensiones.impuestoCedulaPensiones}
+            sublabel={`Gravable: ${formatCOP(resultado.cedulaPensiones.rentaLiquidaGravablePensiones)} — incluida en base combinada ET 241`}
+            value={0}
           />
           <ResultRow
             label="Cédula Dividendos"
-            sublabel={`Sub-cédula 1: ${formatCOP(resultado.cedulaDividendos.subCedula1Impuesto)} | Sub-cédula 2: ${formatCOP(resultado.cedulaDividendos.subCedula2Impuesto)}`}
+            sublabel={`Sub-cédula 1: → base combinada ET 241 | Sub-cédula 2 (35% ET 240): ${formatCOP(resultado.cedulaDividendos.impuestoET240)}`}
             value={resultado.cedulaDividendos.impuestoTotalDividendos}
           />
           <ResultRow
             label="Ganancias ocasionales"
-            sublabel={`Gravable: ${formatCOP(resultado.gananciasOcasionales.gananciaGravable)}`}
-            value={resultado.gananciasOcasionales.impuestoGanancias}
+            sublabel={`Gravable: ${formatCOP(resultado.gananciasOcasionales.gananciaGravableGeneral + resultado.gananciasOcasionales.gananciaGravableLoterias)}`}
+            value={resultado.gananciasOcasionales.impuestoTotalGO}
           />
 
           <hr className="border-border/40" />
 
           <ResultRow label="Impuesto total de renta" value={liq.impuestoRentaTotal} bold />
           <ResultRow label="(−) Descuentos tributarios" value={-liq.descuentosTributarios} />
-          <ResultRow label="Impuesto neto" value={liq.impuestoNeto} bold />
+          <ResultRow label="Impuesto neto" value={liq.impuestoNetoRenta} bold />
           <ResultRow
             label={`(+) Anticipo siguiente año (${state.perfil.anosDeclarando <= 1 ? "25%" : state.perfil.anosDeclarando === 2 ? "50%" : "75%"})`}
-            value={liq.anticipoSiguienteAno}
+            value={liq.anticipoRecomendado}
           />
-          <ResultRow label="(−) Total retenciones" value={-liq.totalRetenciones} />
-          <ResultRow label="(−) Anticipo año anterior" value={-liq.anticipoAnterior} />
-          <ResultRow label="(−) Saldo a favor anterior" value={-liq.saldoFavorAnterior} />
+          <ResultRow label="(−) Total retenciones" value={-liq.menosRetenciones} />
+          <ResultRow label="(−) Anticipo año anterior" value={-liq.menosAnticipoAnterior} />
 
           <hr className="border-border/40" />
 
@@ -199,6 +202,30 @@ export function Step12Resumen({ resultado }: StepProps) {
           </div>
         </div>
       )}
+
+      {/* Filing deadline */}
+      {state.perfil.anoGravable === 2025 && state.perfil.numeroDocumento && (() => {
+        const digits = state.perfil.numeroDocumento.slice(-2);
+        const d = parseInt(digits, 10);
+        const fecha = !isNaN(d) ? getVencimientoPN(d) : undefined;
+        if (!fecha) return null;
+        const dateObj = new Date(fecha + "T12:00:00");
+        const formatted = dateObj.toLocaleDateString("es-CO", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+        return (
+          <div className="flex items-start gap-3 rounded-md border border-primary/30 bg-primary/5 p-4">
+            <CalendarClock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                Fecha límite de presentación
+              </p>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                Según los últimos 2 dígitos de su {state.perfil.tipoDocumento} ({digits}), su vencimiento es el{" "}
+                <strong className="text-foreground">{formatted}</strong>.
+              </p>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Disclaimer */}
       <div className="rounded-md border border-border/60 bg-muted/30 p-4">

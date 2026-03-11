@@ -45,6 +45,7 @@ export function Step03Patrimonio({ resultado }: StepProps) {
       tipo: "inmueble",
       descripcion: "",
       valorFiscal: 0,
+      valorFiscalAnterior: 0,
       pais: "colombia",
     };
     dispatch({ type: "ADD_BIEN", payload: bien });
@@ -56,6 +57,7 @@ export function Step03Patrimonio({ resultado }: StepProps) {
       tipo: "hipoteca",
       descripcion: "",
       saldoDiciembre31: 0,
+      saldoAnterior: 0,
     };
     dispatch({ type: "ADD_DEUDA", payload: deuda });
   }, [dispatch]);

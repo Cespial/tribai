@@ -74,7 +74,48 @@ export const LEY_2277_LIMITS = {
   deduccionesExentasMaxUVT: 1_340,
   dependienteUVT: 72,
   maxDependientes: 4,
+  interesesViviendaUVT: 1_200,
+  medicinaPrepagadaUVTMes: 16,
+  dependientes10PctUVTMes: 32,
+  icetexUVT: 100,
+  cesantiasIndepUVT: 2_500,
+  volPensionAFCPct: 0.30,
+  volPensionAFCTopeUVT: 3_800,
+  volObligatorioPct: 0.25,
+  pensionExentaUVTMes: 1_000,
 };
+
+// Tarifas ET 240 por año gravable (dividendos gravados)
+export const ET240_RATES: Record<number, number> = {
+  2017: 0.35,
+  2018: 0.35,
+  2019: 0.33,
+  2020: 0.32,
+  2021: 0.31,
+  2022: 0.35,
+  2023: 0.35,
+  2024: 0.35,
+  2025: 0.35,
+};
+
+// Tabla exención de cesantías (Art. 206 Num. 4)
+// Porcentaje exento según ingreso mensual promedio en UVT
+export const CESANTIAS_EXEMPTION_TABLE = [
+  { maxUVT: 350, pct: 1.00 },
+  { maxUVT: 410, pct: 0.90 },
+  { maxUVT: 470, pct: 0.80 },
+  { maxUVT: 530, pct: 0.60 },
+  { maxUVT: 590, pct: 0.40 },
+  { maxUVT: 650, pct: 0.20 },
+  { maxUVT: Infinity, pct: 0.00 },
+] as const;
+
+// Tabla dividendos 2016 y anteriores (DUT 1.2.1.10.3)
+export const DIVIDENDOS_2016_BRACKETS = [
+  { from: 0, to: 600, rate: 0, base: 0 },
+  { from: 600, to: 1_000, rate: 0.05, base: 0 },
+  { from: 1_000, to: Infinity, rate: 0.10, base: 20 },
+] as const;
 
 // GMF
 export const GMF_RATE = 0.004;
@@ -148,3 +189,75 @@ export const IBC_MAX_SMLMV = 25;
 export const SS_PENSION_TOTAL_RATE = 0.16;
 export const SS_SALUD_TOTAL_RATE = 0.125;
 export const EXONERATION_THRESHOLD_SMLMV = 10;
+
+// ── Vencimientos AG2025 — Personas Naturales (F210) ──
+// Decreto 2229 de 2023 — últimos 2 dígitos del NIT/CC
+
+export const VENCIMIENTOS_AG2025_PN: { digitosFinal: string; fecha: string }[] = [
+  { digitosFinal: "01-02", fecha: "2026-08-12" },
+  { digitosFinal: "03-04", fecha: "2026-08-13" },
+  { digitosFinal: "05-06", fecha: "2026-08-14" },
+  { digitosFinal: "07-08", fecha: "2026-08-18" },
+  { digitosFinal: "09-10", fecha: "2026-08-19" },
+  { digitosFinal: "11-12", fecha: "2026-08-20" },
+  { digitosFinal: "13-14", fecha: "2026-08-21" },
+  { digitosFinal: "15-16", fecha: "2026-08-22" },
+  { digitosFinal: "17-18", fecha: "2026-08-25" },
+  { digitosFinal: "19-20", fecha: "2026-08-26" },
+  { digitosFinal: "21-22", fecha: "2026-08-27" },
+  { digitosFinal: "23-24", fecha: "2026-08-28" },
+  { digitosFinal: "25-26", fecha: "2026-08-29" },
+  { digitosFinal: "27-28", fecha: "2026-09-01" },
+  { digitosFinal: "29-30", fecha: "2026-09-02" },
+  { digitosFinal: "31-32", fecha: "2026-09-03" },
+  { digitosFinal: "33-34", fecha: "2026-09-04" },
+  { digitosFinal: "35-36", fecha: "2026-09-05" },
+  { digitosFinal: "37-38", fecha: "2026-09-08" },
+  { digitosFinal: "39-40", fecha: "2026-09-09" },
+  { digitosFinal: "41-42", fecha: "2026-09-10" },
+  { digitosFinal: "43-44", fecha: "2026-09-11" },
+  { digitosFinal: "45-46", fecha: "2026-09-12" },
+  { digitosFinal: "47-48", fecha: "2026-09-15" },
+  { digitosFinal: "49-50", fecha: "2026-09-16" },
+  { digitosFinal: "51-52", fecha: "2026-09-17" },
+  { digitosFinal: "53-54", fecha: "2026-09-18" },
+  { digitosFinal: "55-56", fecha: "2026-09-19" },
+  { digitosFinal: "57-58", fecha: "2026-09-22" },
+  { digitosFinal: "59-60", fecha: "2026-09-23" },
+  { digitosFinal: "61-62", fecha: "2026-09-24" },
+  { digitosFinal: "63-64", fecha: "2026-09-25" },
+  { digitosFinal: "65-66", fecha: "2026-09-26" },
+  { digitosFinal: "67-68", fecha: "2026-09-29" },
+  { digitosFinal: "69-70", fecha: "2026-09-30" },
+  { digitosFinal: "71-72", fecha: "2026-10-01" },
+  { digitosFinal: "73-74", fecha: "2026-10-02" },
+  { digitosFinal: "75-76", fecha: "2026-10-03" },
+  { digitosFinal: "77-78", fecha: "2026-10-06" },
+  { digitosFinal: "79-80", fecha: "2026-10-07" },
+  { digitosFinal: "81-82", fecha: "2026-10-08" },
+  { digitosFinal: "83-84", fecha: "2026-10-09" },
+  { digitosFinal: "85-86", fecha: "2026-10-10" },
+  { digitosFinal: "87-88", fecha: "2026-10-14" },
+  { digitosFinal: "89-90", fecha: "2026-10-15" },
+  { digitosFinal: "91-92", fecha: "2026-10-16" },
+  { digitosFinal: "93-94", fecha: "2026-10-17" },
+  { digitosFinal: "95-96", fecha: "2026-10-20" },
+  { digitosFinal: "97-98", fecha: "2026-10-21" },
+  { digitosFinal: "99-00", fecha: "2026-10-22" },
+];
+
+/** Look up filing deadline given the last 2 digits of NIT/CC */
+export function getVencimientoPN(ultimos2Digitos: number): string | undefined {
+  const entry = VENCIMIENTOS_AG2025_PN.find((v) => {
+    const [lo, hi] = v.digitosFinal.split("-").map(Number);
+    return ultimos2Digitos >= lo && ultimos2Digitos <= hi;
+  });
+  return entry?.fecha;
+}
+
+// ── Porcentaje anticipo por años declarando ──
+export const ANTICIPO_PCT: Record<number, number> = {
+  1: 0.25, // primer año
+  2: 0.50, // segundo año
+  3: 0.75, // tercer año en adelante
+};

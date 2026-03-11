@@ -9,7 +9,7 @@ interface StepProps {
   resultado: ResultadoDeclaracion;
 }
 
-export function Step05RentasCapital({ resultado }: StepProps) {
+export function Step06RentasCapital({ resultado }: StepProps) {
   const { state, dispatch } = useDeclaracion();
   const rc = state.rentasCapital;
   const uvt = UVT_VALUES[state.perfil.anoGravable] ?? 49_799;
@@ -88,9 +88,9 @@ export function Step05RentasCapital({ resultado }: StepProps) {
           <DeclaracionCurrencyInput
             id="rc-incr"
             label="INCR de capital"
-            value={rc.INCRCapital}
-            onChange={(v) => update({ INCRCapital: v })}
-            uvtEquivalent={rc.INCRCapital / uvt}
+            value={rc.otrosINCRCapital}
+            onChange={(v) => update({ otrosINCRCapital: v })}
+            uvtEquivalent={rc.otrosINCRCapital / uvt}
             tooltipText="Ingresos no constitutivos de renta asociados a rentas de capital."
           />
         </div>
@@ -105,19 +105,19 @@ export function Step05RentasCapital({ resultado }: StepProps) {
           <div>
             <p className="text-[11px] text-muted-foreground">Ingresos brutos</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.ingresosBrutosCapital.toLocaleString("es-CO")}
+              ${cg.capital.ingresosBrutos.toLocaleString("es-CO")}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-muted-foreground">Costos + INCR</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.INCRCapitalTotal.toLocaleString("es-CO")}
+              ${(cg.capital.INCRGO + cg.capital.costosGastos).toLocaleString("es-CO")}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-muted-foreground">Renta líquida</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.rentaLiquidaCapital.toLocaleString("es-CO")}
+              ${cg.capital.rentaLiquida.toLocaleString("es-CO")}
             </p>
           </div>
         </div>

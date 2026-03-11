@@ -9,7 +9,7 @@ interface StepProps {
   resultado: ResultadoDeclaracion;
 }
 
-export function Step06RentasNoLaborales({ resultado }: StepProps) {
+export function Step07RentasNoLaborales({ resultado }: StepProps) {
   const { state, dispatch } = useDeclaracion();
   const rnl = state.rentasNoLaborales;
   const uvt = UVT_VALUES[state.perfil.anoGravable] ?? 49_799;
@@ -79,17 +79,17 @@ export function Step06RentasNoLaborales({ resultado }: StepProps) {
           <DeclaracionCurrencyInput
             id="rnl-costos"
             label="Costos y gastos procedentes"
-            value={rnl.costosGastosNoLaborales}
-            onChange={(v) => update({ costosGastosNoLaborales: v })}
-            uvtEquivalent={rnl.costosGastosNoLaborales / uvt}
+            value={rnl.costosVentasServicios}
+            onChange={(v) => update({ costosVentasServicios: v })}
+            uvtEquivalent={rnl.costosVentasServicios / uvt}
             tooltipText="Costos y gastos directamente relacionados con la actividad generadora de ingreso."
           />
           <DeclaracionCurrencyInput
             id="rnl-incr"
             label="INCR no laborales"
-            value={rnl.INCRNoLaborales}
-            onChange={(v) => update({ INCRNoLaborales: v })}
-            uvtEquivalent={rnl.INCRNoLaborales / uvt}
+            value={rnl.otrosINCRNoLaborales}
+            onChange={(v) => update({ otrosINCRNoLaborales: v })}
+            uvtEquivalent={rnl.otrosINCRNoLaborales / uvt}
           />
         </div>
       </div>
@@ -103,19 +103,19 @@ export function Step06RentasNoLaborales({ resultado }: StepProps) {
           <div>
             <p className="text-[11px] text-muted-foreground">Ingresos brutos</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.ingresosBrutosNoLaborales.toLocaleString("es-CO")}
+              ${cg.noLaborales.ingresosBrutos.toLocaleString("es-CO")}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-muted-foreground">Costos + INCR</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.INCRNoLaboralesTotal.toLocaleString("es-CO")}
+              ${(cg.noLaborales.INCRGO + cg.noLaborales.costosGastos).toLocaleString("es-CO")}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-muted-foreground">Renta líquida</p>
             <p className="font-values text-lg font-semibold text-foreground">
-              ${cg.rentaLiquidaNoLaborales.toLocaleString("es-CO")}
+              ${cg.noLaborales.rentaLiquida.toLocaleString("es-CO")}
             </p>
           </div>
         </div>
