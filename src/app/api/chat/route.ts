@@ -9,15 +9,17 @@ import { buildConversationContext } from "@/lib/chat/session-memory";
 import { suggestCalculators } from "@/lib/chat/calculator-context";
 import type { ChatPageContext } from "@/types/chat-history";
 import { setRequestId, logger } from "@/lib/logging/structured-logger";
+import { getModelForPlan, getUserPlan, type UserPlan } from "@/lib/auth/plan";
 
 export const maxDuration = 60;
 
-function getChatModel() {
+function getChatModel(plan: UserPlan = "basic") {
   const provider = process.env.LLM_PROVIDER || "anthropic";
   if (provider === "openai") {
     return openai(process.env.OPENAI_CHAT_MODEL || "gpt-4o");
   }
-  return anthropic(process.env.CHAT_MODEL || "claude-sonnet-4-6");
+  const modelId = getModelForPlan(plan, "consulta");
+  return anthropic(modelId);
 }
 
 function getTextFromMessage(message: UIMessage): string {
@@ -81,7 +83,11 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages, filters, pageContext, conversationId } = parsed.data;
+  const { messages, filters, pageContext, conversationId, plan: clientPlan } = parsed.data;
+
+  // Resolve plan: verify server-side if auth is available, else trust client
+  const verifiedPlan = await getUserPlan().catch(() => clientPlan || "basic") as UserPlan;
+  const plan: UserPlan = verifiedPlan || clientPlan || "basic";
 
   // Validate message length
   const lengthError = validateMessageLength(messages);
@@ -252,7 +258,7 @@ export async function POST(req: Request) {
 
   try {
     const result = streamText({
-      model: getChatModel(),
+      model: getChatModel(plan),
       system,
       messages: llmMessages,
       experimental_transform: smoothStream({ delayInMs: 10, chunking: "word" }),

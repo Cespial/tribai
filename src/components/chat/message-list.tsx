@@ -35,6 +35,7 @@ interface MessageListProps {
   onShare: (text: string) => void;
   onFeedback: (messageId: string, value: "up" | "down") => void;
   getFeedback: (messageId: string) => "up" | "down" | undefined;
+  renderAfterMessage?: (message: UIMessage) => React.ReactNode;
 }
 
 function getMessageText(message: UIMessage): string {
@@ -54,6 +55,7 @@ export function MessageList({
   onShare,
   onFeedback,
   getFeedback,
+  renderAfterMessage,
 }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -166,6 +168,9 @@ export function MessageList({
                   />
                 </div>
               )}
+
+              {/* Custom render after message (e.g., tool results in planificador mode) */}
+              {renderAfterMessage?.(message)}
             </div>
           );
         })}

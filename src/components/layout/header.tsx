@@ -8,10 +8,10 @@ import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 
 const MAIN_NAV = [
-  { href: "/planificacion", label: "Planificador" },
   { href: "/asistente", label: "Asistente IA" },
   { href: "/calculadoras", label: "Calculadoras" },
   { href: "/explorador", label: "Estatuto" },
+  { href: "/planes", label: "Planes" },
 ];
 
 const MORE_NAV = [

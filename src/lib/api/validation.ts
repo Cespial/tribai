@@ -30,6 +30,7 @@ const PageContextSchema = z.object({
 export const ChatRequestSchema = z.object({
   messages: z.array(UIMessageSchema).min(1).max(50),
   conversationId: z.string().optional(),
+  plan: z.enum(["basic", "pro"]).optional(),
   filters: z
     .object({
       libro: z.string().optional(),

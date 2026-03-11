@@ -1,7 +1,5 @@
-"use client";
-
-import { PlanificacionChat } from "@/components/planificacion/planificacion-chat";
+import { redirect } from "next/navigation";
 
 export default function PlanificacionPage() {
-  return <PlanificacionChat />;
+  redirect("/asistente?mode=planificador");
 }

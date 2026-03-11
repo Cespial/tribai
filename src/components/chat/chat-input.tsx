@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useRef, useEffect, useCallback } from "react";
+import { FormEvent, useRef, useEffect, useCallback, ReactNode } from "react";
 import { Send, Loader2 } from "lucide-react";
 
 interface ChatInputProps {
@@ -8,6 +8,7 @@ interface ChatInputProps {
   setInput: (value: string) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
+  leftSlot?: ReactNode;
 }
 
 export function ChatInput({
@@ -15,6 +16,7 @@ export function ChatInput({
   setInput,
   onSubmit,
   isLoading,
+  leftSlot,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -57,6 +59,7 @@ export function ChatInput({
   return (
     <form ref={formRef} onSubmit={onSubmit} className="border-t border-border/40 px-4 py-3">
       <div className="mx-auto flex max-w-4xl items-end gap-2">
+        {leftSlot}
         <div className="relative flex-1">
           <label htmlFor="chat-input" className="sr-only">
             Pregunta sobre tributaria colombiana

@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { ArticlePanelProvider } from "@/contexts/article-panel-context";
 import { SlideOutPanel } from "@/components/article/slide-out-panel";
 import { QuickAddFab } from "@/components/workspace/quick-add-fab";
+import { ConditionalClerkProvider } from "@/components/providers/clerk-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -95,13 +96,15 @@ export default function RootLayout({
         >
           Ir al contenido principal
         </a>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ArticlePanelProvider>
-            {children}
-            <SlideOutPanel />
-            <QuickAddFab />
-          </ArticlePanelProvider>
-        </ThemeProvider>
+        <ConditionalClerkProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <ArticlePanelProvider>
+              {children}
+              <SlideOutPanel />
+              <QuickAddFab />
+            </ArticlePanelProvider>
+          </ThemeProvider>
+        </ConditionalClerkProvider>
         <script
           dangerouslySetInnerHTML={{
             __html: `
