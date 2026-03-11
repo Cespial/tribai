@@ -399,6 +399,9 @@ export interface ResultadoCedulaGeneral {
   // Warnings
   limiteExcedido: boolean;
   dependientesCapped: boolean;
+
+  // Accumulated caps (for pension cédula)
+  acumVolPensionAFC: number;
 }
 
 export interface ResultadoCedulaPensiones {

@@ -545,7 +545,8 @@ function calcSubcedulaNoLaborales(
     clamp0(ingresosNetos * LEY_2277_LIMITS.volObligatorioPct - acumVolObligatorio)
   );
 
-  const componenteInfl = Math.min(rnl.componenteInflacionario, rnl.ingresosExterior);
+  // P6-FIX: Componente inflacionario se limita a rendimientos financieros, no ingresos exterior
+  const componenteInfl = Math.min(rnl.componenteInflacionario, ingresosNetos);
 
   const totalINCRGO = Math.min(
     rnl.aportesObligatoriosPension + volObligatorio +
@@ -606,12 +607,10 @@ function calcCedulaGeneral(state: DeclaracionState, uvt: number): ResultadoCedul
 
   // ── Límite 40% / 1,340 UVT (ET 336 Num. 3) ──
 
-  // Base for limit = total ingresos brutos + ECE - total INCRGO
+  // P5-FIX: Base for limit = renta líquida cédula general (ET 336 Num. 3)
   const baseLimite =
-    trabajo.ingresosBrutos + honorarios.ingresosBrutos +
-    capital.ingresosBrutos + noLaborales.ingresosBrutos -
-    trabajo.INCRGO - honorarios.INCRGO -
-    capital.INCRGO - noLaborales.INCRGO;
+    trabajo.rentaLiquida + honorarios.rentaLiquida +
+    capital.rentaLiquida + noLaborales.rentaLiquida;
 
   const limite40_1340 = Math.min(
     baseLimite * 0.40,
@@ -716,6 +715,8 @@ function calcCedulaGeneral(state: DeclaracionState, uvt: number): ResultadoCedul
     rentaLiquidaGravableUVT,
     limiteExcedido,
     dependientesCapped,
+    // P1-FIX: Pass accumulated vol pension/AFC to avoid recalculating subcédulas
+    acumVolPensionAFC: noLaborales.acumVolPensionAFC,
   };
 }
 
@@ -870,8 +871,8 @@ function calcGananciasOcasionales(state: DeclaracionState, uvt: number): Resulta
   );
   const gananciaGravableGeneral = clamp0(gananciaSinLoterias);
 
-  // Gravable loterías (20%)
-  const gananciaGravableLoterias = go.loteriasRifasApuestas;
+  // P3-FIX: Gravable loterías (20%) — primeras 48 UVT exentas (ET 317)
+  const gananciaGravableLoterias = clamp0(go.loteriasRifasApuestas - r3(48 * uvt));
 
   // Impuestos
   const impuestoGeneralGO = r(gananciaGravableGeneral * 0.15);
@@ -986,12 +987,11 @@ function calcLiquidacion(
   const impuestoAnterior = da.impuestoNetoAGAnterior;
   const anticipoOpcion2 = r(((impuestoNetoRenta + impuestoAnterior) / 2) * porcentaje);
 
-  // Anticipo recomendado = MIN de las dos opciones - retenciones
+  // P4-FIX: Anticipo = MIN(op1, op2). Retenciones se restan en liquidación final,
+  // no dentro del anticipo (evita doble deducción ya que menosRetenciones también aplica).
   const totalRetenciones = ra.retencionFuenteRenta + ra.retencionFuenteOtros +
     ra.retencionDividendos + ra.retencionGananciasOcasionales;
-  const anticipoRecomendado = clamp0(
-    Math.min(anticipoOpcion1, anticipoOpcion2) - totalRetenciones
-  );
+  const anticipoRecomendado = clamp0(Math.min(anticipoOpcion1, anticipoOpcion2));
 
   // Liquidación final
   const menosAnticipoAnterior = ra.anticipoAnoAnterior;
@@ -1135,29 +1135,8 @@ export function calcularDeclaracion(state: DeclaracionState): ResultadoDeclaraci
   const patrimonio = calcPatrimonio(state);
   const cedulaGeneral = calcCedulaGeneral(state, uvt);
 
-  // Get accumulated vol pension/AFC from cédula general for pension calculation
-  // We need to recalculate to get the accumulated value
-  const trabajo = calcSubcedulaTrabajo(state, uvt, 0, 0, 0, 0, 0, 0);
-  const honorarios = calcSubcedulaHonorarios(
-    state, uvt,
-    trabajo.acumVolObligatorio, trabajo.acumVivienda,
-    trabajo.acumMedicina, trabajo.acumICETEX,
-    trabajo.acumCesantiasIndep, trabajo.acumVolPensionAFC,
-  );
-  const capital = calcSubcedulaCapital(
-    state, uvt,
-    honorarios.acumVolObligatorio, honorarios.acumVivienda,
-    honorarios.acumMedicina, honorarios.acumICETEX,
-    honorarios.acumCesantiasIndep, honorarios.acumVolPensionAFC,
-  );
-  const noLaborales = calcSubcedulaNoLaborales(
-    state, uvt,
-    capital.acumVolObligatorio, capital.acumVivienda,
-    0, capital.acumICETEX,
-    capital.acumCesantiasIndep, capital.acumVolPensionAFC,
-  );
-
-  const cedulaPensiones = calcCedulaPensiones(state, uvt, noLaborales.acumVolPensionAFC);
+  // P1-FIX: Use acumVolPensionAFC from cedulaGeneral instead of recalculating
+  const cedulaPensiones = calcCedulaPensiones(state, uvt, cedulaGeneral.acumVolPensionAFC);
   const cedulaDividendos = calcCedulaDividendos(state, uvt);
   const gananciasOcasionales = calcGananciasOcasionales(state, uvt);
 
@@ -1210,7 +1189,8 @@ export function calcularDeclaracion(state: DeclaracionState): ResultadoDeclaraci
     cedulaDividendos.subcedula2Total +
     gananciasOcasionales.gananciasBrutas;
 
-  const tasaEfectivaGlobal = totalIngresos > 0 ? liquidacion.impuestoRentaTotal / totalIngresos : 0;
+  // P7-FIX: Tasa efectiva incluye impuesto GO (totalImpuestoCargo, no solo renta)
+  const tasaEfectivaGlobal = totalIngresos > 0 ? liquidacion.totalImpuestoCargo / totalIngresos : 0;
 
   const sugerencias = calcSugerencias(state, cedulaGeneral, uvt);
 

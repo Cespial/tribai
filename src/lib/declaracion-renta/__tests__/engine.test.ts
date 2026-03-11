@@ -636,12 +636,14 @@ describe("Ganancias Ocasionales", () => {
     expect(r.gananciasOcasionales.impuestoGeneralGO).toBe(Math.round(100_000_000 * 0.15));
   });
 
-  it("loterias at 20%", () => {
+  it("loterias at 20% with 48 UVT exemption (ET 317)", () => {
     const r = calcularDeclaracion(makeState({
       gananciasOcasionales: { loteriasRifasApuestas: 50_000_000 },
     }));
-    expect(r.gananciasOcasionales.gananciaGravableLoterias).toBe(50_000_000);
-    expect(r.gananciasOcasionales.impuestoLoteriasGO).toBe(Math.round(50_000_000 * 0.20));
+    const exencion48UVT = Math.round(48 * UVT / 1000) * 1000;
+    const expectedGravable = Math.max(50_000_000 - exencion48UVT, 0);
+    expect(r.gananciasOcasionales.gananciaGravableLoterias).toBe(expectedGravable);
+    expect(r.gananciasOcasionales.impuestoLoteriasGO).toBe(Math.round(expectedGravable * 0.20));
   });
 
   it("herencias 20% exempt up to 1625 UVT", () => {
@@ -848,15 +850,15 @@ describe("Anticipo", () => {
     expect(r.liquidacion.anticipoOpcion2).toBe(expected);
   });
 
-  it("anticipoRecomendado = min(opcion1, opcion2) - retenciones, clamped >= 0", () => {
+  it("anticipoRecomendado = min(opcion1, opcion2) without subtracting retenciones", () => {
     const r = calcularDeclaracion(makeState({
       perfil: { anosDeclarando: 3 },
       rentasTrabajo: { salariosYPagosLaborales: 200_000_000 },
       retencionesAnticipos: { retencionFuenteRenta: 50_000_000 },
     }));
+    // P4-FIX: Retenciones se restan en liquidación final, no en el anticipo
     const minAnticipo = Math.min(r.liquidacion.anticipoOpcion1, r.liquidacion.anticipoOpcion2);
-    const expected = Math.max(minAnticipo - 50_000_000, 0);
-    expect(r.liquidacion.anticipoRecomendado).toBe(expected);
+    expect(r.liquidacion.anticipoRecomendado).toBe(Math.max(minAnticipo, 0));
   });
 });
 
