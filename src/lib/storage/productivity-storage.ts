@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   recents: "superapp-recents-v1",
   chatConversations: "superapp-chat-conversations-v1",
   chatFeedback: "superapp-chat-feedback-v1",
+  planificacionConversations: "superapp-planificacion-conversations-v1",
   legacyBookmarks: "superapp-bookmarks",
   legacyNotes: "superapp-notes",
 } as const;
@@ -16,6 +17,7 @@ export const STORAGE_EVENTS = {
   recents: "recents-changed",
   chatConversations: "chat-conversations-changed",
   chatFeedback: "chat-feedback-changed",
+  planificacionConversations: "planificacion-conversations-changed",
 } as const;
 
 export function readJsonStorage<T>(key: string, fallback: T): T {

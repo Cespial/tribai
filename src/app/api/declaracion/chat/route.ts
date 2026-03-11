@@ -1,4 +1,4 @@
-import { streamText, UIMessage, stepCountIs } from "ai";
+import { streamText, UIMessage, stepCountIs, smoothStream } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { buildAgentSystemPrompt } from "@/lib/declaracion-renta/agent-prompt";
 import {
@@ -123,6 +123,7 @@ export async function POST(req: Request) {
       messages: llmMessages,
       tools,
       stopWhen: stepCountIs(5),
+      experimental_transform: smoothStream({ delayInMs: 10, chunking: "word" }),
     });
 
     const totalMs = Math.round(performance.now() - requestStart);

@@ -86,6 +86,9 @@ export function ChatInput({
           )}
         </button>
       </div>
+      <p className="mt-2 text-center text-[10px] text-muted-foreground/70">
+        Herramienta informativa &middot; Derechos Reservados de tribai e inplux
+      </p>
     </form>
   );
 }

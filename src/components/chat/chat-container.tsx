@@ -17,7 +17,7 @@ import { ChatConversation, ChatPageContext } from "@/types/chat-history";
 import { ConversationSidebar } from "./conversation-sidebar";
 import { trackEvent } from "@/lib/telemetry/events";
 import { ChatBottomSheet } from "./chat-bottom-sheet";
-import { Download, FileJson, Copy as CopyIcon, Check, MessageSquare, Network } from "lucide-react";
+import { Download, FileJson, FileText, Copy as CopyIcon, Check, MessageSquare, Network } from "lucide-react";
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 
@@ -183,6 +183,33 @@ export function ChatContainer() {
     a.download = `conversacion-${selectedConversationId}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    setExporting(false);
+  };
+
+  const handleExportPDF = () => {
+    const msgHtml = messages.map((m) => {
+      const text = getMessageText(m);
+      const isUser = m.role === "user";
+      const cls = isUser ? "user" : "assistant";
+      const role = isUser ? "Usuario" : "Asistente Tributario";
+      return '<div class="message ' + cls + '"><div class="role">' + role + "</div><div>" + text.replace(/\n/g, "<br>") + "</div></div>";
+    }).join("");
+
+    const html = [
+      "<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><title>Consulta Tributaria — tribai.co</title>",
+      "<style>body{font-family:'Segoe UI',system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6}h1{font-size:24px;border-bottom:2px solid #0066FF;padding-bottom:8px}.message{margin:20px 0;padding:16px;border-radius:8px}.user{background:#f0f0f0}.assistant{background:#f8f9ff;border-left:3px solid #0066FF}.role{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#666;margin-bottom:8px}.footer{margin-top:40px;padding-top:16px;border-top:1px solid #e0e0e0;font-size:11px;color:#888;text-align:center}pre{background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}</style></head><body>",
+      "<h1>Consulta Tributaria</h1>",
+      '<p style="color:#666;font-size:13px;">Generado desde tribai.co — ' + new Date().toLocaleString("es-CO") + "</p>",
+      msgHtml,
+      '<div class="footer">Derechos Reservados de tribai e inplux &middot; tribai.co</div></body></html>',
+    ].join("\n");
+
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, "_blank");
+    if (win) {
+      win.onload = () => { win.print(); URL.revokeObjectURL(url); };
+    }
     setExporting(false);
   };
 
@@ -392,6 +419,13 @@ export function ChatContainer() {
 
                     {exporting && (
                       <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-md border border-border bg-card p-1 shadow-lg animate-in fade-in zoom-in-95">
+                        <button
+                          onClick={handleExportPDF}
+                          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-xs transition-colors hover:bg-muted"
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          Exportar a PDF
+                        </button>
                         <button
                           onClick={handleExportJSON}
                           className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-xs transition-colors hover:bg-muted"

@@ -1,4 +1,4 @@
-import { streamText, UIMessage } from "ai";
+import { streamText, UIMessage, smoothStream } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 import { runRAGPipeline } from "@/lib/rag/pipeline";
@@ -255,6 +255,7 @@ export async function POST(req: Request) {
       model: getChatModel(),
       system,
       messages: llmMessages,
+      experimental_transform: smoothStream({ delayInMs: 10, chunking: "word" }),
     });
 
     return result.toUIMessageStreamResponse({
