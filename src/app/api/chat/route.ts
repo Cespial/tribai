@@ -9,7 +9,7 @@ import { buildConversationContext } from "@/lib/chat/session-memory";
 import { suggestCalculators } from "@/lib/chat/calculator-context";
 import type { ChatPageContext } from "@/types/chat-history";
 import { setRequestId, logger } from "@/lib/logging/structured-logger";
-import { getModelForPlan, getUserPlan, type UserPlan } from "@/lib/auth/plan";
+import { getModelForPlan, getUserPlan, isAuthEnabled, type UserPlan } from "@/lib/auth/plan";
 
 export const maxDuration = 60;
 
@@ -86,8 +86,9 @@ export async function POST(req: Request) {
   const { messages, filters, pageContext, conversationId, plan: clientPlan } = parsed.data;
 
   // Resolve plan: verify server-side if auth is available, else trust client
-  const verifiedPlan = await getUserPlan().catch(() => clientPlan || "basic") as UserPlan;
-  const plan: UserPlan = verifiedPlan || clientPlan || "basic";
+  const plan: UserPlan = isAuthEnabled()
+    ? await getUserPlan().catch(() => "basic" as UserPlan)
+    : (clientPlan || "basic");
 
   // Validate message length
   const lengthError = validateMessageLength(messages);

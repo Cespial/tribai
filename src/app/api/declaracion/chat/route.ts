@@ -10,7 +10,7 @@ import {
 import { checkRateLimitWithHeaders } from "@/lib/api/rate-limiter";
 import { logger } from "@/lib/logging/structured-logger";
 import type { DeclaracionState } from "@/lib/declaracion-renta/types";
-import { getModelForPlan, getUserPlan, type UserPlan } from "@/lib/auth/plan";
+import { getModelForPlan, getUserPlan, isAuthEnabled, type UserPlan } from "@/lib/auth/plan";
 
 export const maxDuration = 120;
 
@@ -51,9 +51,10 @@ export async function POST(req: Request) {
 
   const { messages, exogenaSummary, sessionState: clientState, plan: clientPlan } = body;
 
-  // Resolve plan server-side if auth available
-  const verifiedPlan = await getUserPlan().catch(() => clientPlan || "basic") as UserPlan;
-  const plan: UserPlan = verifiedPlan || clientPlan || "basic";
+  // Resolve plan: verify server-side if auth is available, else trust client
+  const plan: UserPlan = isAuthEnabled()
+    ? await getUserPlan().catch(() => "basic" as UserPlan)
+    : (clientPlan || "basic");
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
     return Response.json({ error: "No hay mensajes en la solicitud." }, { status: 400 });
