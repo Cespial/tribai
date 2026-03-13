@@ -11,7 +11,6 @@ const MAIN_NAV = [
   { href: "/asistente", label: "Asistente IA" },
   { href: "/calculadoras", label: "Calculadoras" },
   { href: "/explorador", label: "Estatuto" },
-  { href: "/planes", label: "Planes" },
 ];
 
 const MORE_NAV = [
