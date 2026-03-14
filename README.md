@@ -101,8 +101,8 @@ Query → Query Enhancer (rewrite + HyDE + decompose)
 ## Desarrollo Local
 
 ```bash
-git clone https://github.com/Cespial/superapp-tributaria-colombia.git
-cd superapp-tributaria-colombia
+git clone https://github.com/Cespial/tribai.git
+cd tribai
 
 npm install
 
